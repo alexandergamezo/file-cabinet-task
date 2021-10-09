@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace FileCabinetApp
 {
@@ -18,6 +19,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("help", PrintHelp),
             new Tuple<string, Action<string>>("exit", Exit),
             new Tuple<string, Action<string>>("stat", Stat),
+            new Tuple<string, Action<string>>("create", Create),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -25,6 +27,7 @@ namespace FileCabinetApp
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
             new string[] { "stat", "displays statistics on records", "The 'stat' command displays statistics on records." },
+            new string[] { "create", "creates a record", "The 'create' creates record." },
         };
 
         public static void Main(string[] args)
@@ -104,6 +107,20 @@ namespace FileCabinetApp
         {
             var recordsCount = Program.fileCabinetService.GetStat();
             Console.WriteLine($"{recordsCount} record(s).");
+        }
+
+        private static void Create(string parameters)
+        {
+            Console.Write("First name: ");
+            string firstName = Console.ReadLine();
+
+            Console.Write("Last name: ");
+            string lastName = Console.ReadLine();
+
+            Console.Write("Date of birth: ");
+            DateTime dateOfBirth = DateTime.ParseExact(Console.ReadLine(), "MM/dd/yyyy", CultureInfo.InvariantCulture);
+
+            Console.WriteLine($"Record #{fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth)} is created.");
         }
     }
 }
