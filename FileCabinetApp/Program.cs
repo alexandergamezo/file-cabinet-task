@@ -122,7 +122,16 @@ namespace FileCabinetApp
             Console.Write("Date of birth: ");
             DateTime dateOfBirth = DateTime.ParseExact(Console.ReadLine(), "MM/dd/yyyy", CultureInfo.InvariantCulture);
 
-            Console.WriteLine($"Record #{fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth)} is created.");
+            Console.Write("Property1 <short>: ");
+            short property1 = short.Parse(Console.ReadLine());
+
+            Console.Write("Property2 <decimal>: ");
+            decimal property2 = decimal.Parse(Console.ReadLine());
+
+            Console.Write("Property3 <char>: ");
+            char property3 = char.Parse(Console.ReadLine());
+
+            Console.WriteLine($"Record #{fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, property1, property2, property3)} is created.");
         }
 
         private static void List(string parameters)
@@ -130,7 +139,7 @@ namespace FileCabinetApp
             var arr = Program.fileCabinetService.GetRecords();
             foreach (var a in arr)
             {
-                Console.WriteLine($"#{a.Id}, {a.FirstName}, {a.LastName}, {a.DateOfBirth.ToString("yyyy-MMMM-dd", CultureInfo.InvariantCulture)}");
+                Console.WriteLine($"#{a.Id}, {a.FirstName}, {a.LastName}, {a.DateOfBirth.ToString("yyyy-MMMM-dd", CultureInfo.InvariantCulture)}, {a.Property1}, {a.Property2}, {a.Property3}");
             }
         }
     }
