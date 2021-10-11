@@ -21,6 +21,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("stat", Stat),
             new Tuple<string, Action<string>>("create", Create),
             new Tuple<string, Action<string>>("list", List),
+            new Tuple<string, Action<string>>("edit", Edit),
         };
 
         private static string[][] helpMessages = new string[][]
@@ -28,8 +29,9 @@ namespace FileCabinetApp
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
             new string[] { "stat", "displays statistics on records", "The 'stat' command displays statistics on records." },
-            new string[] { "create", "creates a record", "The 'create' creates record." },
+            new string[] { "create", "creates a record", "The 'create' creates a record." },
             new string[] { "list", "returns a list of records", "The 'list' returns a list of records." },
+            new string[] { "edit", "edits a record", "The 'edit' edits a record." },
         };
 
         public static void Main(string[] args)
@@ -147,6 +149,51 @@ namespace FileCabinetApp
             foreach (var a in arr)
             {
                 Console.WriteLine($"#{a.Id}, {a.FirstName}, {a.LastName}, {a.DateOfBirth.ToString("yyyy-MMMM-dd", CultureInfo.InvariantCulture)}, {a.Property1}, {a.Property2}, {a.Property3}");
+            }
+        }
+
+        private static void Edit(string parameters)
+        {
+            int id = -1;
+            if (!string.IsNullOrEmpty(parameters) && int.TryParse(parameters, out int num))
+            {
+                id = num;
+            }
+
+            var arr = Program.fileCabinetService.GetRecords();
+            if (id > 0 && id <= arr.Length)
+            {
+                try
+                {
+                    Console.Write("First name: ");
+                    string firstName = Console.ReadLine();
+
+                    Console.Write("Last name: ");
+                    string lastName = Console.ReadLine();
+
+                    Console.Write("Date of birth: ");
+                    DateTime dateOfBirth = DateTime.ParseExact(Console.ReadLine(), "MM/dd/yyyy", CultureInfo.InvariantCulture);
+
+                    Console.Write("Property1 <short>: ");
+                    short property1 = short.Parse(Console.ReadLine());
+
+                    Console.Write("Property2 <decimal>: ");
+                    decimal property2 = decimal.Parse(Console.ReadLine());
+
+                    Console.Write("Property3 <char>: ");
+                    char property3 = char.Parse(Console.ReadLine());
+
+                    fileCabinetService.EditRecord(id, firstName, lastName, dateOfBirth, property1, property2, property3);
+                    Console.WriteLine($"Record #{id} is updated.");
+                }
+                catch (Exception exc)
+                {
+                    Console.WriteLine(exc.Message);
+                }
+            }
+            else
+            {
+                Console.WriteLine($"#{parameters} record is not found.");
             }
         }
     }
