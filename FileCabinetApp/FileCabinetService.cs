@@ -31,7 +31,7 @@ namespace FileCabinetApp
 
             if (dateOfBirth < new DateTime(1950, 01, 01) || dateOfBirth > DateTime.Today)
             {
-                throw new ArgumentException("Source string has the wrong format", nameof(dateOfBirth));
+                throw new ArgumentException("Source string has the wrong value", nameof(dateOfBirth));
             }
 
             if (property1 < short.MinValue || property1 > short.MaxValue)

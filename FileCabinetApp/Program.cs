@@ -113,25 +113,32 @@ namespace FileCabinetApp
 
         private static void Create(string parameters)
         {
-            Console.Write("First name: ");
-            string firstName = Console.ReadLine();
+            try
+            {
+                Console.Write("First name: ");
+                string firstName = Console.ReadLine();
 
-            Console.Write("Last name: ");
-            string lastName = Console.ReadLine();
+                Console.Write("Last name: ");
+                string lastName = Console.ReadLine();
 
-            Console.Write("Date of birth: ");
-            DateTime dateOfBirth = DateTime.ParseExact(Console.ReadLine(), "MM/dd/yyyy", CultureInfo.InvariantCulture);
+                Console.Write("Date of birth: ");
+                DateTime dateOfBirth = DateTime.ParseExact(Console.ReadLine(), "MM/dd/yyyy", CultureInfo.InvariantCulture);
 
-            Console.Write("Property1 <short>: ");
-            short property1 = short.Parse(Console.ReadLine());
+                Console.Write("Property1 <short>: ");
+                short property1 = short.Parse(Console.ReadLine());
 
-            Console.Write("Property2 <decimal>: ");
-            decimal property2 = decimal.Parse(Console.ReadLine());
+                Console.Write("Property2 <decimal>: ");
+                decimal property2 = decimal.Parse(Console.ReadLine());
 
-            Console.Write("Property3 <char>: ");
-            char property3 = char.Parse(Console.ReadLine());
+                Console.Write("Property3 <char>: ");
+                char property3 = char.Parse(Console.ReadLine());
 
-            Console.WriteLine($"Record #{fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, property1, property2, property3)} is created.");
+                Console.WriteLine($"Record #{fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, property1, property2, property3)} is created.");
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc.Message);
+            }
         }
 
         private static void List(string parameters)
