@@ -131,5 +131,24 @@ namespace FileCabinetApp
             this.list.RemoveAt(id - 1);
             this.list.Insert(id - 1, record);
         }
+
+        public FileCabinetRecord[] FindByFirstName(string firstName)
+        {
+            List<FileCabinetRecord> findResults = this.list.FindAll(FuncFindFirstName);
+
+            bool FuncFindFirstName(FileCabinetRecord record)
+            {
+                if (record.FirstName.ToLower() == firstName.ToLower())
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return findResults.ToArray();
+        }
     }
 }
