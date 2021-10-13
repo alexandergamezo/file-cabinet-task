@@ -144,6 +144,27 @@ namespace FileCabinetApp
                 }
                 else
                 {
+                    Console.WriteLine("No results.");
+                    return false;
+                }
+            }
+
+            return findResults.ToArray();
+        }
+
+        public FileCabinetRecord[] FindByLastName(string lastName)
+        {
+            List<FileCabinetRecord> findResults = this.list.FindAll(FuncFindLastName);
+
+            bool FuncFindLastName(FileCabinetRecord record)
+            {
+                if (record.LastName.ToLower() == lastName.ToLower())
+                {
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("No results.");
                     return false;
                 }
             }

@@ -206,25 +206,51 @@ namespace FileCabinetApp
             const int parameterIndex = 1;
             string command = inputs[commandIndex];
             string parameter = string.Empty;
+
+            bool checkCommand = false;
+            string firstName = "firstname";
+            string lastName = "lastname";
+
+            if (firstName.Equals(command, StringComparison.InvariantCultureIgnoreCase) ||
+                lastName.Equals(command, StringComparison.InvariantCultureIgnoreCase))
+            {
+                checkCommand = true;
+            }
+            else
+            {
+                Console.WriteLine("Check your command.");
+            }
+
             try
             {
                 parameter = inputs[parameterIndex].Trim('"');
-                Console.WriteLine("parameter: " + parameter);
             }
             catch (IndexOutOfRangeException)
             {
-                Console.WriteLine("Add your parameter(s)");
+                Console.WriteLine("Add your parameter(s).");
             }
 
-            string firstName = "firstname";
-
-            if (firstName.Equals(command, StringComparison.InvariantCultureIgnoreCase))
+            if (checkCommand && !string.IsNullOrEmpty(parameter))
             {
-                FileCabinetRecord[] arr = fileCabinetService.FindByFirstName(parameter);
-                foreach (var a in arr)
+                if (firstName.Equals(command, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    Console.WriteLine($"#{a.Id}, {a.FirstName}, {a.LastName}, {a.DateOfBirth.ToString("yyyy-MMMM-dd", CultureInfo.InvariantCulture)}, {a.Property1}, {a.Property2}, {a.Property3}");
+                    FileCabinetRecord[] arr = fileCabinetService.FindByFirstName(parameter);
+                    Show(arr);
                 }
+
+                if (lastName.Equals(command, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    FileCabinetRecord[] arr = fileCabinetService.FindByLastName(parameter);
+                    Show(arr);
+                }
+            }
+        }
+
+        private static void Show(FileCabinetRecord[] arr)
+        {
+            foreach (var a in arr)
+            {
+                Console.WriteLine($"#{a.Id}, {a.FirstName}, {a.LastName}, {a.DateOfBirth.ToString("yyyy-MMMM-dd", CultureInfo.InvariantCulture)}, {a.Property1}, {a.Property2}, {a.Property3}");
             }
         }
     }
