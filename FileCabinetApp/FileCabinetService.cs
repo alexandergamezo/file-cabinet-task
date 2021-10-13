@@ -144,9 +144,13 @@ namespace FileCabinetApp
                 }
                 else
                 {
-                    Console.WriteLine("No results.");
                     return false;
                 }
+            }
+
+            if (findResults.Count == 0)
+            {
+                Console.WriteLine("No results.");
             }
 
             return findResults.ToArray();
@@ -164,9 +168,37 @@ namespace FileCabinetApp
                 }
                 else
                 {
-                    Console.WriteLine("No results.");
                     return false;
                 }
+            }
+
+            if (findResults.Count == 0)
+            {
+                Console.WriteLine("No results.");
+            }
+
+            return findResults.ToArray();
+        }
+
+        public FileCabinetRecord[] FindByDateOfBirth(DateTime dateOfBirth)
+        {
+            List<FileCabinetRecord> findResults = this.list.FindAll(FuncFindDateOfBirth);
+
+            bool FuncFindDateOfBirth(FileCabinetRecord record)
+            {
+                if (record.DateOfBirth == dateOfBirth)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            if (findResults.Count == 0)
+            {
+                Console.WriteLine("No results.");
             }
 
             return findResults.ToArray();

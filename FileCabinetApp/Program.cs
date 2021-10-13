@@ -148,10 +148,7 @@ namespace FileCabinetApp
         private static void List(string parameters)
         {
             var arr = Program.fileCabinetService.GetRecords();
-            foreach (var a in arr)
-            {
-                Console.WriteLine($"#{a.Id}, {a.FirstName}, {a.LastName}, {a.DateOfBirth.ToString("yyyy-MMMM-dd", CultureInfo.InvariantCulture)}, {a.Property1}, {a.Property2}, {a.Property3}");
-            }
+            Show(arr);
         }
 
         private static void Edit(string parameters)
@@ -210,9 +207,11 @@ namespace FileCabinetApp
             bool checkCommand = false;
             string firstName = "firstname";
             string lastName = "lastname";
+            string dateOfBirth = "dateofbirth";
 
             if (firstName.Equals(command, StringComparison.InvariantCultureIgnoreCase) ||
-                lastName.Equals(command, StringComparison.InvariantCultureIgnoreCase))
+                lastName.Equals(command, StringComparison.InvariantCultureIgnoreCase) ||
+                dateOfBirth.Equals(command, StringComparison.InvariantCultureIgnoreCase))
             {
                 checkCommand = true;
             }
@@ -243,6 +242,19 @@ namespace FileCabinetApp
                     FileCabinetRecord[] arr = fileCabinetService.FindByLastName(parameter);
                     Show(arr);
                 }
+
+                if (dateOfBirth.Equals(command, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    try
+                    {
+                        FileCabinetRecord[] arr = fileCabinetService.FindByDateOfBirth(DateTime.Parse(parameter.Trim('"')));
+                        Show(arr);
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("The 'dateofbirth' parameter has the wrong format.");
+                    }
+                }
             }
         }
 
@@ -250,7 +262,7 @@ namespace FileCabinetApp
         {
             foreach (var a in arr)
             {
-                Console.WriteLine($"#{a.Id}, {a.FirstName}, {a.LastName}, {a.DateOfBirth.ToString("yyyy-MMMM-dd", CultureInfo.InvariantCulture)}, {a.Property1}, {a.Property2}, {a.Property3}");
+                Console.WriteLine($"#{a.Id}, {a.FirstName}, {a.LastName}, {a.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, {a.Property1}, {a.Property2}, {a.Property3}");
             }
         }
     }
