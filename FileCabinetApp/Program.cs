@@ -228,7 +228,7 @@ namespace FileCabinetApp
                 {
                     try
                     {
-                        FileCabinetRecord[] arr = fileCabinetService.FindByDateOfBirth(DateTime.Parse(parameter.Trim('"')));
+                        FileCabinetRecord[] arr = fileCabinetService.FindByDateOfBirth(parameter.Trim('"'));
                         if (arr.Length == 0)
                         {
                             Console.WriteLine("No results.");

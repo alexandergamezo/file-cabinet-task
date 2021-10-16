@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace FileCabinetApp
 {
@@ -9,6 +10,7 @@ namespace FileCabinetApp
 
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+        private readonly Dictionary<string, List<FileCabinetRecord>> dateOfBirthDictionary = new Dictionary<string, List<FileCabinetRecord>>();
 
         public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, short property1, decimal property2, char property3)
         {
@@ -29,6 +31,7 @@ namespace FileCabinetApp
 
             this.CreateRecordInDictionary(this.firstNameDictionary, firstName);
             this.CreateRecordInDictionary(this.lastNameDictionary, lastName);
+            this.CreateRecordInDictionary(this.dateOfBirthDictionary, dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture));
 
             return record.Id;
         }
@@ -60,6 +63,7 @@ namespace FileCabinetApp
 
             this.EditDictinary(this.firstNameDictionary, firstName, this.list[id - 1].FirstName, record, id);
             this.EditDictinary(this.lastNameDictionary, lastName, this.list[id - 1].LastName, record, id);
+            this.EditDictinary(this.dateOfBirthDictionary, dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), this.list[id - 1].DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), record, id);
 
             this.list.RemoveAt(id - 1);
             this.list.Insert(id - 1, record);
@@ -75,28 +79,9 @@ namespace FileCabinetApp
             return this.FindByKey(this.lastNameDictionary, lastName);
         }
 
-        public FileCabinetRecord[] FindByDateOfBirth(DateTime dateOfBirth)
+        public FileCabinetRecord[] FindByDateOfBirth(string dateOfBirth)
         {
-            List<FileCabinetRecord> findResults = this.list.FindAll(FuncFindDateOfBirth);
-
-            bool FuncFindDateOfBirth(FileCabinetRecord record)
-            {
-                if (record.DateOfBirth == dateOfBirth)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            if (findResults.Count == 0)
-            {
-                Console.WriteLine("No results.");
-            }
-
-            return findResults.ToArray();
+            return this.FindByKey(this.dateOfBirthDictionary, dateOfBirth);
         }
 
         public void CheckInputParameters(string firstName, string lastName, DateTime dateOfBirth, short property1, decimal property2, char property3)
@@ -179,7 +164,18 @@ namespace FileCabinetApp
         public FileCabinetRecord[] FindByKey(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string currentDictKey)
         {
             FileCabinetRecord[] arr = Array.Empty<FileCabinetRecord>();
-            string appropriateFormat = string.Concat(currentDictKey[..1].ToUpper(), currentDictKey[1..].ToLower());
+            DateTime temp;
+            string appropriateFormat;
+            if (DateTime.TryParse(currentDictKey, out temp))
+            {
+                string str = temp.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
+                appropriateFormat = string.Concat(str[..6].ToUpper(), str[6..].ToLower());
+            }
+            else
+            {
+                appropriateFormat = string.Concat(currentDictKey[..1].ToUpper(), currentDictKey[1..].ToLower());
+            }
+
             if (nameOfDict.ContainsKey(appropriateFormat))
             {
                 arr = new FileCabinetRecord[nameOfDict[appropriateFormat].Count];
