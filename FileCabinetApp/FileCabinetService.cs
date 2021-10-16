@@ -6,7 +6,9 @@ namespace FileCabinetApp
     public class FileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new List<FileCabinetRecord>();
+
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
+        private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new Dictionary<string, List<FileCabinetRecord>>();
 
         public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, short property1, decimal property2, char property3)
         {
@@ -26,6 +28,7 @@ namespace FileCabinetApp
             this.list.Add(record);
 
             this.CreateRecordInDictionary(this.firstNameDictionary, firstName);
+            this.CreateRecordInDictionary(this.lastNameDictionary, lastName);
 
             return record.Id;
         }
@@ -56,6 +59,7 @@ namespace FileCabinetApp
             };
 
             this.EditDictinary(this.firstNameDictionary, firstName, this.list[id - 1].FirstName, record, id);
+            this.EditDictinary(this.lastNameDictionary, lastName, this.list[id - 1].LastName, record, id);
 
             this.list.RemoveAt(id - 1);
             this.list.Insert(id - 1, record);
@@ -68,26 +72,7 @@ namespace FileCabinetApp
 
         public FileCabinetRecord[] FindByLastName(string lastName)
         {
-            List<FileCabinetRecord> findResults = this.list.FindAll(FuncFindLastName);
-
-            bool FuncFindLastName(FileCabinetRecord record)
-            {
-                if (record.LastName.ToLower() == lastName.ToLower())
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            if (findResults.Count == 0)
-            {
-                Console.WriteLine("No results.");
-            }
-
-            return findResults.ToArray();
+            return this.FindByKey(this.lastNameDictionary, lastName);
         }
 
         public FileCabinetRecord[] FindByDateOfBirth(DateTime dateOfBirth)
