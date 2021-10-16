@@ -119,24 +119,7 @@ namespace FileCabinetApp
         {
             try
             {
-                Console.Write("First name: ");
-                string firstName = Console.ReadLine();
-
-                Console.Write("Last name: ");
-                string lastName = Console.ReadLine();
-
-                Console.Write("Date of birth: ");
-                DateTime dateOfBirth = DateTime.ParseExact(Console.ReadLine(), "MM/dd/yyyy", CultureInfo.InvariantCulture);
-
-                Console.Write("Property1 <short>: ");
-                short property1 = short.Parse(Console.ReadLine());
-
-                Console.Write("Property2 <decimal>: ");
-                decimal property2 = decimal.Parse(Console.ReadLine());
-
-                Console.Write("Property3 <char>: ");
-                char property3 = char.Parse(Console.ReadLine());
-
+                InputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3);
                 Console.WriteLine($"Record #{fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, property1, property2, property3)} is created.");
             }
             catch (Exception exc)
@@ -164,23 +147,7 @@ namespace FileCabinetApp
             {
                 try
                 {
-                    Console.Write("First name: ");
-                    string firstName = Console.ReadLine();
-
-                    Console.Write("Last name: ");
-                    string lastName = Console.ReadLine();
-
-                    Console.Write("Date of birth: ");
-                    DateTime dateOfBirth = DateTime.ParseExact(Console.ReadLine(), "MM/dd/yyyy", CultureInfo.InvariantCulture);
-
-                    Console.Write("Property1 <short>: ");
-                    short property1 = short.Parse(Console.ReadLine());
-
-                    Console.Write("Property2 <decimal>: ");
-                    decimal property2 = decimal.Parse(Console.ReadLine());
-
-                    Console.Write("Property3 <char>: ");
-                    char property3 = char.Parse(Console.ReadLine());
+                    InputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3);
 
                     fileCabinetService.EditRecord(id, firstName, lastName, dateOfBirth, property1, property2, property3);
                     Console.WriteLine($"Record #{id} is updated.");
@@ -229,18 +196,32 @@ namespace FileCabinetApp
                 Console.WriteLine("Add your parameter(s).");
             }
 
-            if (checkCommand && !string.IsNullOrEmpty(parameter))
+            if (checkCommand && !string.IsNullOrEmpty(parameter) && !string.IsNullOrWhiteSpace(parameter))
             {
                 if (firstName.Equals(command, StringComparison.InvariantCultureIgnoreCase))
                 {
                     FileCabinetRecord[] arr = fileCabinetService.FindByFirstName(parameter);
-                    Show(arr);
+                    if (arr.Length == 0)
+                    {
+                        Console.WriteLine("No results.");
+                    }
+                    else
+                    {
+                        Show(arr);
+                    }
                 }
 
                 if (lastName.Equals(command, StringComparison.InvariantCultureIgnoreCase))
                 {
                     FileCabinetRecord[] arr = fileCabinetService.FindByLastName(parameter);
-                    Show(arr);
+                    if (arr.Length == 0)
+                    {
+                        Console.WriteLine("No results.");
+                    }
+                    else
+                    {
+                        Show(arr);
+                    }
                 }
 
                 if (dateOfBirth.Equals(command, StringComparison.InvariantCultureIgnoreCase))
@@ -248,7 +229,14 @@ namespace FileCabinetApp
                     try
                     {
                         FileCabinetRecord[] arr = fileCabinetService.FindByDateOfBirth(DateTime.Parse(parameter.Trim('"')));
-                        Show(arr);
+                        if (arr.Length == 0)
+                        {
+                            Console.WriteLine("No results.");
+                        }
+                        else
+                        {
+                            Show(arr);
+                        }
                     }
                     catch (Exception)
                     {
@@ -256,6 +244,27 @@ namespace FileCabinetApp
                     }
                 }
             }
+        }
+
+        private static void InputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3)
+        {
+            Console.Write("First name: ");
+            firstName = Console.ReadLine();
+
+            Console.Write("Last name: ");
+            lastName = Console.ReadLine();
+
+            Console.Write("Date of birth: ");
+            dateOfBirth = DateTime.ParseExact(Console.ReadLine(), "MM/dd/yyyy", CultureInfo.InvariantCulture);
+
+            Console.Write("Property1 <short>: ");
+            property1 = short.Parse(Console.ReadLine());
+
+            Console.Write("Property2 <decimal>: ");
+            property2 = decimal.Parse(Console.ReadLine());
+
+            Console.Write("Property3 <char>: ");
+            property3 = char.Parse(Console.ReadLine());
         }
 
         private static void Show(FileCabinetRecord[] arr)
