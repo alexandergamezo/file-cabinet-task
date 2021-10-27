@@ -11,10 +11,9 @@ namespace FileCabinetApp
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
 
-        private static bool isRunning = true;
-        private static FileCabinetService fileCabinetService = new FileCabinetService();
+        private static readonly FileCabinetService FileCabinetService = new ();
 
-        private static Tuple<string, Action<string>>[] commands = new Tuple<string, Action<string>>[]
+        private static readonly Tuple<string, Action<string>>[] Commands = new Tuple<string, Action<string>>[]
         {
             new Tuple<string, Action<string>>("help", PrintHelp),
             new Tuple<string, Action<string>>("exit", Exit),
@@ -25,7 +24,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("find", Find),
         };
 
-        private static string[][] helpMessages = new string[][]
+        private static readonly string[][] HelpMessages = new string[][]
         {
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
@@ -33,13 +32,15 @@ namespace FileCabinetApp
             new string[] { "create", "creates a record", "The 'create' creates a record." },
             new string[] { "list", "returns a list of records", "The 'list' returns a list of records." },
             new string[] { "edit", "edits a record", "The 'edit' edits a record." },
-            new string[] { "find", "finds and returns a list of records", "The 'find' finds and returns a list of records." },
+            new string[] { "find", "finds and returns a list of records", "The 'find' finds and returns a list of records. Parameters: 'firstname', 'lastname', 'dateofbirth'." },
         };
 
-        public static void Main(string[] args)
+        private static bool isRunning = true;
+
+        public static void Main()
         {
-            Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
-            Console.WriteLine(Program.HintMessage);
+            Console.WriteLine($"File Cabinet Application, developed by {DeveloperName}");
+            Console.WriteLine(HintMessage);
             Console.WriteLine();
 
             do
@@ -51,16 +52,16 @@ namespace FileCabinetApp
 
                 if (string.IsNullOrEmpty(command))
                 {
-                    Console.WriteLine(Program.HintMessage);
+                    Console.WriteLine(HintMessage);
                     continue;
                 }
 
-                var index = Array.FindIndex(commands, 0, commands.Length, i => i.Item1.Equals(command, StringComparison.InvariantCultureIgnoreCase));
+                var index = Array.FindIndex(Commands, 0, Commands.Length, i => i.Item1.Equals(command, StringComparison.InvariantCultureIgnoreCase));
                 if (index >= 0)
                 {
                     const int parametersIndex = 1;
                     var parameters = inputs.Length > 1 ? inputs[parametersIndex] : string.Empty;
-                    commands[index].Item2(parameters);
+                    Commands[index].Item2(parameters);
                 }
                 else
                 {
@@ -80,10 +81,10 @@ namespace FileCabinetApp
         {
             if (!string.IsNullOrEmpty(parameters))
             {
-                var index = Array.FindIndex(helpMessages, 0, helpMessages.Length, i => string.Equals(i[Program.CommandHelpIndex], parameters, StringComparison.InvariantCultureIgnoreCase));
+                var index = Array.FindIndex(HelpMessages, 0, HelpMessages.Length, i => string.Equals(i[Program.CommandHelpIndex], parameters, StringComparison.InvariantCultureIgnoreCase));
                 if (index >= 0)
                 {
-                    Console.WriteLine(helpMessages[index][Program.ExplanationHelpIndex]);
+                    Console.WriteLine(HelpMessages[index][Program.ExplanationHelpIndex]);
                 }
                 else
                 {
@@ -94,7 +95,7 @@ namespace FileCabinetApp
             {
                 Console.WriteLine("Available commands:");
 
-                foreach (var helpMessage in helpMessages)
+                foreach (var helpMessage in HelpMessages)
                 {
                     Console.WriteLine("\t{0}\t- {1}", helpMessage[Program.CommandHelpIndex], helpMessage[Program.DescriptionHelpIndex]);
                 }
@@ -111,7 +112,7 @@ namespace FileCabinetApp
 
         private static void Stat(string parameters)
         {
-            var recordsCount = Program.fileCabinetService.GetStat();
+            var recordsCount = Program.FileCabinetService.GetStat();
             Console.WriteLine($"{recordsCount} record(s).");
         }
 
@@ -119,8 +120,8 @@ namespace FileCabinetApp
         {
             try
             {
-                InputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3);
-                Console.WriteLine($"Record #{fileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, property1, property2, property3)} is created.");
+                CheckInputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3);
+                Console.WriteLine($"Record #{FileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, property1, property2, property3)} is created.");
             }
             catch (Exception exc)
             {
@@ -130,26 +131,26 @@ namespace FileCabinetApp
 
         private static void List(string parameters)
         {
-            var arr = Program.fileCabinetService.GetRecords();
+            var arr = FileCabinetService.GetRecords();
             Show(arr);
         }
 
         private static void Edit(string parameters)
         {
             int id = -1;
-            if (!string.IsNullOrEmpty(parameters) && int.TryParse(parameters, out int num))
+            if (!string.IsNullOrEmpty(parameters) && int.TryParse(parameters, out int enteredId))
             {
-                id = num;
+                id = enteredId;
             }
 
-            var arr = Program.fileCabinetService.GetRecords();
+            var arr = FileCabinetService.GetRecords();
             if (id > 0 && id <= arr.Length)
             {
                 try
                 {
-                    InputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3);
+                    CheckInputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3);
 
-                    fileCabinetService.EditRecord(id, firstName, lastName, dateOfBirth, property1, property2, property3);
+                    FileCabinetService.EditRecord(id, firstName, lastName, dateOfBirth, property1, property2, property3);
                     Console.WriteLine($"Record #{id} is updated.");
                 }
                 catch (Exception exc)
@@ -168,39 +169,72 @@ namespace FileCabinetApp
             string[] inputs = parameters.Split(' ', 2);
             const int commandIndex = 0;
             const int parameterIndex = 1;
+
+            string[] originalParameters = { "firstname", "lastname", "dateofbirth" };
+
             string command = inputs[commandIndex];
-            string parameter = string.Empty;
-
-            bool checkCommand = false;
-            string firstName = "firstname";
-            string lastName = "lastname";
-            string dateOfBirth = "dateofbirth";
-
-            if (firstName.Equals(command, StringComparison.InvariantCultureIgnoreCase) ||
-                lastName.Equals(command, StringComparison.InvariantCultureIgnoreCase) ||
-                dateOfBirth.Equals(command, StringComparison.InvariantCultureIgnoreCase))
-            {
-                checkCommand = true;
-            }
-            else
+            bool checkCommand = originalParameters[0].Equals(command, StringComparison.InvariantCultureIgnoreCase) ||
+                                originalParameters[1].Equals(command, StringComparison.InvariantCultureIgnoreCase) ||
+                                originalParameters[2].Equals(command, StringComparison.InvariantCultureIgnoreCase);
+            if (!checkCommand)
             {
                 Console.WriteLine("Check your command.");
             }
 
+            string parameter = string.Empty;
             try
             {
                 parameter = inputs[parameterIndex].Trim('"');
             }
-            catch (IndexOutOfRangeException)
+            catch (IndexOutOfRangeException exc)
             {
-                Console.WriteLine("Add your parameter(s).");
+                Console.WriteLine("Add your parameter(s). {0}", exc.Message);
             }
 
-            if (checkCommand && !string.IsNullOrEmpty(parameter) && !string.IsNullOrWhiteSpace(parameter))
+            bool checkParameter = checkCommand && !string.IsNullOrEmpty(parameter) && !string.IsNullOrWhiteSpace(parameter);
+            if (checkParameter)
             {
-                if (firstName.Equals(command, StringComparison.InvariantCultureIgnoreCase))
+                FindAppropriateMethod(originalParameters, command, parameter);
+            }
+        }
+
+        private static void FindAppropriateMethod(string[] originalParameters, string command, string parameter)
+        {
+            bool checkParameterFirstName = originalParameters[0].Equals(command, StringComparison.InvariantCultureIgnoreCase);
+            bool checkParameterLastName = originalParameters[1].Equals(command, StringComparison.InvariantCultureIgnoreCase);
+            bool checkParameterDateOfBirth = originalParameters[2].Equals(command, StringComparison.InvariantCultureIgnoreCase);
+
+            if (checkParameterFirstName)
+            {
+                FileCabinetRecord[] arr = FileCabinetService.FindByFirstName(parameter);
+                if (arr.Length == 0)
                 {
-                    FileCabinetRecord[] arr = fileCabinetService.FindByFirstName(parameter);
+                    Console.WriteLine("No results.");
+                }
+                else
+                {
+                    Show(arr);
+                }
+            }
+
+            if (checkParameterLastName)
+            {
+                FileCabinetRecord[] arr = FileCabinetService.FindByLastName(parameter);
+                if (arr.Length == 0)
+                {
+                    Console.WriteLine("No results.");
+                }
+                else
+                {
+                    Show(arr);
+                }
+            }
+
+            if (checkParameterDateOfBirth)
+            {
+                try
+                {
+                    FileCabinetRecord[] arr = FileCabinetService.FindByDateOfBirth(parameter.Trim('"'));
                     if (arr.Length == 0)
                     {
                         Console.WriteLine("No results.");
@@ -210,43 +244,14 @@ namespace FileCabinetApp
                         Show(arr);
                     }
                 }
-
-                if (lastName.Equals(command, StringComparison.InvariantCultureIgnoreCase))
+                catch (Exception)
                 {
-                    FileCabinetRecord[] arr = fileCabinetService.FindByLastName(parameter);
-                    if (arr.Length == 0)
-                    {
-                        Console.WriteLine("No results.");
-                    }
-                    else
-                    {
-                        Show(arr);
-                    }
-                }
-
-                if (dateOfBirth.Equals(command, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    try
-                    {
-                        FileCabinetRecord[] arr = fileCabinetService.FindByDateOfBirth(parameter.Trim('"'));
-                        if (arr.Length == 0)
-                        {
-                            Console.WriteLine("No results.");
-                        }
-                        else
-                        {
-                            Show(arr);
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        Console.WriteLine("The 'dateofbirth' parameter has the wrong format.");
-                    }
+                    Console.WriteLine($"The '{originalParameters[2]}' parameter has the wrong format.");
                 }
             }
         }
 
-        private static void InputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3)
+        private static void CheckInputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3)
         {
             Console.Write("First name: ");
             firstName = Console.ReadLine();
