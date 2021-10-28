@@ -3,6 +3,9 @@ using System.Globalization;
 
 namespace FileCabinetApp
 {
+    /// <summary>
+    /// The main class for this app.
+    /// </summary>
     public static class Program
     {
         private const string DeveloperName = "Alexander Gamezo";
@@ -37,6 +40,9 @@ namespace FileCabinetApp
 
         private static bool isRunning = true;
 
+        /// <summary>
+        /// The main method for this app.
+        /// </summary>
         public static void Main()
         {
             Console.WriteLine($"File Cabinet Application, developed by {DeveloperName}");
