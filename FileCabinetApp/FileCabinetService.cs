@@ -18,52 +18,47 @@ namespace FileCabinetApp
         /// <summary>
         /// Checks input parameters on the wrong values.
         /// </summary>
-        /// <param name="firstName">First name.</param>
-        /// <param name="lastName">Last name.</param>
-        /// <param name="dateOfBirth">Date of birth.</param>
-        /// <param name="property1">Property in "short" format.</param>
-        /// <param name="property2">Property in "decimal" format.</param>
-        /// <param name="property3">Property in "char" format.</param>
-        public static void CheckInputParameters(string firstName, string lastName, DateTime dateOfBirth, short property1, decimal property2, char property3)
+        /// <param name="v">Object with parameters.</param>
+        public static void CheckInputParameters(ParameterObject v)
         {
-            if (string.IsNullOrEmpty(firstName))
+            if (string.IsNullOrEmpty(v.FirstName))
             {
-                throw new ArgumentNullException(nameof(firstName), $"{nameof(firstName)} is null or empty");
+                throw new ArgumentNullException(nameof(v), $"{nameof(v)} is null or empty");
             }
 
-            if (firstName.Length < 2 || firstName.Length > 60)
+            if (v.FirstName.Length < 2 || v.FirstName.Length > 60)
             {
-                throw new ArgumentException("All names must be more or equal than 2-letters and less or equal than 60-letters", nameof(firstName));
+                throw new ArgumentException("All names must be more or equal than 2-letters and less or equal than 60-letters", nameof(v));
             }
 
-            if (string.IsNullOrEmpty(lastName))
+            if (string.IsNullOrEmpty(v.LastName))
             {
-                throw new ArgumentNullException(nameof(lastName), $"{nameof(lastName)} is null or empty");
+                throw new ArgumentNullException(nameof(v), $"{nameof(v)} is null or empty");
             }
 
-            if (lastName.Length < 2 || lastName.Length > 60)
+            if (v.LastName.Length < 2 || v.LastName.Length > 60)
             {
-                throw new ArgumentException("All names must be more or equal than 2-letters and less or equal than 60-letters", nameof(lastName));
+                throw new ArgumentException("All names must be more or equal than 2-letters and less or equal than 60-letters", nameof(v));
             }
 
-            if (dateOfBirth < new DateTime(1950, 01, 01) || dateOfBirth > DateTime.Today)
+            if (v.DateOfBirth < new DateTime(1950, 01, 01) || v.DateOfBirth > DateTime.Today)
             {
-                throw new ArgumentException("Source string has the wrong value", nameof(dateOfBirth));
+                throw new ArgumentException("DateOfBirth string has the wrong value", nameof(v));
             }
 
-            if (property1 < short.MinValue || property1 > short.MaxValue)
+            if (v.Property1 < short.MinValue || v.Property1 > short.MaxValue)
             {
-                throw new ArgumentOutOfRangeException(nameof(property1), "value is not a <short> number");
+                throw new ArgumentOutOfRangeException(nameof(v), "Property1 value is not a <short> number");
             }
 
-            if (property2 < decimal.MinValue || property2 > decimal.MaxValue)
+            if (v.Property2 < decimal.MinValue || v.Property2 > decimal.MaxValue)
             {
-                throw new ArgumentOutOfRangeException(nameof(property2), "value is not a <decimal> number");
+                throw new ArgumentOutOfRangeException(nameof(v), "Property2 value is not a <decimal> number");
             }
 
-            if (!char.IsLetter(property3))
+            if (!char.IsLetter(v.Property3))
             {
-                throw new ArgumentOutOfRangeException(nameof(property3), "value is not a <char> letter");
+                throw new ArgumentOutOfRangeException(nameof(v), "Property3 value is not a <char> letter");
             }
         }
 
@@ -75,7 +70,7 @@ namespace FileCabinetApp
         /// <param name="currentDictKey">Current Dictionary key.</param>
         /// <param name="record">The new record which changes the old record.</param>
         /// <param name="id">Id of old record.</param>
-        public static void EditDictinary(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string newDictKey, string currentDictKey, FileCabinetRecord record, int id)
+        public static void EditDictionary(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string newDictKey, string currentDictKey, FileCabinetRecord record, int id)
         {
             FileCabinetService obj = new ();
 
@@ -93,7 +88,7 @@ namespace FileCabinetApp
             else
             {
                 nameOfDict[newDictKey].Add(record);
-                nameOfDict[newDictKey].Sort(CompareID.CompareWithID);
+                nameOfDict[newDictKey].Sort(CompareId.CompareWithID);
             }
         }
 
@@ -130,33 +125,28 @@ namespace FileCabinetApp
         /// <summary>
         /// Creates records in the List and the Dictionary.
         /// </summary>
-        /// <param name="firstName">First name.</param>
-        /// <param name="lastName">Last name.</param>
-        /// <param name="dateOfBirth">Date of birth.</param>
-        /// <param name="property1">Property in "short" format.</param>
-        /// <param name="property2">Property in "decimal" format.</param>
-        /// <param name="property3">Property in "char" format.</param>
+        /// <param name="v">Object with parameters.</param>
         /// <returns>The id number.</returns>
-        public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, short property1, decimal property2, char property3)
+        public int CreateRecord(ParameterObject v)
         {
-            CheckInputParameters(firstName, lastName, dateOfBirth, property1, property2, property3);
+            CheckInputParameters(v);
 
             var record = new FileCabinetRecord
             {
                 Id = this.list.Count + 1,
-                FirstName = firstName,
-                LastName = lastName,
-                DateOfBirth = dateOfBirth,
-                Property1 = property1,
-                Property2 = property2,
-                Property3 = property3,
+                FirstName = v.FirstName,
+                LastName = v.LastName,
+                DateOfBirth = v.DateOfBirth,
+                Property1 = v.Property1,
+                Property2 = v.Property2,
+                Property3 = v.Property3,
             };
 
             this.list.Add(record);
 
-            this.CreateRecordInDictionary(this.firstNameDictionary, firstName);
-            this.CreateRecordInDictionary(this.lastNameDictionary, lastName);
-            this.CreateRecordInDictionary(this.dateOfBirthDictionary, dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture));
+            this.CreateRecordInDictionary(this.firstNameDictionary, v.FirstName);
+            this.CreateRecordInDictionary(this.lastNameDictionary, v.LastName);
+            this.CreateRecordInDictionary(this.dateOfBirthDictionary, v.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture));
 
             return record.Id;
         }
@@ -183,30 +173,25 @@ namespace FileCabinetApp
         /// Changes old record on the new one in the Dictionary and List.
         /// </summary>
         /// <param name="id">Id number.</param>
-        /// <param name="firstName">First name.</param>
-        /// <param name="lastName">Last name.</param>
-        /// <param name="dateOfBirth">Date of birth.</param>
-        /// <param name="property1">Property in "short" format.</param>
-        /// <param name="property2">Property in "decimal" format.</param>
-        /// <param name="property3">Property in "char" format.</param>
-        public void EditRecord(int id, string firstName, string lastName, DateTime dateOfBirth, short property1, decimal property2, char property3)
+        /// <param name="v">Object with parameters.</param>
+        public void EditRecord(int id, ParameterObject v)
         {
-            CheckInputParameters(firstName, lastName, dateOfBirth, property1, property2, property3);
+            CheckInputParameters(v);
 
             var record = new FileCabinetRecord
             {
                 Id = id,
-                FirstName = firstName,
-                LastName = lastName,
-                DateOfBirth = dateOfBirth,
-                Property1 = property1,
-                Property2 = property2,
-                Property3 = property3,
+                FirstName = v.FirstName,
+                LastName = v.LastName,
+                DateOfBirth = v.DateOfBirth,
+                Property1 = v.Property1,
+                Property2 = v.Property2,
+                Property3 = v.Property3,
             };
 
-            EditDictinary(this.firstNameDictionary, firstName, this.list[id - 1].FirstName, record, id);
-            EditDictinary(this.lastNameDictionary, lastName, this.list[id - 1].LastName, record, id);
-            EditDictinary(this.dateOfBirthDictionary, dateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), this.list[id - 1].DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), record, id);
+            EditDictionary(this.firstNameDictionary, v.FirstName, this.list[id - 1].FirstName, record, id);
+            EditDictionary(this.lastNameDictionary, v.LastName, this.list[id - 1].LastName, record, id);
+            EditDictionary(this.dateOfBirthDictionary, v.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), this.list[id - 1].DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), record, id);
 
             this.list.RemoveAt(id - 1);
             this.list.Insert(id - 1, record);
@@ -262,7 +247,7 @@ namespace FileCabinetApp
         /// <summary>
         /// Contains comparison method.
         /// </summary>
-        public static class CompareID
+        public static class CompareId
         {
             /// <summary>
             /// Compares two integer instances.
@@ -275,6 +260,80 @@ namespace FileCabinetApp
                 int val = x.Id.CompareTo(y.Id);
                 return (val != 0) ? val : 0;
             }
+        }
+
+        /// <summary>
+        /// Contains method for pass parameters.
+        /// </summary>
+        public class ParameterObject
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ParameterObject"/> class.
+            /// Passes parameters.
+            /// </summary>
+            /// <param name="firstName">First name.</param>
+            /// <param name="lastName">Last name.</param>
+            /// <param name="dateOfBirth">Date of birth.</param>
+            /// <param name="property1">Property in "short" format.</param>
+            /// <param name="property2">Property in "decimal" format.</param>
+            /// <param name="property3">Property in "char" format.</param>
+            public ParameterObject(string firstName, string lastName, DateTime dateOfBirth, short property1, decimal property2, char property3)
+            {
+                this.FirstName = firstName;
+                this.LastName = lastName;
+                this.DateOfBirth = dateOfBirth;
+                this.Property1 = property1;
+                this.Property2 = property2;
+                this.Property3 = property3;
+            }
+
+            /// <summary>
+            /// Gets First name.
+            /// </summary>
+            /// <value>
+            /// FirstName.
+            /// </value>
+            public string FirstName { get; private set; }
+
+            /// <summary>
+            /// Gets Last name.
+            /// </summary>
+            /// <value>
+            /// LastName.
+            /// </value>
+            public string LastName { get; private set; }
+
+            /// <summary>
+            /// Gets Date of birth.
+            /// </summary>
+            /// <value>
+            /// DateOfBirth.
+            /// </value>
+            public DateTime DateOfBirth { get; private set; }
+
+            /// <summary>
+            /// Gets Property in "short" format.
+            /// </summary>
+            /// <value>
+            /// Property1.
+            /// </value>
+            public short Property1 { get; private set; }
+
+            /// <summary>
+            /// Gets Property in "decimal" format.
+            /// </summary>
+            /// <value>
+            /// Property2.
+            /// </value>
+            public decimal Property2 { get; private set; }
+
+            /// <summary>
+            /// Gets Property in "char" format.
+            /// </summary>
+            /// <value>
+            /// Property3.
+            /// </value>
+            public char Property3 { get; private set; }
         }
     }
 }

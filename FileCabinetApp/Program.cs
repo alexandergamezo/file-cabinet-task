@@ -127,7 +127,7 @@ namespace FileCabinetApp
             try
             {
                 CheckInputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3);
-                Console.WriteLine($"Record #{FileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, property1, property2, property3)} is created.");
+                Console.WriteLine($"Record #{FileCabinetService.CreateRecord(new FileCabinetService.ParameterObject(firstName, lastName, dateOfBirth, property1, property2, property3))} is created.");
             }
             catch (Exception exc)
             {
@@ -156,7 +156,7 @@ namespace FileCabinetApp
                 {
                     CheckInputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3);
 
-                    FileCabinetService.EditRecord(id, firstName, lastName, dateOfBirth, property1, property2, property3);
+                    FileCabinetService.EditRecord(id, new FileCabinetService.ParameterObject(firstName, lastName, dateOfBirth, property1, property2, property3));
                     Console.WriteLine($"Record #{id} is updated.");
                 }
                 catch (Exception exc)
