@@ -7,60 +7,13 @@ namespace FileCabinetApp
     /// <summary>
     /// Reacts to user commands and executes some commands.
     /// </summary>
-    public class FileCabinetService
+    public abstract class FileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new ();
 
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new ();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new ();
         private readonly Dictionary<string, List<FileCabinetRecord>> dateOfBirthDictionary = new ();
-
-        /// <summary>
-        /// Checks input parameters on the wrong values.
-        /// </summary>
-        /// <param name="v">Object with parameters.</param>
-        public static void CheckInputParameters(ParameterObject v)
-        {
-            if (string.IsNullOrEmpty(v.FirstName))
-            {
-                throw new ArgumentNullException(nameof(v), $"{nameof(v)} is null or empty");
-            }
-
-            if (v.FirstName.Length < 2 || v.FirstName.Length > 60)
-            {
-                throw new ArgumentException("All names must be more or equal than 2-letters and less or equal than 60-letters", nameof(v));
-            }
-
-            if (string.IsNullOrEmpty(v.LastName))
-            {
-                throw new ArgumentNullException(nameof(v), $"{nameof(v)} is null or empty");
-            }
-
-            if (v.LastName.Length < 2 || v.LastName.Length > 60)
-            {
-                throw new ArgumentException("All names must be more or equal than 2-letters and less or equal than 60-letters", nameof(v));
-            }
-
-            if (v.DateOfBirth < new DateTime(1950, 01, 01) || v.DateOfBirth > DateTime.Today)
-            {
-                throw new ArgumentException("DateOfBirth string has the wrong value", nameof(v));
-            }
-
-            if (v.Property1 < short.MinValue || v.Property1 > short.MaxValue)
-            {
-                throw new ArgumentOutOfRangeException(nameof(v), "Property1 value is not a <short> number");
-            }
-
-            if (v.Property2 < decimal.MinValue || v.Property2 > decimal.MaxValue)
-            {
-                throw new ArgumentOutOfRangeException(nameof(v), "Property2 value is not a <decimal> number");
-            }
-
-            if (!char.IsLetter(v.Property3))
-            {
-                throw new ArgumentOutOfRangeException(nameof(v), "Property3 value is not a <char> letter");
-            }
-        }
 
         /// <summary>
         /// Changes old record on the new one in the Dictionary.
@@ -72,7 +25,7 @@ namespace FileCabinetApp
         /// <param name="id">Id of old record.</param>
         public static void EditDictionary(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string newDictKey, string currentDictKey, FileCabinetRecord record, int id)
         {
-            FileCabinetService obj = new ();
+            FileCabinetDefaultService obj = new ();
 
             int indexCurrent = nameOfDict[currentDictKey].IndexOf(obj.list[id - 1]);
             nameOfDict[currentDictKey].RemoveAt(indexCurrent);
@@ -129,7 +82,7 @@ namespace FileCabinetApp
         /// <returns>The id number.</returns>
         public int CreateRecord(ParameterObject v)
         {
-            CheckInputParameters(v);
+            this.ValidateParameters(v);
 
             var record = new FileCabinetRecord
             {
@@ -176,7 +129,7 @@ namespace FileCabinetApp
         /// <param name="v">Object with parameters.</param>
         public void EditRecord(int id, ParameterObject v)
         {
-            CheckInputParameters(v);
+            this.ValidateParameters(v);
 
             var record = new FileCabinetRecord
             {
@@ -243,6 +196,12 @@ namespace FileCabinetApp
                 nameOfDict[newDictKey].Add(this.list[^1]);
             }
         }
+
+        /// <summary>
+        /// Checks input parameters on the wrong values.
+        /// </summary>
+        /// <param name="v">Object with parameters.</param>
+        protected abstract void ValidateParameters(ParameterObject v);
 
         /// <summary>
         /// Contains comparison method.

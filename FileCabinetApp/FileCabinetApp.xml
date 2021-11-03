@@ -4,6 +4,28 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
+        <member name="T:FileCabinetApp.FileCabinetCustomService">
+            <summary>
+            Extends base class with additional individual algorithms.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetCustomService.ValidateParameters(FileCabinetApp.FileCabinetService.ParameterObject)">
+            <summary>
+            Checks input parameters on the wrong values.
+            </summary>
+            <param name="v">Object with parameters.</param>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetDefaultService">
+            <summary>
+            Extends base class with default algorithms.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetDefaultService.ValidateParameters(FileCabinetApp.FileCabinetService.ParameterObject)">
+            <summary>
+            Checks input parameters on the wrong values.
+            </summary>
+            <param name="v">Object with parameters.</param>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetRecord">
             <summary>
             Provides access to values of variables by using properties.
@@ -69,12 +91,6 @@
             <summary>
             Reacts to user commands and executes some commands.
             </summary>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.CheckInputParameters(FileCabinetApp.FileCabinetService.ParameterObject)">
-            <summary>
-            Checks input parameters on the wrong values.
-            </summary>
-            <param name="v">Object with parameters.</param>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.EditDictionary(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String,System.String,FileCabinetApp.FileCabinetRecord,System.Int32)">
             <summary>
@@ -147,6 +163,12 @@
             </summary>
             <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
             <param name="newDictKey">New Dictionary key.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.ValidateParameters(FileCabinetApp.FileCabinetService.ParameterObject)">
+            <summary>
+            Checks input parameters on the wrong values.
+            </summary>
+            <param name="v">Object with parameters.</param>
         </member>
         <member name="T:FileCabinetApp.FileCabinetService.CompareId">
             <summary>
