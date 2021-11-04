@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FileCabinetApp": {
+      "commandName": "Project",
+      "commandLineArgs": "arg0 arg1"
+    }
+  }
+}

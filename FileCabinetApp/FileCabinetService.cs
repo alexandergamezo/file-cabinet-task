@@ -16,66 +16,6 @@ namespace FileCabinetApp
         private readonly Dictionary<string, List<FileCabinetRecord>> dateOfBirthDictionary = new ();
 
         /// <summary>
-        /// Changes old record on the new one in the Dictionary.
-        /// </summary>
-        /// <param name="nameOfDict">Name of the Dictionary which has to be changed.</param>
-        /// <param name="newDictKey">New Dictionary key.</param>
-        /// <param name="currentDictKey">Current Dictionary key.</param>
-        /// <param name="record">The new record which changes the old record.</param>
-        /// <param name="id">Id of old record.</param>
-        public static void EditDictionary(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string newDictKey, string currentDictKey, FileCabinetRecord record, int id)
-        {
-            FileCabinetDefaultService obj = new ();
-
-            int indexCurrent = nameOfDict[currentDictKey].IndexOf(obj.list[id - 1]);
-            nameOfDict[currentDictKey].RemoveAt(indexCurrent);
-            if (nameOfDict[currentDictKey].Count == 0)
-            {
-                nameOfDict.Remove(currentDictKey);
-            }
-
-            if (!nameOfDict.ContainsKey(newDictKey))
-            {
-                nameOfDict[newDictKey] = new List<FileCabinetRecord> { record };
-            }
-            else
-            {
-                nameOfDict[newDictKey].Add(record);
-                nameOfDict[newDictKey].Sort(CompareId.CompareWithID);
-            }
-        }
-
-        /// <summary>
-        /// Finds records in the Dictionary by key.
-        /// </summary>
-        /// <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
-        /// <param name="currentDictKey">Current Dictionary key.</param>
-        /// <returns>The array of records found by <paramref name="currentDictKey"/>.</returns>
-        public static FileCabinetRecord[] FindByKey(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string currentDictKey)
-        {
-            FileCabinetRecord[] arr = Array.Empty<FileCabinetRecord>();
-            string appropriateFormat;
-            if (DateTime.TryParse(currentDictKey, out DateTime appropriateValue))
-            {
-                string str = appropriateValue.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
-                appropriateFormat = string.Concat(str[..6].ToUpper(), str[6..].ToLower());
-            }
-            else
-            {
-                appropriateFormat = string.Concat(currentDictKey[..1].ToUpper(), currentDictKey[1..].ToLower());
-            }
-
-            if (nameOfDict.ContainsKey(appropriateFormat))
-            {
-                arr = new FileCabinetRecord[nameOfDict[appropriateFormat].Count];
-                nameOfDict[appropriateFormat].CopyTo(arr, 0);
-                return arr;
-            }
-
-            return arr;
-        }
-
-        /// <summary>
         /// Creates records in the List and the Dictionary.
         /// </summary>
         /// <param name="v">Object with parameters.</param>
@@ -142,9 +82,9 @@ namespace FileCabinetApp
                 Property3 = v.Property3,
             };
 
-            EditDictionary(this.firstNameDictionary, v.FirstName, this.list[id - 1].FirstName, record, id);
-            EditDictionary(this.lastNameDictionary, v.LastName, this.list[id - 1].LastName, record, id);
-            EditDictionary(this.dateOfBirthDictionary, v.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), this.list[id - 1].DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), record, id);
+            this.EditDictionary(this.firstNameDictionary, v.FirstName, this.list[id - 1].FirstName, record, id);
+            this.EditDictionary(this.lastNameDictionary, v.LastName, this.list[id - 1].LastName, record, id);
+            this.EditDictionary(this.dateOfBirthDictionary, v.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), this.list[id - 1].DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), record, id);
 
             this.list.RemoveAt(id - 1);
             this.list.Insert(id - 1, record);
@@ -181,11 +121,75 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Checks input parameters on the wrong values.
+        /// </summary>
+        /// <param name="v">Object with parameters.</param>
+        protected abstract void ValidateParameters(ParameterObject v);
+
+        /// <summary>
+        /// Finds records in the Dictionary by key.
+        /// </summary>
+        /// <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
+        /// <param name="currentDictKey">Current Dictionary key.</param>
+        /// <returns>The array of records found by <paramref name="currentDictKey"/>.</returns>
+        private static FileCabinetRecord[] FindByKey(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string currentDictKey)
+        {
+            FileCabinetRecord[] arr = Array.Empty<FileCabinetRecord>();
+            string appropriateFormat;
+            if (DateTime.TryParse(currentDictKey, out DateTime appropriateValue))
+            {
+                string str = appropriateValue.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
+                appropriateFormat = string.Concat(str[..6].ToUpper(), str[6..].ToLower());
+            }
+            else
+            {
+                appropriateFormat = string.Concat(currentDictKey[..1].ToUpper(), currentDictKey[1..].ToLower());
+            }
+
+            if (nameOfDict.ContainsKey(appropriateFormat))
+            {
+                arr = new FileCabinetRecord[nameOfDict[appropriateFormat].Count];
+                nameOfDict[appropriateFormat].CopyTo(arr, 0);
+                return arr;
+            }
+
+            return arr;
+        }
+
+        /// <summary>
+        /// Changes old record on the new one in the Dictionary.
+        /// </summary>
+        /// <param name="nameOfDict">Name of the Dictionary which has to be changed.</param>
+        /// <param name="newDictKey">New Dictionary key.</param>
+        /// <param name="currentDictKey">Current Dictionary key.</param>
+        /// <param name="record">The new record which changes the old record.</param>
+        /// <param name="id">Id of old record.</param>
+        private void EditDictionary(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string newDictKey, string currentDictKey, FileCabinetRecord record, int id)
+        {
+            int indexCurrent = nameOfDict[currentDictKey].IndexOf(this.list[id - 1]);
+            nameOfDict[currentDictKey].RemoveAt(indexCurrent);
+            if (nameOfDict[currentDictKey].Count == 0)
+            {
+                nameOfDict.Remove(currentDictKey);
+            }
+
+            if (!nameOfDict.ContainsKey(newDictKey))
+            {
+                nameOfDict[newDictKey] = new List<FileCabinetRecord> { record };
+            }
+            else
+            {
+                nameOfDict[newDictKey].Add(record);
+                nameOfDict[newDictKey].Sort(CompareId.CompareWithID);
+            }
+        }
+
+        /// <summary>
         /// Creates record in the Dictionary.
         /// </summary>
         /// <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
         /// <param name="newDictKey">New Dictionary key.</param>
-        public void CreateRecordInDictionary(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string newDictKey)
+        private void CreateRecordInDictionary(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string newDictKey)
         {
             if (!nameOfDict.ContainsKey(newDictKey))
             {
@@ -194,30 +198,6 @@ namespace FileCabinetApp
             else
             {
                 nameOfDict[newDictKey].Add(this.list[^1]);
-            }
-        }
-
-        /// <summary>
-        /// Checks input parameters on the wrong values.
-        /// </summary>
-        /// <param name="v">Object with parameters.</param>
-        protected abstract void ValidateParameters(ParameterObject v);
-
-        /// <summary>
-        /// Contains comparison method.
-        /// </summary>
-        public static class CompareId
-        {
-            /// <summary>
-            /// Compares two integer instances.
-            /// </summary>
-            /// <param name="x">First integer instance.</param>
-            /// <param name="y">Second integer instance.</param>
-            /// <returns>The indication relative values of integer instances.</returns>
-            public static int CompareWithID(FileCabinetRecord x, FileCabinetRecord y)
-            {
-                int val = x.Id.CompareTo(y.Id);
-                return (val != 0) ? val : 0;
             }
         }
 
@@ -293,6 +273,24 @@ namespace FileCabinetApp
             /// Property3.
             /// </value>
             public char Property3 { get; private set; }
+        }
+
+        /// <summary>
+        /// Contains comparison method.
+        /// </summary>
+        private static class CompareId
+        {
+            /// <summary>
+            /// Compares two integer instances.
+            /// </summary>
+            /// <param name="x">First integer instance.</param>
+            /// <param name="y">Second integer instance.</param>
+            /// <returns>The indication relative values of integer instances.</returns>
+            public static int CompareWithID(FileCabinetRecord x, FileCabinetRecord y)
+            {
+                int val = x.Id.CompareTo(y.Id);
+                return (val != 0) ? val : 0;
+            }
         }
     }
 }

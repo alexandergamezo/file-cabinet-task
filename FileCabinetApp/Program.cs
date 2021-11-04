@@ -14,8 +14,6 @@ namespace FileCabinetApp
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
 
-        private static readonly FileCabinetDefaultService FileCabinetService = new ();
-
         private static readonly Tuple<string, Action<string>>[] Commands = new Tuple<string, Action<string>>[]
         {
             new Tuple<string, Action<string>>("help", PrintHelp),
@@ -38,14 +36,19 @@ namespace FileCabinetApp
             new string[] { "find", "finds and returns a list of records", "The 'find' finds and returns a list of records. Parameters: 'firstname', 'lastname', 'dateofbirth'." },
         };
 
+        private static FileCabinetService fileCabinetService;
         private static bool isRunning = true;
 
         /// <summary>
         /// The main method for this app.
         /// </summary>
-        public static void Main()
+        /// <param name="args">Application arguments with validation-rules command line parameters.</param>
+        public static void Main(string[] args)
         {
             Console.WriteLine($"File Cabinet Application, developed by {DeveloperName}");
+
+            CommandLineParameter(args);
+
             Console.WriteLine(HintMessage);
             Console.WriteLine();
 
@@ -118,7 +121,7 @@ namespace FileCabinetApp
 
         private static void Stat(string parameters)
         {
-            var recordsCount = Program.FileCabinetService.GetStat();
+            var recordsCount = fileCabinetService.GetStat();
             Console.WriteLine($"{recordsCount} record(s).");
         }
 
@@ -127,7 +130,7 @@ namespace FileCabinetApp
             try
             {
                 CheckInputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3);
-                Console.WriteLine($"Record #{FileCabinetService.CreateRecord(new FileCabinetService.ParameterObject(firstName, lastName, dateOfBirth, property1, property2, property3))} is created.");
+                Console.WriteLine($"Record #{fileCabinetService.CreateRecord(new FileCabinetService.ParameterObject(firstName, lastName, dateOfBirth, property1, property2, property3))} is created.");
             }
             catch (Exception exc)
             {
@@ -137,7 +140,7 @@ namespace FileCabinetApp
 
         private static void List(string parameters)
         {
-            var arr = FileCabinetService.GetRecords();
+            var arr = fileCabinetService.GetRecords();
             Show(arr);
         }
 
@@ -149,14 +152,14 @@ namespace FileCabinetApp
                 id = enteredId;
             }
 
-            var arr = FileCabinetService.GetRecords();
+            var arr = fileCabinetService.GetRecords();
             if (id > 0 && id <= arr.Length)
             {
                 try
                 {
                     CheckInputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3);
 
-                    FileCabinetService.EditRecord(id, new FileCabinetService.ParameterObject(firstName, lastName, dateOfBirth, property1, property2, property3));
+                    fileCabinetService.EditRecord(id, new FileCabinetService.ParameterObject(firstName, lastName, dateOfBirth, property1, property2, property3));
                     Console.WriteLine($"Record #{id} is updated.");
                 }
                 catch (Exception exc)
@@ -212,7 +215,7 @@ namespace FileCabinetApp
 
             if (checkParameterFirstName)
             {
-                FileCabinetRecord[] arr = FileCabinetService.FindByFirstName(parameter);
+                FileCabinetRecord[] arr = fileCabinetService.FindByFirstName(parameter);
                 if (arr.Length == 0)
                 {
                     Console.WriteLine("No results.");
@@ -225,7 +228,7 @@ namespace FileCabinetApp
 
             if (checkParameterLastName)
             {
-                FileCabinetRecord[] arr = FileCabinetService.FindByLastName(parameter);
+                FileCabinetRecord[] arr = fileCabinetService.FindByLastName(parameter);
                 if (arr.Length == 0)
                 {
                     Console.WriteLine("No results.");
@@ -240,7 +243,7 @@ namespace FileCabinetApp
             {
                 try
                 {
-                    FileCabinetRecord[] arr = FileCabinetService.FindByDateOfBirth(parameter.Trim('"'));
+                    FileCabinetRecord[] arr = fileCabinetService.FindByDateOfBirth(parameter.Trim('"'));
                     if (arr.Length == 0)
                     {
                         Console.WriteLine("No results.");
@@ -276,6 +279,29 @@ namespace FileCabinetApp
 
             Console.Write("Property3 <char>: ");
             property3 = char.Parse(Console.ReadLine());
+        }
+
+        private static void CommandLineParameter(string[] args)
+        {
+            if (args.Length == 0 ||
+                (args.Length == 1 && args[0].ToLowerInvariant().Equals("--validation-rules=default")) ||
+                (args.Length == 2 && (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v default")))
+            {
+                Console.WriteLine("Using default validation rules.");
+                fileCabinetService = new FileCabinetDefaultService();
+            }
+            else if ((args.Length == 1 && args[0].ToLowerInvariant().Equals("--validation-rules=custom")) ||
+                     (args.Length == 2 && (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v custom")))
+            {
+                Console.WriteLine("Using custom validation rules.");
+                fileCabinetService = (FileCabinetService)new FileCabinetCustomService();
+            }
+            else
+            {
+                Console.WriteLine("Validation-rules command line parameter is wrong. Check your input.");
+                Console.WriteLine("Using default validation rules.");
+                fileCabinetService = new FileCabinetDefaultService();
+            }
         }
 
         private static void Show(FileCabinetRecord[] arr)

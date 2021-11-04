@@ -92,24 +92,6 @@
             Reacts to user commands and executes some commands.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetService.EditDictionary(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String,System.String,FileCabinetApp.FileCabinetRecord,System.Int32)">
-            <summary>
-            Changes old record on the new one in the Dictionary.
-            </summary>
-            <param name="nameOfDict">Name of the Dictionary which has to be changed.</param>
-            <param name="newDictKey">New Dictionary key.</param>
-            <param name="currentDictKey">Current Dictionary key.</param>
-            <param name="record">The new record which changes the old record.</param>
-            <param name="id">Id of old record.</param>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.FindByKey(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
-            <summary>
-            Finds records in the Dictionary by key.
-            </summary>
-            <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
-            <param name="currentDictKey">Current Dictionary key.</param>
-            <returns>The array of records found by <paramref name="currentDictKey"/>.</returns>
-        </member>
         <member name="M:FileCabinetApp.FileCabinetService.CreateRecord(FileCabinetApp.FileCabinetService.ParameterObject)">
             <summary>
             Creates records in the List and the Dictionary.
@@ -157,31 +139,36 @@
             <param name="dateOfBirth">date of birth.</param>
             <returns>The array of records found by <paramref name="dateOfBirth"/>.</returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetService.CreateRecordInDictionary(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
-            <summary>
-            Creates record in the Dictionary.
-            </summary>
-            <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
-            <param name="newDictKey">New Dictionary key.</param>
-        </member>
         <member name="M:FileCabinetApp.FileCabinetService.ValidateParameters(FileCabinetApp.FileCabinetService.ParameterObject)">
             <summary>
             Checks input parameters on the wrong values.
             </summary>
             <param name="v">Object with parameters.</param>
         </member>
-        <member name="T:FileCabinetApp.FileCabinetService.CompareId">
+        <member name="M:FileCabinetApp.FileCabinetService.FindByKey(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
             <summary>
-            Contains comparison method.
+            Finds records in the Dictionary by key.
             </summary>
+            <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
+            <param name="currentDictKey">Current Dictionary key.</param>
+            <returns>The array of records found by <paramref name="currentDictKey"/>.</returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetService.CompareId.CompareWithID(FileCabinetApp.FileCabinetRecord,FileCabinetApp.FileCabinetRecord)">
+        <member name="M:FileCabinetApp.FileCabinetService.EditDictionary(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String,System.String,FileCabinetApp.FileCabinetRecord,System.Int32)">
             <summary>
-            Compares two integer instances.
+            Changes old record on the new one in the Dictionary.
             </summary>
-            <param name="x">First integer instance.</param>
-            <param name="y">Second integer instance.</param>
-            <returns>The indication relative values of integer instances.</returns>
+            <param name="nameOfDict">Name of the Dictionary which has to be changed.</param>
+            <param name="newDictKey">New Dictionary key.</param>
+            <param name="currentDictKey">Current Dictionary key.</param>
+            <param name="record">The new record which changes the old record.</param>
+            <param name="id">Id of old record.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.CreateRecordInDictionary(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
+            <summary>
+            Creates record in the Dictionary.
+            </summary>
+            <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
+            <param name="newDictKey">New Dictionary key.</param>
         </member>
         <member name="T:FileCabinetApp.FileCabinetService.ParameterObject">
             <summary>
@@ -248,15 +235,29 @@
             Property3.
             </value>
         </member>
+        <member name="T:FileCabinetApp.FileCabinetService.CompareId">
+            <summary>
+            Contains comparison method.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.CompareId.CompareWithID(FileCabinetApp.FileCabinetRecord,FileCabinetApp.FileCabinetRecord)">
+            <summary>
+            Compares two integer instances.
+            </summary>
+            <param name="x">First integer instance.</param>
+            <param name="y">Second integer instance.</param>
+            <returns>The indication relative values of integer instances.</returns>
+        </member>
         <member name="T:FileCabinetApp.Program">
             <summary>
             The main class for this app.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.Program.Main">
+        <member name="M:FileCabinetApp.Program.Main(System.String[])">
             <summary>
             The main method for this app.
             </summary>
+            <param name="args">Application arguments with validation-rules command line parameters.</param>
         </member>
     </members>
 </doc>
