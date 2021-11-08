@@ -22,7 +22,7 @@ namespace FileCabinetApp
         /// <returns>The id number.</returns>
         public int CreateRecord(ParameterObject v)
         {
-            this.ValidateParameters(v);
+            this.CreateValidator().ValidateParameters(v);
 
             var record = new FileCabinetRecord
             {
@@ -69,7 +69,7 @@ namespace FileCabinetApp
         /// <param name="v">Object with parameters.</param>
         public void EditRecord(int id, ParameterObject v)
         {
-            this.ValidateParameters(v);
+            this.CreateValidator().ValidateParameters(v);
 
             var record = new FileCabinetRecord
             {
@@ -123,8 +123,8 @@ namespace FileCabinetApp
         /// <summary>
         /// Checks input parameters on the wrong values.
         /// </summary>
-        /// <param name="v">Object with parameters.</param>
-        protected abstract void ValidateParameters(ParameterObject v);
+        /// <returns>Returns a reference to one of the concrete strategies.</returns>
+        protected abstract IRecordValidator CreateValidator();
 
         /// <summary>
         /// Finds records in the Dictionary by key.
@@ -199,80 +199,6 @@ namespace FileCabinetApp
             {
                 nameOfDict[newDictKey].Add(this.list[^1]);
             }
-        }
-
-        /// <summary>
-        /// Contains method for pass parameters.
-        /// </summary>
-        public class ParameterObject
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="ParameterObject"/> class.
-            /// Passes parameters.
-            /// </summary>
-            /// <param name="firstName">First name.</param>
-            /// <param name="lastName">Last name.</param>
-            /// <param name="dateOfBirth">Date of birth.</param>
-            /// <param name="property1">Property in "short" format.</param>
-            /// <param name="property2">Property in "decimal" format.</param>
-            /// <param name="property3">Property in "char" format.</param>
-            public ParameterObject(string firstName, string lastName, DateTime dateOfBirth, short property1, decimal property2, char property3)
-            {
-                this.FirstName = firstName;
-                this.LastName = lastName;
-                this.DateOfBirth = dateOfBirth;
-                this.Property1 = property1;
-                this.Property2 = property2;
-                this.Property3 = property3;
-            }
-
-            /// <summary>
-            /// Gets First name.
-            /// </summary>
-            /// <value>
-            /// FirstName.
-            /// </value>
-            public string FirstName { get; private set; }
-
-            /// <summary>
-            /// Gets Last name.
-            /// </summary>
-            /// <value>
-            /// LastName.
-            /// </value>
-            public string LastName { get; private set; }
-
-            /// <summary>
-            /// Gets Date of birth.
-            /// </summary>
-            /// <value>
-            /// DateOfBirth.
-            /// </value>
-            public DateTime DateOfBirth { get; private set; }
-
-            /// <summary>
-            /// Gets Property in "short" format.
-            /// </summary>
-            /// <value>
-            /// Property1.
-            /// </value>
-            public short Property1 { get; private set; }
-
-            /// <summary>
-            /// Gets Property in "decimal" format.
-            /// </summary>
-            /// <value>
-            /// Property2.
-            /// </value>
-            public decimal Property2 { get; private set; }
-
-            /// <summary>
-            /// Gets Property in "char" format.
-            /// </summary>
-            /// <value>
-            /// Property3.
-            /// </value>
-            public char Property3 { get; private set; }
         }
 
         /// <summary>

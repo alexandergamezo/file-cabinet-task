@@ -37,6 +37,7 @@ namespace FileCabinetApp
         };
 
         private static FileCabinetService fileCabinetService;
+
         private static bool isRunning = true;
 
         /// <summary>
@@ -130,7 +131,8 @@ namespace FileCabinetApp
             try
             {
                 CheckInputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3);
-                Console.WriteLine($"Record #{fileCabinetService.CreateRecord(new FileCabinetService.ParameterObject(firstName, lastName, dateOfBirth, property1, property2, property3))} is created.");
+                ParameterObject paramobj = new (firstName, lastName, dateOfBirth, property1, property2, property3);
+                Console.WriteLine($"Record #{fileCabinetService.CreateRecord(paramobj)} is created.");
             }
             catch (Exception exc)
             {
@@ -158,8 +160,8 @@ namespace FileCabinetApp
                 try
                 {
                     CheckInputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3);
-
-                    fileCabinetService.EditRecord(id, new FileCabinetService.ParameterObject(firstName, lastName, dateOfBirth, property1, property2, property3));
+                    ParameterObject paramobj = new (firstName, lastName, dateOfBirth, property1, property2, property3);
+                    fileCabinetService.EditRecord(id, paramobj);
                     Console.WriteLine($"Record #{id} is updated.");
                 }
                 catch (Exception exc)
