@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Globalization;
 
 namespace FileCabinetApp
@@ -154,8 +155,8 @@ namespace FileCabinetApp
                 id = enteredId;
             }
 
-            var arr = fileCabinetService.GetRecords();
-            if (id > 0 && id <= arr.Length)
+            var onlyCollection = fileCabinetService.GetRecords();
+            if (id > 0 && id <= onlyCollection.Count)
             {
                 try
                 {
@@ -217,27 +218,27 @@ namespace FileCabinetApp
 
             if (checkParameterFirstName)
             {
-                FileCabinetRecord[] arr = fileCabinetService.FindByFirstName(parameter);
-                if (arr.Length == 0)
+                ReadOnlyCollection<FileCabinetRecord> onlyCollection = fileCabinetService.FindByFirstName(parameter);
+                if (onlyCollection.Count == 0)
                 {
                     Console.WriteLine("No results.");
                 }
                 else
                 {
-                    Show(arr);
+                    Show(onlyCollection);
                 }
             }
 
             if (checkParameterLastName)
             {
-                FileCabinetRecord[] arr = fileCabinetService.FindByLastName(parameter);
-                if (arr.Length == 0)
+                ReadOnlyCollection<FileCabinetRecord> onlyCollection = fileCabinetService.FindByLastName(parameter);
+                if (onlyCollection.Count == 0)
                 {
                     Console.WriteLine("No results.");
                 }
                 else
                 {
-                    Show(arr);
+                    Show(onlyCollection);
                 }
             }
 
@@ -245,14 +246,14 @@ namespace FileCabinetApp
             {
                 try
                 {
-                    FileCabinetRecord[] arr = fileCabinetService.FindByDateOfBirth(parameter.Trim('"'));
-                    if (arr.Length == 0)
+                    ReadOnlyCollection<FileCabinetRecord> onlyCollection = fileCabinetService.FindByDateOfBirth(parameter.Trim('"'));
+                    if (onlyCollection.Count == 0)
                     {
                         Console.WriteLine("No results.");
                     }
                     else
                     {
-                        Show(arr);
+                        Show(onlyCollection);
                     }
                 }
                 catch (Exception)
@@ -306,9 +307,9 @@ namespace FileCabinetApp
             }
         }
 
-        private static void Show(FileCabinetRecord[] arr)
+        private static void Show(ReadOnlyCollection<FileCabinetRecord> onlyCollection)
         {
-            foreach (var a in arr)
+            foreach (var a in onlyCollection)
             {
                 Console.WriteLine($"#{a.Id}, {a.FirstName}, {a.LastName}, {a.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, {a.Property1}, {a.Property2}, {a.Property3}");
             }

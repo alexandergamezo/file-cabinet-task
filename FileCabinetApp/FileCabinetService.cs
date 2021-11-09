@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 
 namespace FileCabinetApp
@@ -60,9 +61,10 @@ namespace FileCabinetApp
         /// Gets records from the List and puts them into an array.
         /// </summary>
         /// <returns>The array of records.</returns>
-        public FileCabinetRecord[] GetRecords()
+        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
         {
-            return this.list.ToArray();
+            ReadOnlyCollection<FileCabinetRecord> onlyCollection = new (this.list);
+            return onlyCollection;
         }
 
         /// <summary>
@@ -107,7 +109,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="firstName">First name.</param>
         /// <returns>The array of records found by the <paramref name="firstName"/>.</returns>
-        public FileCabinetRecord[] FindByFirstName(string firstName)
+        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
         {
             return FindByKey(this.firstNameDictionary, firstName);
         }
@@ -117,7 +119,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="lastName">Last name.</param>
         /// <returns>The array of records which by the <paramref name="lastName"/>.</returns>
-        public FileCabinetRecord[] FindByLastName(string lastName)
+        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
         {
             return FindByKey(this.lastNameDictionary, lastName);
         }
@@ -127,7 +129,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="dateOfBirth">date of birth.</param>
         /// <returns>The array of records found by <paramref name="dateOfBirth"/>.</returns>
-        public FileCabinetRecord[] FindByDateOfBirth(string dateOfBirth)
+        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
         {
             return FindByKey(this.dateOfBirthDictionary, dateOfBirth);
         }
@@ -138,9 +140,10 @@ namespace FileCabinetApp
         /// <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
         /// <param name="currentDictKey">Current Dictionary key.</param>
         /// <returns>The array of records found by <paramref name="currentDictKey"/>.</returns>
-        private static FileCabinetRecord[] FindByKey(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string currentDictKey)
+        private static ReadOnlyCollection<FileCabinetRecord> FindByKey(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string currentDictKey)
         {
-            FileCabinetRecord[] arr = Array.Empty<FileCabinetRecord>();
+            List<FileCabinetRecord> onlyList = new ();
+            ReadOnlyCollection<FileCabinetRecord> onlyCollection;
             string appropriateFormat;
             if (DateTime.TryParse(currentDictKey, out DateTime appropriateValue))
             {
@@ -154,12 +157,13 @@ namespace FileCabinetApp
 
             if (nameOfDict.ContainsKey(appropriateFormat))
             {
-                arr = new FileCabinetRecord[nameOfDict[appropriateFormat].Count];
-                nameOfDict[appropriateFormat].CopyTo(arr, 0);
-                return arr;
+                onlyList = nameOfDict[appropriateFormat];
+                onlyCollection = new (onlyList);
+                return onlyCollection;
             }
 
-            return arr;
+            onlyCollection = new (onlyList);
+            return onlyCollection;
         }
 
         /// <summary>
