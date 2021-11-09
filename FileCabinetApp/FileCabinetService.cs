@@ -8,7 +8,7 @@ namespace FileCabinetApp
     /// <summary>
     /// Reacts to user commands and executes some commands.
     /// </summary>
-    public class FileCabinetService
+    public class FileCabinetService : IFileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new ();
 
@@ -58,9 +58,9 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Gets records from the List and puts them into an array.
+        /// Gets records from the List and puts them into a collection.
         /// </summary>
-        /// <returns>The array of records.</returns>
+        /// <returns>The collection of records.</returns>
         public ReadOnlyCollection<FileCabinetRecord> GetRecords()
         {
             ReadOnlyCollection<FileCabinetRecord> onlyCollection = new (this.list);
@@ -108,7 +108,7 @@ namespace FileCabinetApp
         /// Finds records in the Dictionary by first name.
         /// </summary>
         /// <param name="firstName">First name.</param>
-        /// <returns>The array of records found by the <paramref name="firstName"/>.</returns>
+        /// <returns>The collection of records found by the <paramref name="firstName"/>.</returns>
         public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
         {
             return FindByKey(this.firstNameDictionary, firstName);
@@ -118,7 +118,7 @@ namespace FileCabinetApp
         /// Finds records in the Dictionary by last name.
         /// </summary>
         /// <param name="lastName">Last name.</param>
-        /// <returns>The array of records which by the <paramref name="lastName"/>.</returns>
+        /// <returns>The collection of records which by the <paramref name="lastName"/>.</returns>
         public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
         {
             return FindByKey(this.lastNameDictionary, lastName);
@@ -128,7 +128,7 @@ namespace FileCabinetApp
         /// Finds records in the Dictionary by date of birth.
         /// </summary>
         /// <param name="dateOfBirth">date of birth.</param>
-        /// <returns>The array of records found by <paramref name="dateOfBirth"/>.</returns>
+        /// <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
         public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
         {
             return FindByKey(this.dateOfBirthDictionary, dateOfBirth);
@@ -139,7 +139,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
         /// <param name="currentDictKey">Current Dictionary key.</param>
-        /// <returns>The array of records found by <paramref name="currentDictKey"/>.</returns>
+        /// <returns>The collection of records found by <paramref name="currentDictKey"/>.</returns>
         private static ReadOnlyCollection<FileCabinetRecord> FindByKey(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string currentDictKey)
         {
             List<FileCabinetRecord> onlyList = new ();

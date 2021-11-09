@@ -108,9 +108,9 @@
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.GetRecords">
             <summary>
-            Gets records from the List and puts them into an array.
+            Gets records from the List and puts them into a collection.
             </summary>
-            <returns>The array of records.</returns>
+            <returns>The collection of records.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.GetStat">
             <summary>
@@ -130,21 +130,21 @@
             Finds records in the Dictionary by first name.
             </summary>
             <param name="firstName">First name.</param>
-            <returns>The array of records found by the <paramref name="firstName"/>.</returns>
+            <returns>The collection of records found by the <paramref name="firstName"/>.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.FindByLastName(System.String)">
             <summary>
             Finds records in the Dictionary by last name.
             </summary>
             <param name="lastName">Last name.</param>
-            <returns>The array of records which by the <paramref name="lastName"/>.</returns>
+            <returns>The collection of records which by the <paramref name="lastName"/>.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.FindByDateOfBirth(System.String)">
             <summary>
             Finds records in the Dictionary by date of birth.
             </summary>
             <param name="dateOfBirth">date of birth.</param>
-            <returns>The array of records found by <paramref name="dateOfBirth"/>.</returns>
+            <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.FindByKey(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
             <summary>
@@ -152,7 +152,7 @@
             </summary>
             <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
             <param name="currentDictKey">Current Dictionary key.</param>
-            <returns>The array of records found by <paramref name="currentDictKey"/>.</returns>
+            <returns>The collection of records found by <paramref name="currentDictKey"/>.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.EditDictionary(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String,System.String,FileCabinetApp.FileCabinetRecord,System.Int32)">
             <summary>
@@ -183,6 +183,58 @@
             <param name="x">First integer instance.</param>
             <param name="y">Second integer instance.</param>
             <returns>The indication relative values of integer instances.</returns>
+        </member>
+        <member name="T:FileCabinetApp.IFileCabinetService">
+            <summary>
+            The IFileCabinetService interface uses for different services.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.CreateRecord(FileCabinetApp.ParameterObject)">
+            <summary>
+            Creates records in the List and the Dictionary.
+            </summary>
+            <param name="v">Object with parameters.</param>
+            <returns>The id number.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.GetRecords">
+            <summary>
+            Gets records from the List and puts them into a collection.
+            </summary>
+            <returns>The collection of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.GetStat">
+            <summary>
+            Defines the number of records in the List.
+            </summary>
+            <returns>The number of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.EditRecord(System.Int32,FileCabinetApp.ParameterObject)">
+            <summary>
+            Changes old record on the new one in the Dictionary and List.
+            </summary>
+            <param name="id">Id number.</param>
+            <param name="v">Object with parameters.</param>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.FindByFirstName(System.String)">
+            <summary>
+            Finds records in the Dictionary by first name.
+            </summary>
+            <param name="firstName">First name.</param>
+            <returns>The collection of records found by the <paramref name="firstName"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.FindByLastName(System.String)">
+            <summary>
+            Finds records in the Dictionary by last name.
+            </summary>
+            <param name="lastName">Last name.</param>
+            <returns>The collection of records which by the <paramref name="lastName"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.FindByDateOfBirth(System.String)">
+            <summary>
+            Finds records in the Dictionary by date of birth.
+            </summary>
+            <param name="dateOfBirth">date of birth.</param>
+            <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
         </member>
         <member name="T:FileCabinetApp.IRecordValidator">
             <summary>
