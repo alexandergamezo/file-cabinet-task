@@ -7,7 +7,7 @@ namespace FileCabinetApp
     /// <summary>
     /// Reacts to user commands and executes some commands.
     /// </summary>
-    public abstract class FileCabinetService
+    public class FileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new ();
 
@@ -22,7 +22,7 @@ namespace FileCabinetApp
         /// Provides a setter to change a strategy at runtime.
         /// </summary>
         /// <param name="validator">Reference to one of the strategy objects.</param>
-        protected FileCabinetService(IRecordValidator validator)
+        public FileCabinetService(IRecordValidator validator)
         {
             this.validator = validator;
         }

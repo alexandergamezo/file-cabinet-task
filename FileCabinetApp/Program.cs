@@ -290,19 +290,19 @@ namespace FileCabinetApp
                 (args.Length == 2 && (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v default")))
             {
                 Console.WriteLine("Using default validation rules.");
-                fileCabinetService = new FileCabinetDefaultService();
+                fileCabinetService = new (new DefaultValidator());
             }
             else if ((args.Length == 1 && args[0].ToLowerInvariant().Equals("--validation-rules=custom")) ||
                      (args.Length == 2 && (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v custom")))
             {
                 Console.WriteLine("Using custom validation rules.");
-                fileCabinetService = (FileCabinetService)new FileCabinetCustomService();
+                fileCabinetService = new (new CustomValidator());
             }
             else
             {
                 Console.WriteLine("Validation-rules command line parameter is wrong. Check your input.");
                 Console.WriteLine("Using default validation rules.");
-                fileCabinetService = new FileCabinetDefaultService();
+                fileCabinetService = new (new DefaultValidator());
             }
         }
 
