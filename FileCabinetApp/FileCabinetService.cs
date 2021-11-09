@@ -15,6 +15,18 @@ namespace FileCabinetApp
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new ();
         private readonly Dictionary<string, List<FileCabinetRecord>> dateOfBirthDictionary = new ();
 
+        private readonly IRecordValidator validator;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileCabinetService"/> class.
+        /// Provides a setter to change a strategy at runtime.
+        /// </summary>
+        /// <param name="validator">Reference to one of the strategy objects.</param>
+        protected FileCabinetService(IRecordValidator validator)
+        {
+            this.validator = validator;
+        }
+
         /// <summary>
         /// Creates records in the List and the Dictionary.
         /// </summary>
@@ -22,7 +34,7 @@ namespace FileCabinetApp
         /// <returns>The id number.</returns>
         public int CreateRecord(ParameterObject v)
         {
-            this.CreateValidator().ValidateParameters(v);
+            this.validator.ValidateParameters(v);
 
             var record = new FileCabinetRecord
             {
@@ -69,7 +81,7 @@ namespace FileCabinetApp
         /// <param name="v">Object with parameters.</param>
         public void EditRecord(int id, ParameterObject v)
         {
-            this.CreateValidator().ValidateParameters(v);
+            this.validator.ValidateParameters(v);
 
             var record = new FileCabinetRecord
             {
@@ -119,12 +131,6 @@ namespace FileCabinetApp
         {
             return FindByKey(this.dateOfBirthDictionary, dateOfBirth);
         }
-
-        /// <summary>
-        /// Checks input parameters on the wrong values.
-        /// </summary>
-        /// <returns>Returns a reference to one of the concrete strategies.</returns>
-        protected abstract IRecordValidator CreateValidator();
 
         /// <summary>
         /// Finds records in the Dictionary by key.

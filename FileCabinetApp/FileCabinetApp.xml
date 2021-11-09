@@ -31,22 +31,22 @@
             Extends base class with additional individual algorithms.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetCustomService.CreateValidator">
+        <member name="M:FileCabinetApp.FileCabinetCustomService.#ctor">
             <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetCustomService"/> class.
             Returns a reference to the concrete strategy.
             </summary>
-            <returns>New object.</returns>
         </member>
         <member name="T:FileCabinetApp.FileCabinetDefaultService">
             <summary>
             Extends base class with default algorithms.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetDefaultService.CreateValidator">
+        <member name="M:FileCabinetApp.FileCabinetDefaultService.#ctor">
             <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetDefaultService"/> class.
             Returns a reference to the concrete strategy.
             </summary>
-            <returns>New object.</returns>
         </member>
         <member name="T:FileCabinetApp.FileCabinetRecord">
             <summary>
@@ -114,6 +114,13 @@
             Reacts to user commands and executes some commands.
             </summary>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetService.#ctor(FileCabinetApp.IRecordValidator)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetService"/> class.
+            Provides a setter to change a strategy at runtime.
+            </summary>
+            <param name="validator">Reference to one of the strategy objects.</param>
+        </member>
         <member name="M:FileCabinetApp.FileCabinetService.CreateRecord(FileCabinetApp.ParameterObject)">
             <summary>
             Creates records in the List and the Dictionary.
@@ -160,12 +167,6 @@
             </summary>
             <param name="dateOfBirth">date of birth.</param>
             <returns>The array of records found by <paramref name="dateOfBirth"/>.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.CreateValidator">
-            <summary>
-            Checks input parameters on the wrong values.
-            </summary>
-            <returns>Returns a reference to one of the concrete strategies.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.FindByKey(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
             <summary>
