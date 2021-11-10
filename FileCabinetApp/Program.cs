@@ -39,6 +39,8 @@ namespace FileCabinetApp
 
         private static FileCabinetService fileCabinetService;
 
+        private static string commandLineParameter = string.Empty;
+
         private static bool isRunning = true;
 
         /// <summary>
@@ -265,23 +267,328 @@ namespace FileCabinetApp
 
         private static void CheckInputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3)
         {
+            Tuple<bool, string, string> StringConverter(string str)
+            {
+                bool process = true;
+                string appropriateStr = str;
+                foreach (var a in str)
+                {
+                    if (!char.IsLetter(a))
+                    {
+                        process = false;
+                        break;
+                    }
+                }
+
+                var result = new Tuple<bool, string, string>(process, str, appropriateStr);
+                return result;
+            }
+
+            Tuple<bool, string, DateTime> DateConverter(string str)
+            {
+                bool process = DateTime.TryParse(str, out DateTime appropriateDate);
+                var result = new Tuple<bool, string, DateTime>(process, str, appropriateDate);
+                return result;
+            }
+
+            Tuple<bool, string, short> ShortConverter(string str)
+            {
+                bool process = short.TryParse(str, out short appropriateShort);
+                var result = new Tuple<bool, string, short>(process, str, appropriateShort);
+                return result;
+            }
+
+            Tuple<bool, string, decimal> DecimalConverter(string str)
+            {
+                bool process = decimal.TryParse(str, out decimal appropriateDate);
+                var result = new Tuple<bool, string, decimal>(process, str, appropriateDate);
+                return result;
+            }
+
+            Tuple<bool, string, char> CharConverter(string str)
+            {
+                bool process = true;
+                char appropriateChar;
+                if (str.Length != 1 && !char.IsLetter(str[0]))
+                {
+                    process = false;
+                    appropriateChar = ' ';
+                }
+                else
+                {
+                    appropriateChar = str[0];
+                }
+
+                var result = new Tuple<bool, string, char>(process, str, appropriateChar);
+                return result;
+            }
+
+            Func<string, Tuple<bool, string, string>> stringConverter = StringConverter;
+            Func<string, Tuple<bool, string, DateTime>> dateConverter = DateConverter;
+            Func<string, Tuple<bool, string, short>> shortConverter = ShortConverter;
+            Func<string, Tuple<bool, string, decimal>> decimalConverter = DecimalConverter;
+            Func<string, Tuple<bool, string, char>> charConverter = CharConverter;
+
+            Func<string, Tuple<bool, string>> firstNameValidator;
+            Func<string, Tuple<bool, string>> lastNameValidator;
+            Func<DateTime, Tuple<bool, string>> dateOfBirthValidator;
+            Func<short, Tuple<bool, string>> shortValidator;
+            Func<decimal, Tuple<bool, string>> decimalValidator;
+            Func<char, Tuple<bool, string>> charValidator;
+
+            if (commandLineParameter == "custom")
+            {
+                Tuple<bool, string> FirstNameValidator(string firstname)
+                {
+                    bool process = true;
+                    if (string.IsNullOrEmpty(firstname) || (firstname.Length < 2 || firstname.Length > 60))
+                    {
+                        process = false;
+                    }
+
+                    var result = new Tuple<bool, string>(process, firstname);
+                    return result;
+                }
+
+                Tuple<bool, string> LastNameValidator(string lastname)
+                {
+                    bool process = true;
+                    if (string.IsNullOrEmpty(lastname) || (lastname.Length < 2 || lastname.Length > 60))
+                    {
+                        process = false;
+                    }
+
+                    var result = new Tuple<bool, string>(process, lastname);
+                    return result;
+                }
+
+                Tuple<bool, string> DateOfBirthValidator(DateTime date)
+                {
+                    bool process = true;
+                    string appropriateDate = date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+                    if (date < new DateTime(2000, 01, 01) || date > DateTime.Today)
+                    {
+                        process = false;
+                    }
+
+                    var result = new Tuple<bool, string>(process, appropriateDate);
+                    return result;
+                }
+
+                Tuple<bool, string> ShortValidator(short shortValue)
+                {
+                    bool process = false;
+                    try
+                    {
+                        if (shortValue > short.MinValue && shortValue < short.MaxValue)
+                        {
+                            process = true;
+                        }
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        Console.WriteLine("Property1 value is not a <short> number");
+                    }
+
+                    var result = new Tuple<bool, string>(process, shortValue.ToString());
+                    return result;
+                }
+
+                Tuple<bool, string> DecimalValidator(decimal decimalValue)
+                {
+                    bool process = false;
+                    try
+                    {
+                        if (decimalValue > decimal.MinValue && decimalValue < decimal.MaxValue)
+                        {
+                            process = true;
+                        }
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        Console.WriteLine("Property2 value is not a <decimal> number");
+                    }
+
+                    var result = new Tuple<bool, string>(process, decimalValue.ToString());
+                    return result;
+                }
+
+                Tuple<bool, string> CharValidator(char charValue)
+                {
+                    bool process = false;
+                    try
+                    {
+                        if (charValue > char.MinValue && charValue < char.MaxValue)
+                        {
+                            process = true;
+                        }
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        Console.WriteLine("Property3 value is not a <char> letter");
+                    }
+
+                    var result = new Tuple<bool, string>(process, charValue.ToString());
+                    return result;
+                }
+
+                firstNameValidator = FirstNameValidator;
+                lastNameValidator = LastNameValidator;
+                dateOfBirthValidator = DateOfBirthValidator;
+                shortValidator = ShortValidator;
+                decimalValidator = DecimalValidator;
+                charValidator = CharValidator;
+            }
+            else
+            {
+                Tuple<bool, string> FirstNameValidator(string firstname)
+                {
+                    bool process = true;
+                    if (string.IsNullOrEmpty(firstname) || (firstname.Length < 2 || firstname.Length > 60))
+                    {
+                        process = false;
+                    }
+
+                    var result = new Tuple<bool, string>(process, firstname);
+                    return result;
+                }
+
+                Tuple<bool, string> LastNameValidator(string lastname)
+                {
+                    bool process = true;
+                    if (string.IsNullOrEmpty(lastname) || (lastname.Length < 2 || lastname.Length > 60))
+                    {
+                        process = false;
+                    }
+
+                    var result = new Tuple<bool, string>(process, lastname);
+                    return result;
+                }
+
+                Tuple<bool, string> DateOfBirthValidator(DateTime date)
+                {
+                    bool process = true;
+                    string appropriateDate = date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+                    if (date < new DateTime(1950, 01, 01) || date > DateTime.Today)
+                    {
+                        process = false;
+                    }
+
+                    var result = new Tuple<bool, string>(process, appropriateDate);
+                    return result;
+                }
+
+                Tuple<bool, string> ShortValidator(short shortValue)
+                {
+                    bool process = false;
+                    try
+                    {
+                        if (shortValue > short.MinValue && shortValue < short.MaxValue)
+                        {
+                            process = true;
+                        }
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        Console.WriteLine("Property1 value is not a <short> number");
+                    }
+
+                    var result = new Tuple<bool, string>(process, shortValue.ToString());
+                    return result;
+                }
+
+                Tuple<bool, string> DecimalValidator(decimal decimalValue)
+                {
+                    bool process = false;
+                    try
+                    {
+                        if (decimalValue > decimal.MinValue && decimalValue < decimal.MaxValue)
+                        {
+                            process = true;
+                        }
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        Console.WriteLine("Property2 value is not a <decimal> number");
+                    }
+
+                    var result = new Tuple<bool, string>(process, decimalValue.ToString());
+                    return result;
+                }
+
+                Tuple<bool, string> CharValidator(char charValue)
+                {
+                    bool process = false;
+                    try
+                    {
+                        if (charValue > char.MinValue && charValue < char.MaxValue)
+                        {
+                            process = true;
+                        }
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        Console.WriteLine("Property3 value is not a <char> letter");
+                    }
+
+                    var result = new Tuple<bool, string>(process, charValue.ToString());
+                    return result;
+                }
+
+                firstNameValidator = FirstNameValidator;
+                lastNameValidator = LastNameValidator;
+                dateOfBirthValidator = DateOfBirthValidator;
+                shortValidator = ShortValidator;
+                decimalValidator = DecimalValidator;
+                charValidator = CharValidator;
+            }
+
             Console.Write("First name: ");
-            firstName = Console.ReadLine();
+            firstName = ReadInput(stringConverter, firstNameValidator);
 
             Console.Write("Last name: ");
-            lastName = Console.ReadLine();
+            lastName = ReadInput(stringConverter, lastNameValidator);
 
             Console.Write("Date of birth: ");
-            dateOfBirth = DateTime.ParseExact(Console.ReadLine(), "MM/dd/yyyy", CultureInfo.InvariantCulture);
+            dateOfBirth = ReadInput(dateConverter, dateOfBirthValidator);
 
             Console.Write("Property1 <short>: ");
-            property1 = short.Parse(Console.ReadLine());
+            property1 = ReadInput(shortConverter, shortValidator);
 
             Console.Write("Property2 <decimal>: ");
-            property2 = decimal.Parse(Console.ReadLine());
+            property2 = ReadInput(decimalConverter, decimalValidator);
 
             Console.Write("Property3 <char>: ");
-            property3 = char.Parse(Console.ReadLine());
+            property3 = ReadInput(charConverter, charValidator);
+        }
+
+        private static T ReadInput<T>(Func<string, Tuple<bool, string, T>> converter, Func<T, Tuple<bool, string>> validator)
+        {
+            do
+            {
+                T value;
+
+                var input = Console.ReadLine();
+                var conversionResult = converter(input);
+
+                if (!conversionResult.Item1)
+                {
+                    Console.WriteLine($"Conversion failed: {conversionResult.Item2}. Please, correct your input.");
+                    continue;
+                }
+
+                value = conversionResult.Item3;
+
+                var validationResult = validator(value);
+                if (!validationResult.Item1)
+                {
+                    Console.WriteLine($"Validation failed: {validationResult.Item2}. Please, correct your input.");
+                    continue;
+                }
+
+                return value;
+            }
+            while (true);
         }
 
         private static void CommandLineParameter(string[] args)
@@ -292,18 +599,21 @@ namespace FileCabinetApp
             {
                 Console.WriteLine("Using default validation rules.");
                 fileCabinetService = new (new DefaultValidator());
+                commandLineParameter = "default";
             }
             else if ((args.Length == 1 && args[0].ToLowerInvariant().Equals("--validation-rules=custom")) ||
                      (args.Length == 2 && (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v custom")))
             {
                 Console.WriteLine("Using custom validation rules.");
                 fileCabinetService = new (new CustomValidator());
+                commandLineParameter = "custom";
             }
             else
             {
                 Console.WriteLine("Validation-rules command line parameter is wrong. Check your input.");
                 Console.WriteLine("Using default validation rules.");
                 fileCabinetService = new (new DefaultValidator());
+                commandLineParameter = "default";
             }
         }
 
