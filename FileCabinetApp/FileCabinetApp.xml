@@ -4,5 +4,324 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
+        <member name="T:FileCabinetApp.CustomValidator">
+            <summary>
+            The concrete strategy implements the definite algorithm.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.CustomValidator.ValidateParameters(FileCabinetApp.ParameterObject)">
+            <summary>
+            Checks input parameters on the wrong values.
+            </summary>
+            <param name="v">Object with parameters.</param>
+        </member>
+        <member name="T:FileCabinetApp.DefaultValidator">
+            <summary>
+            The concrete strategy implements the definite algorithm.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.DefaultValidator.ValidateParameters(FileCabinetApp.ParameterObject)">
+            <summary>
+            Checks input parameters on the wrong values.
+            </summary>
+            <param name="v">Object with parameters.</param>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetRecord">
+            <summary>
+            Provides access to values of variables by using properties.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.Id">
+            <summary>
+            Gets or sets Id.
+            </summary>
+            <value>
+            Id.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.FirstName">
+            <summary>
+            Gets or sets First name.
+            </summary>
+            <value>
+            FirstName.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.LastName">
+            <summary>
+            Gets or sets Last name.
+            </summary>
+            <value>
+            LastName.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.DateOfBirth">
+            <summary>
+            Gets or sets Date of birth.
+            </summary>
+            <value>
+            DateOfBirth.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.Property1">
+            <summary>
+            Gets or sets Property in "short" format.
+            </summary>
+            <value>
+            Property1.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.Property2">
+            <summary>
+            Gets or sets Property in "decimal" format.
+            </summary>
+            <value>
+            Property2.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecord.Property3">
+            <summary>
+            Gets or sets Property in "char" format.
+            </summary>
+            <value>
+            Property3.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetService">
+            <summary>
+            Reacts to user commands and executes some commands.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.#ctor(FileCabinetApp.IRecordValidator)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetService"/> class.
+            Provides a setter to change a strategy at runtime.
+            </summary>
+            <param name="validator">Reference to one of the strategy objects.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.CreateRecord(FileCabinetApp.ParameterObject)">
+            <summary>
+            Creates records in the List and the Dictionary.
+            </summary>
+            <param name="v">Object with parameters.</param>
+            <returns>The id number.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.GetRecords">
+            <summary>
+            Gets records from the List and puts them into a collection.
+            </summary>
+            <returns>The collection of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.GetStat">
+            <summary>
+            Defines the number of records in the List.
+            </summary>
+            <returns>The number of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.EditRecord(System.Int32,FileCabinetApp.ParameterObject)">
+            <summary>
+            Changes old record on the new one in the Dictionary and List.
+            </summary>
+            <param name="id">Id number.</param>
+            <param name="v">Object with parameters.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.FindByFirstName(System.String)">
+            <summary>
+            Finds records in the Dictionary by first name.
+            </summary>
+            <param name="firstName">First name.</param>
+            <returns>The collection of records found by the <paramref name="firstName"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.FindByLastName(System.String)">
+            <summary>
+            Finds records in the Dictionary by last name.
+            </summary>
+            <param name="lastName">Last name.</param>
+            <returns>The collection of records which by the <paramref name="lastName"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.FindByDateOfBirth(System.String)">
+            <summary>
+            Finds records in the Dictionary by date of birth.
+            </summary>
+            <param name="dateOfBirth">date of birth.</param>
+            <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.FindByKey(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
+            <summary>
+            Finds records in the Dictionary by key.
+            </summary>
+            <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
+            <param name="currentDictKey">Current Dictionary key.</param>
+            <returns>The collection of records found by <paramref name="currentDictKey"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.EditDictionary(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String,System.String,FileCabinetApp.FileCabinetRecord,System.Int32)">
+            <summary>
+            Changes old record on the new one in the Dictionary.
+            </summary>
+            <param name="nameOfDict">Name of the Dictionary which has to be changed.</param>
+            <param name="newDictKey">New Dictionary key.</param>
+            <param name="currentDictKey">Current Dictionary key.</param>
+            <param name="record">The new record which changes the old record.</param>
+            <param name="id">Id of old record.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.CreateRecordInDictionary(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
+            <summary>
+            Creates record in the Dictionary.
+            </summary>
+            <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
+            <param name="newDictKey">New Dictionary key.</param>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetService.CompareId">
+            <summary>
+            Contains comparison method.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.CompareId.CompareWithID(FileCabinetApp.FileCabinetRecord,FileCabinetApp.FileCabinetRecord)">
+            <summary>
+            Compares two integer instances.
+            </summary>
+            <param name="x">First integer instance.</param>
+            <param name="y">Second integer instance.</param>
+            <returns>The indication relative values of integer instances.</returns>
+        </member>
+        <member name="T:FileCabinetApp.IFileCabinetService">
+            <summary>
+            The IFileCabinetService interface uses for different services.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.CreateRecord(FileCabinetApp.ParameterObject)">
+            <summary>
+            Creates records in the List and the Dictionary.
+            </summary>
+            <param name="v">Object with parameters.</param>
+            <returns>The id number.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.GetRecords">
+            <summary>
+            Gets records from the List and puts them into a collection.
+            </summary>
+            <returns>The collection of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.GetStat">
+            <summary>
+            Defines the number of records in the List.
+            </summary>
+            <returns>The number of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.EditRecord(System.Int32,FileCabinetApp.ParameterObject)">
+            <summary>
+            Changes old record on the new one in the Dictionary and List.
+            </summary>
+            <param name="id">Id number.</param>
+            <param name="v">Object with parameters.</param>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.FindByFirstName(System.String)">
+            <summary>
+            Finds records in the Dictionary by first name.
+            </summary>
+            <param name="firstName">First name.</param>
+            <returns>The collection of records found by the <paramref name="firstName"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.FindByLastName(System.String)">
+            <summary>
+            Finds records in the Dictionary by last name.
+            </summary>
+            <param name="lastName">Last name.</param>
+            <returns>The collection of records which by the <paramref name="lastName"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.FindByDateOfBirth(System.String)">
+            <summary>
+            Finds records in the Dictionary by date of birth.
+            </summary>
+            <param name="dateOfBirth">date of birth.</param>
+            <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
+        </member>
+        <member name="T:FileCabinetApp.IRecordValidator">
+            <summary>
+            The IRecordValidator interface is common to all concrete strategies.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.IRecordValidator.ValidateParameters(FileCabinetApp.ParameterObject)">
+            <summary>
+             Declares a method used for executing the strategy.
+            </summary>
+            <param name="v">Object with parameters.</param>
+        </member>
+        <member name="T:FileCabinetApp.ParameterObject">
+            <summary>
+            Contains method for pass parameters.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.ParameterObject.#ctor(System.String,System.String,System.DateTime,System.Int16,System.Decimal,System.Char)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.ParameterObject"/> class.
+            Passes parameters.
+            </summary>
+            <param name="firstName">First name.</param>
+            <param name="lastName">Last name.</param>
+            <param name="dateOfBirth">Date of birth.</param>
+            <param name="property1">Property in "short" format.</param>
+            <param name="property2">Property in "decimal" format.</param>
+            <param name="property3">Property in "char" format.</param>
+        </member>
+        <member name="P:FileCabinetApp.ParameterObject.FirstName">
+            <summary>
+            Gets First name.
+            </summary>
+            <value>
+            FirstName.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.ParameterObject.LastName">
+            <summary>
+            Gets Last name.
+            </summary>
+            <value>
+            LastName.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.ParameterObject.DateOfBirth">
+            <summary>
+            Gets Date of birth.
+            </summary>
+            <value>
+            DateOfBirth.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.ParameterObject.Property1">
+            <summary>
+            Gets Property in "short" format.
+            </summary>
+            <value>
+            Property1.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.ParameterObject.Property2">
+            <summary>
+            Gets Property in "decimal" format.
+            </summary>
+            <value>
+            Property2.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.ParameterObject.Property3">
+            <summary>
+            Gets Property in "char" format.
+            </summary>
+            <value>
+            Property3.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.Program">
+            <summary>
+            The main class for this app.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.Program.Main(System.String[])">
+            <summary>
+            The main method for this app.
+            </summary>
+            <param name="args">Application arguments with validation-rules command line parameters.</param>
+        </member>
     </members>
 </doc>
