@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace FileCabinetApp
 {
@@ -24,6 +27,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("list", List),
             new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("find", Find),
+            new Tuple<string, Action<string>>("export", Export),
         };
 
         private static readonly string[][] HelpMessages = new string[][]
@@ -35,6 +39,7 @@ namespace FileCabinetApp
             new string[] { "list", "returns a list of records", "The 'list' returns a list of records." },
             new string[] { "edit", "edits a record", "The 'edit' edits a record." },
             new string[] { "find", "finds and returns a list of records", "The 'find' finds and returns a list of records. Parameters: 'firstname', 'lastname', 'dateofbirth'." },
+            new string[] { "export", "exports service data into a file in the 'CSV' format", "The 'export' exports service data into a file in the 'CSV' format. Formats: 'csv'." },
         };
 
         private static FileCabinetService fileCabinetService;
@@ -209,6 +214,86 @@ namespace FileCabinetApp
             if (checkParameter)
             {
                 FindAppropriateMethod(originalParameters, command, parameter);
+            }
+        }
+
+        private static void Export(string parameters)
+        {
+            string paramFormat;
+            string paramPath = string.Empty;
+            try
+            {
+                CheckInputParameters(out string f, out string p);
+                paramFormat = f;
+                paramPath = p;
+
+                if (!File.Exists(paramPath))
+                {
+                    FindAppropriateFunc();
+                }
+                else
+                {
+                    Console.Write($"File is exist - rewrite {paramPath}? [Y/n] ");
+                    string answer = Console.ReadLine();
+                    if (answer.ToLowerInvariant() == "y")
+                    {
+                        FindAppropriateFunc();
+                    }
+                    else if (answer.ToLowerInvariant() == "n")
+                    {
+                        Console.WriteLine($"Export failed: file {paramPath} was not rewrited.");
+                    }
+                }
+            }
+            catch (DirectoryNotFoundException exc)
+            {
+                Console.WriteLine($"Export failed: can't open file {paramPath}. {exc}.");
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine($"Check your input. {exc}.");
+            }
+
+            void FindAppropriateFunc()
+            {
+                if (paramFormat == "csv")
+                {
+                    SaveToCsvFormat(paramPath);
+                }
+            }
+
+            void SaveToCsvFormat(string path)
+            {
+                StreamWriter writer = new (path);
+                fileCabinetService.MakeSnapshot().SaveToCsv(writer);
+                writer.Close();
+                Console.WriteLine($"All records are exported to file {paramPath}.");
+            }
+
+            void CheckInputParameters(out string format, out string path)
+            {
+                string[] inputs = parameters.Split(' ', 2);
+                const int recordFormat = 0;
+                const int fileName = 1;
+
+                string[] originalParameters = { "csv" };
+
+                format = inputs[recordFormat].ToLowerInvariant();
+                bool checkFormat = originalParameters[0].Equals(format, StringComparison.InvariantCultureIgnoreCase);
+                if (!checkFormat)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(format), "Check your format.");
+                }
+
+                path = string.Empty;
+                try
+                {
+                    path = inputs[fileName];
+                }
+                catch (IndexOutOfRangeException exc)
+                {
+                    Console.WriteLine("Add your filename(path). {0}", exc.Message);
+                }
             }
         }
 

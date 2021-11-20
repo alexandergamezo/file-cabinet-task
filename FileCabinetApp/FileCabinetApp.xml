@@ -87,6 +87,24 @@
             Property3.
             </value>
         </member>
+        <member name="T:FileCabinetApp.FileCabinetRecordCsvWriter">
+            <summary>
+            Serializes record to the CSV format.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordCsvWriter.#ctor(System.IO.TextWriter)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetRecordCsvWriter"/> class.
+            Constructor which gets the stream.
+            </summary>
+            <param name="writer">Stream for recording.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordCsvWriter.Write(FileCabinetApp.FileCabinetRecord)">
+            <summary>
+            Writes a string to the stream.
+            </summary>
+            <param name="record">State for recording.</param>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetService">
             <summary>
             Reacts to user commands and executes some commands.
@@ -146,6 +164,12 @@
             <param name="dateOfBirth">date of birth.</param>
             <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetService.MakeSnapshot">
+            <summary>
+            Saves the current state inside a FileCabinetServiceSnapshot.
+            </summary>
+            <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
+        </member>
         <member name="M:FileCabinetApp.FileCabinetService.FindByKey(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
             <summary>
             Finds records in the Dictionary by key.
@@ -183,6 +207,24 @@
             <param name="x">First integer instance.</param>
             <param name="y">Second integer instance.</param>
             <returns>The indication relative values of integer instances.</returns>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetServiceSnapshot">
+            <summary>
+            The FileCabinetServiceSnapshot contains the infrastructure for saving the FileCabinetService state.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.#ctor(System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord})">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/> class.
+            Constructor which gets FileCabinetService state.
+            </summary>
+            <param name="stateList">FileCabinetService state.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToCsv(System.IO.StreamWriter)">
+            <summary>
+            Saves the state to the CSV format.
+            </summary>
+            <param name="writer">Stream for writing state.</param>
         </member>
         <member name="T:FileCabinetApp.IFileCabinetService">
             <summary>
