@@ -105,6 +105,24 @@
             </summary>
             <param name="record">State for recording.</param>
         </member>
+        <member name="T:FileCabinetApp.FileCabinetRecordXmlWriter">
+            <summary>
+            Serializes record to the XML format.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordXmlWriter.#ctor(System.Xml.XmlWriter)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetRecordXmlWriter"/> class.
+            Constructor which gets the stream.
+            </summary>
+            <param name="writer">Stream for recording.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordXmlWriter.Write(FileCabinetApp.FileCabinetRecord)">
+            <summary>
+            Writes a string to the stream.
+            </summary>
+            <param name="record">State for recording.</param>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetService">
             <summary>
             Reacts to user commands and executes some commands.
@@ -223,6 +241,12 @@
         <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToCsv(System.IO.StreamWriter)">
             <summary>
             Saves the state to the CSV format.
+            </summary>
+            <param name="writer">Stream for writing state.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToXmL(System.IO.StreamWriter)">
+            <summary>
+            Saves the state to the XML format.
             </summary>
             <param name="writer">Stream for writing state.</param>
         </member>

@@ -2,8 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace FileCabinetApp
 {
@@ -39,7 +37,7 @@ namespace FileCabinetApp
             new string[] { "list", "returns a list of records", "The 'list' returns a list of records." },
             new string[] { "edit", "edits a record", "The 'edit' edits a record." },
             new string[] { "find", "finds and returns a list of records", "The 'find' finds and returns a list of records. Parameters: 'firstname', 'lastname', 'dateofbirth'." },
-            new string[] { "export", "exports service data into a file in the 'CSV' format", "The 'export' exports service data into a file in the 'CSV' format. Formats: 'csv'." },
+            new string[] { "export", "exports service data into a file in the 'CSV' or 'XML' format", "The 'export' exports service data into a file in the 'CSV' or 'XML' format. Formats: 'csv', 'xml'." },
         };
 
         private static FileCabinetService fileCabinetService;
@@ -260,6 +258,11 @@ namespace FileCabinetApp
                 {
                     SaveToCsvFormat(paramPath);
                 }
+
+                if (paramFormat == "xml")
+                {
+                    SaveToXmlFormat(paramPath);
+                }
             }
 
             void SaveToCsvFormat(string path)
@@ -270,16 +273,25 @@ namespace FileCabinetApp
                 Console.WriteLine($"All records are exported to file {paramPath}.");
             }
 
+            void SaveToXmlFormat(string path)
+            {
+                StreamWriter writer = new (path);
+                fileCabinetService.MakeSnapshot().SaveToXmL(writer);
+                writer.Close();
+                Console.WriteLine($"All records are exported to file {paramPath}.");
+            }
+
             void CheckInputParameters(out string format, out string path)
             {
                 string[] inputs = parameters.Split(' ', 2);
                 const int recordFormat = 0;
                 const int fileName = 1;
 
-                string[] originalParameters = { "csv" };
+                string[] originalParameters = { "csv", "xml" };
 
                 format = inputs[recordFormat].ToLowerInvariant();
-                bool checkFormat = originalParameters[0].Equals(format, StringComparison.InvariantCultureIgnoreCase);
+                bool checkFormat = originalParameters[0].Equals(format, StringComparison.InvariantCultureIgnoreCase) ||
+                                   originalParameters[1].Equals(format, StringComparison.InvariantCultureIgnoreCase);
                 if (!checkFormat)
                 {
                     throw new ArgumentOutOfRangeException(nameof(format), "Check your format.");
