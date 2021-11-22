@@ -40,7 +40,7 @@ namespace FileCabinetApp
             new string[] { "export", "exports service data into a file in the 'CSV' or 'XML' format", "The 'export' exports service data into a file in the 'CSV' or 'XML' format. Formats: 'csv', 'xml'." },
         };
 
-        private static FileCabinetService fileCabinetService;
+        private static FileCabinetMemoryService fileCabinetService;
 
         private static string commandLineParameter = string.Empty;
 

@@ -8,7 +8,7 @@ namespace FileCabinetApp
     /// <summary>
     /// Reacts to user commands and executes some commands.
     /// </summary>
-    public partial class FileCabinetService : IFileCabinetService
+    public class FileCabinetMemoryService : IFileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new ();
 
@@ -19,11 +19,11 @@ namespace FileCabinetApp
         private readonly IRecordValidator validator;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileCabinetService"/> class.
+        /// Initializes a new instance of the <see cref="FileCabinetMemoryService"/> class.
         /// Provides a setter to change a strategy at runtime.
         /// </summary>
         /// <param name="validator">Reference to one of the strategy objects.</param>
-        public FileCabinetService(IRecordValidator validator)
+        public FileCabinetMemoryService(IRecordValidator validator)
         {
             this.validator = validator;
         }
