@@ -8,7 +8,7 @@ namespace FileCabinetApp
     /// <summary>
     /// Reacts to user commands and executes some commands.
     /// </summary>
-    public class FileCabinetService : IFileCabinetService
+    public partial class FileCabinetService : IFileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new ();
 
@@ -132,6 +132,15 @@ namespace FileCabinetApp
         public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
         {
             return FindByKey(this.dateOfBirthDictionary, dateOfBirth);
+        }
+
+        /// <summary>
+        /// Saves the current state inside a FileCabinetServiceSnapshot.
+        /// </summary>
+        /// <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
+        public FileCabinetServiceSnapshot MakeSnapshot()
+        {
+            return new FileCabinetServiceSnapshot(this.list);
         }
 
         /// <summary>
