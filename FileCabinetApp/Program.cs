@@ -16,6 +16,8 @@ namespace FileCabinetApp
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
 
+        private const string FILENAME = "cabinet-records.db";
+
         private static readonly Tuple<string, Action<string>>[] Commands = new Tuple<string, Action<string>>[]
         {
             new Tuple<string, Action<string>>("help", PrintHelp),
@@ -40,7 +42,7 @@ namespace FileCabinetApp
             new string[] { "export", "exports service data into a file in the 'CSV' or 'XML' format", "The 'export' exports service data into a file in the 'CSV' or 'XML' format. Formats: 'csv', 'xml'." },
         };
 
-        private static FileCabinetMemoryService fileCabinetService;
+        private static IFileCabinetService fileCabinetService;
 
         private static string commandLineParameter = string.Empty;
 
@@ -690,26 +692,68 @@ namespace FileCabinetApp
 
         private static void CommandLineParameter(string[] args)
         {
-            if (args.Length == 0 ||
-                (args.Length == 1 && args[0].ToLowerInvariant().Equals("--validation-rules=default")) ||
-                (args.Length == 2 && (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v default")))
+            try
             {
-                Console.WriteLine("Using default validation rules.");
-                fileCabinetService = new (new DefaultValidator());
-                commandLineParameter = "default";
+                bool paramVariantOne = (args[0].ToLowerInvariant().Equals("--validation-rules=default") || (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v default")) &&
+                                       (args[2].ToLowerInvariant().Equals("--storage=memory") || (args[2] + " " + args[3]).ToLowerInvariant().Equals("-s memory"));
+
+                bool paramVariantTwo = (args[0].ToLowerInvariant().Equals("--validation-rules=default") || (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v default")) &&
+                                       (args[2].ToLowerInvariant().Equals("--storage=file") || (args[2] + " " + args[3]).ToLowerInvariant().Equals("-s file"));
+
+                bool paramVariantThree = (args[0].ToLowerInvariant().Equals("--validation-rules=custom") || (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v custom")) &&
+                                         (args[2].ToLowerInvariant().Equals("--storage=memory") || (args[2] + " " + args[3]).ToLowerInvariant().Equals("-s memory"));
+
+                bool paramVariantFour = (args[0].ToLowerInvariant().Equals("--validation-rules=custom") || (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v custom")) &&
+                                        (args[2].ToLowerInvariant().Equals("--storage=file") || (args[2] + " " + args[3]).ToLowerInvariant().Equals("-s file"));
+
+                if (paramVariantOne)
+                {
+                    Console.WriteLine("Using default validation rules. Storage is memory.");
+                    FileCabinetMemoryService fileCabinetMemoryService = new (new DefaultValidator());
+                    fileCabinetService = fileCabinetMemoryService;
+                    commandLineParameter = "default";
+                }
+
+                if (paramVariantTwo)
+                {
+                    Console.WriteLine("Using default validation rules. Storage is file.");
+                    using FileStream fileStream = new (FILENAME, FileMode.OpenOrCreate);
+                    FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, new DefaultValidator());
+                    fileCabinetService = fileCabinetFilesystemService;
+                    commandLineParameter = "default";
+                }
+
+                if (paramVariantThree)
+                {
+                    Console.WriteLine("Using custom validation rules. Storage is memory.");
+                    FileCabinetMemoryService fileCabinetMemoryService = new (new CustomValidator());
+                    fileCabinetService = fileCabinetMemoryService;
+                    commandLineParameter = "custom";
+                }
+
+                if (paramVariantFour)
+                {
+                    Console.WriteLine("Using custom validation rules. Storage is file.");
+                    using FileStream fileStream = new (FILENAME, FileMode.OpenOrCreate);
+                    FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, new CustomValidator());
+                    fileCabinetService = fileCabinetFilesystemService;
+                    commandLineParameter = "custom";
+                }
+                else
+                {
+                    Console.WriteLine("Validation-rules command line parameter is wrong. Check your input.");
+                    Console.WriteLine("Using default validation rules. Storage is memory.");
+                    FileCabinetMemoryService fileCabinetMemoryService = new (new DefaultValidator());
+                    fileCabinetService = fileCabinetMemoryService;
+                    commandLineParameter = "default";
+                }
             }
-            else if ((args.Length == 1 && args[0].ToLowerInvariant().Equals("--validation-rules=custom")) ||
-                     (args.Length == 2 && (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v custom")))
-            {
-                Console.WriteLine("Using custom validation rules.");
-                fileCabinetService = new (new CustomValidator());
-                commandLineParameter = "custom";
-            }
-            else
+            catch
             {
                 Console.WriteLine("Validation-rules command line parameter is wrong. Check your input.");
-                Console.WriteLine("Using default validation rules.");
-                fileCabinetService = new (new DefaultValidator());
+                Console.WriteLine("Using default validation rules. Storage is memory.");
+                FileCabinetMemoryService fileCabinetMemoryService = new (new DefaultValidator());
+                fileCabinetService = fileCabinetMemoryService;
                 commandLineParameter = "default";
             }
         }

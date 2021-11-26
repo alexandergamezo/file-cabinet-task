@@ -31,12 +31,13 @@
             Reacts to user commands and executes some commands.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.#ctor(System.IO.FileStream)">
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.#ctor(System.IO.FileStream,FileCabinetApp.IRecordValidator)">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetFilesystemService"/> class.
             Constructor which gets the stream.
             </summary>
             <param name="fileStream">Stream for recording.</param>
+            <param name="validator">Reference to one of the strategy objects.</param>
         </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.CreateRecord(FileCabinetApp.ParameterObject)">
             <summary>
@@ -84,6 +85,12 @@
             </summary>
             <param name="dateOfBirth">date of birth.</param>
             <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.MakeSnapshot">
+            <summary>
+            Saves the current state inside a FileCabinetServiceSnapshot.
+            </summary>
+            <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
         </member>
         <member name="T:FileCabinetApp.FileCabinetMemoryService">
             <summary>
@@ -360,6 +367,12 @@
             </summary>
             <param name="dateOfBirth">date of birth.</param>
             <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.MakeSnapshot">
+            <summary>
+            Saves the current state inside a FileCabinetServiceSnapshot.
+            </summary>
+            <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
         </member>
         <member name="T:FileCabinetApp.IRecordValidator">
             <summary>

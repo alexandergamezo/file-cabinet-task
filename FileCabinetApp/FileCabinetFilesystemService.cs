@@ -10,15 +10,18 @@ namespace FileCabinetApp
     public class FileCabinetFilesystemService : IFileCabinetService
     {
         private readonly FileStream fileStream;
+        private readonly IRecordValidator validator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetFilesystemService"/> class.
         /// Constructor which gets the stream.
         /// </summary>
         /// <param name="fileStream">Stream for recording.</param>
-        public FileCabinetFilesystemService(FileStream fileStream)
+        /// <param name="validator">Reference to one of the strategy objects.</param>
+        public FileCabinetFilesystemService(FileStream fileStream, IRecordValidator validator)
         {
             this.fileStream = fileStream;
+            this.validator = validator;
         }
 
         /// <summary>
@@ -85,6 +88,15 @@ namespace FileCabinetApp
         /// <param name="dateOfBirth">date of birth.</param>
         /// <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
         public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Saves the current state inside a FileCabinetServiceSnapshot.
+        /// </summary>
+        /// <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
+        public FileCabinetServiceSnapshot MakeSnapshot()
         {
             throw new NotImplementedException();
         }

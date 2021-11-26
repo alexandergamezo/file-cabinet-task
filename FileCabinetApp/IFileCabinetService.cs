@@ -53,5 +53,11 @@ namespace FileCabinetApp
         /// <param name="dateOfBirth">date of birth.</param>
         /// <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
         ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth);
+
+        /// <summary>
+        /// Saves the current state inside a FileCabinetServiceSnapshot.
+        /// </summary>
+        /// <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
+        FileCabinetServiceSnapshot MakeSnapshot();
     }
 }
