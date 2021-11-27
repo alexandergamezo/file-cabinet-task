@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text;
 
 namespace FileCabinetApp
 {
@@ -11,6 +12,8 @@ namespace FileCabinetApp
     {
         private readonly FileStream fileStream;
         private readonly IRecordValidator validator;
+        private readonly int recordSize = 279;
+        private readonly int[] offset = { 0, 2, 6, 126, 246, 250, 254, 258, 262, 278 };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetFilesystemService"/> class.
@@ -24,18 +27,84 @@ namespace FileCabinetApp
             this.validator = validator;
         }
 
-        /// <summary>
-        /// Creates records in the List and the Dictionary.
+/// <summary>
+        /// Creates records in the file.
         /// </summary>
         /// <param name="v">Object with parameters.</param>
         /// <returns>The id number.</returns>
         public int CreateRecord(ParameterObject v)
         {
-            throw new NotImplementedException();
+            this.validator.ValidateParameters(v);
+            var record = new FileCabinetRecord
+            {
+                Id = (int)((this.fileStream.Position / this.recordSize) + 1),
+                FirstName = v.FirstName,
+                LastName = v.LastName,
+                DateOfBirth = v.DateOfBirth,
+                Property1 = v.Property1,
+                Property2 = v.Property2,
+                Property3 = v.Property3,
+            };
+
+            static byte[] FuncRecordToByte(FileCabinetRecord fileCabinetRecord, int[] offset, int recordSize)
+            {
+                int writerId = fileCabinetRecord.Id;
+                char[] writerFirstName = fileCabinetRecord.FirstName.ToCharArray();
+                char[] writerLastName = fileCabinetRecord.LastName.ToCharArray();
+                int writerFirstDateOfBirth = fileCabinetRecord.DateOfBirth.Year;
+                int writerSecondDateOfBirth = fileCabinetRecord.DateOfBirth.Month;
+                int writerThirdDateOfBirth = fileCabinetRecord.DateOfBirth.Day;
+                short writerProperty1 = fileCabinetRecord.Property1;
+                decimal writerProperty2 = fileCabinetRecord.Property2;
+                char writerProperty3 = fileCabinetRecord.Property3;
+
+                byte[] bytes = new byte[recordSize];
+                using (MemoryStream memoryStream = new (bytes))
+                using (BinaryWriter binaryWriter = new (memoryStream))
+                {
+                    binaryWriter.Seek(offset[1], SeekOrigin.Begin);
+                    binaryWriter.Write(writerId);
+
+                    binaryWriter.Seek(offset[2], SeekOrigin.Begin);
+                    UnicodeEncoding unicode = new ();
+                    byte[] firstNameBytes = unicode.GetBytes(writerFirstName);
+                    binaryWriter.Write(firstNameBytes);
+
+                    binaryWriter.Seek(offset[3], SeekOrigin.Begin);
+                    byte[] lastNameBytes = unicode.GetBytes(writerLastName);
+                    binaryWriter.Write(lastNameBytes);
+
+                    binaryWriter.Seek(offset[4], SeekOrigin.Begin);
+                    binaryWriter.Write(writerFirstDateOfBirth);
+
+                    binaryWriter.Seek(offset[5], SeekOrigin.Begin);
+                    binaryWriter.Write(writerSecondDateOfBirth);
+
+                    binaryWriter.Seek(offset[6], SeekOrigin.Begin);
+                    binaryWriter.Write(writerThirdDateOfBirth);
+
+                    binaryWriter.Seek(offset[7], SeekOrigin.Begin);
+                    binaryWriter.Write(writerProperty1);
+
+                    binaryWriter.Seek(offset[8], SeekOrigin.Begin);
+                    binaryWriter.Write(writerProperty2);
+
+                    binaryWriter.Seek(offset[9], SeekOrigin.Begin);
+                    binaryWriter.Write(writerProperty3);
+                }
+
+                return bytes;
+            }
+
+            byte[] recordBytes = FuncRecordToByte(record, this.offset, this.recordSize);
+            this.fileStream.Write(recordBytes, 0, recordBytes.Length);
+            this.fileStream.Flush();
+
+            return record.Id;
         }
 
         /// <summary>
-        /// Gets records from the List and puts them into a collection.
+        /// Gets records from the file and puts them into a collection.
         /// </summary>
         /// <returns>The collection of records.</returns>
         public ReadOnlyCollection<FileCabinetRecord> GetRecords()
@@ -44,7 +113,7 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Defines the number of records in the List.
+        /// Defines the number of records in the file.
         /// </summary>
         /// <returns>The number of records.</returns>
         public int GetStat()

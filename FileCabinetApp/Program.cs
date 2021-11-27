@@ -16,7 +16,7 @@ namespace FileCabinetApp
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
 
-        private const string FILENAME = "cabinet-records.db";
+        private const string Filename = "cabinet-records.db";
 
         private static readonly Tuple<string, Action<string>>[] Commands = new Tuple<string, Action<string>>[]
         {
@@ -717,7 +717,8 @@ namespace FileCabinetApp
                 if (paramVariantTwo)
                 {
                     Console.WriteLine("Using default validation rules. Storage is file.");
-                    using FileStream fileStream = new (FILENAME, FileMode.OpenOrCreate);
+                    FileStream fileStream = File.Open(Filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+                    fileStream.Seek(0, SeekOrigin.End);
                     FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, new DefaultValidator());
                     fileCabinetService = fileCabinetFilesystemService;
                     commandLineParameter = "default";
@@ -734,7 +735,8 @@ namespace FileCabinetApp
                 if (paramVariantFour)
                 {
                     Console.WriteLine("Using custom validation rules. Storage is file.");
-                    using FileStream fileStream = new (FILENAME, FileMode.OpenOrCreate);
+                    FileStream fileStream = File.Open(Filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+                    fileStream.Seek(0, SeekOrigin.End);
                     FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, new CustomValidator());
                     fileCabinetService = fileCabinetFilesystemService;
                     commandLineParameter = "custom";

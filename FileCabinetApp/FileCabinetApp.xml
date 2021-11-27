@@ -41,20 +41,20 @@
         </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.CreateRecord(FileCabinetApp.ParameterObject)">
             <summary>
-            Creates records in the List and the Dictionary.
+            Creates records in the file.
             </summary>
             <param name="v">Object with parameters.</param>
             <returns>The id number.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.GetRecords">
             <summary>
-            Gets records from the List and puts them into a collection.
+            Gets records from the file and puts them into a collection.
             </summary>
             <returns>The collection of records.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.GetStat">
             <summary>
-            Defines the number of records in the List.
+            Defines the number of records in the file.
             </summary>
             <returns>The number of records.</returns>
         </member>
