@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -12,6 +13,9 @@ namespace FileCabinetApp
     public class FileCabinetFilesystemService : IFileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new ();
+
+        private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new ();
+
         private readonly FileStream fileStream;
         private readonly IRecordValidator validator;
         private readonly int recordSize = 277;
@@ -125,6 +129,9 @@ namespace FileCabinetApp
                 };
 
                 this.list.Add(record);
+
+                this.CreateRecordInDictionary(this.firstNameDictionary, readerFirstName);
+
                 offsetShift += this.recordSize;
             }
 
@@ -174,7 +181,8 @@ namespace FileCabinetApp
         /// <returns>The collection of records found by the <paramref name="firstName"/>.</returns>
         public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
         {
-            throw new NotImplementedException();
+            this.GetRecords();
+            return FindByKey(this.firstNameDictionary, firstName);
         }
 
         /// <summary>
@@ -259,6 +267,55 @@ namespace FileCabinetApp
             binaryWriter.Write(writerProperty3);
 
             return writeBytes;
+        }
+
+        /// <summary>
+        /// Finds records in the Dictionary by key.
+        /// </summary>
+        /// <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
+        /// <param name="currentDictKey">Current Dictionary key.</param>
+        /// <returns>The collection of records found by <paramref name="currentDictKey"/>.</returns>
+        private static ReadOnlyCollection<FileCabinetRecord> FindByKey(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string currentDictKey)
+        {
+            List<FileCabinetRecord> onlyList = new ();
+            ReadOnlyCollection<FileCabinetRecord> onlyCollection;
+            string appropriateFormat;
+            if (DateTime.TryParse(currentDictKey, out DateTime appropriateValue))
+            {
+                string str = appropriateValue.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
+                appropriateFormat = string.Concat(str[..6].ToUpper(), str[6..].ToLower());
+            }
+            else
+            {
+                appropriateFormat = string.Concat(currentDictKey[..1].ToUpper(), currentDictKey[1..].ToLower());
+            }
+
+            if (nameOfDict.ContainsKey(appropriateFormat))
+            {
+                onlyList = nameOfDict[appropriateFormat];
+                onlyCollection = new (onlyList);
+                return onlyCollection;
+            }
+
+            onlyCollection = new (onlyList);
+            return onlyCollection;
+        }
+
+        /// <summary>
+        /// Creates record in the Dictionary.
+        /// </summary>
+        /// <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
+        /// <param name="newDictKey">New Dictionary key.</param>
+        private void CreateRecordInDictionary(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string newDictKey)
+        {
+            if (!nameOfDict.ContainsKey(newDictKey))
+            {
+                nameOfDict[newDictKey] = new List<FileCabinetRecord> { this.list[^1] };
+            }
+            else
+            {
+                nameOfDict[newDictKey].Add(this.list[^1]);
+            }
         }
     }
 }
