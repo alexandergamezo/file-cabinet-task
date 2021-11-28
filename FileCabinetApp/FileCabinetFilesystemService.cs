@@ -16,6 +16,7 @@ namespace FileCabinetApp
 
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new ();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new ();
+        private readonly Dictionary<string, List<FileCabinetRecord>> dateOfBirthDictionary = new ();
 
         private readonly FileStream fileStream;
         private readonly IRecordValidator validator;
@@ -71,6 +72,7 @@ namespace FileCabinetApp
                 this.list.Clear();
                 this.firstNameDictionary.Clear();
                 this.lastNameDictionary.Clear();
+                this.dateOfBirthDictionary.Clear();
             }
 
             byte[] readBytes = new byte[this.fileStream.Length];
@@ -135,6 +137,7 @@ namespace FileCabinetApp
 
                 this.CreateRecordInDictionary(this.firstNameDictionary, readerFirstName);
                 this.CreateRecordInDictionary(this.lastNameDictionary, readerLastName);
+                this.CreateRecordInDictionary(this.dateOfBirthDictionary, readerDateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture));
 
                 offsetShift += this.recordSize;
             }
@@ -207,7 +210,8 @@ namespace FileCabinetApp
         /// <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
         public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
         {
-            throw new NotImplementedException();
+            this.GetRecords();
+            return FindByKey(this.dateOfBirthDictionary, dateOfBirth);
         }
 
         /// <summary>
