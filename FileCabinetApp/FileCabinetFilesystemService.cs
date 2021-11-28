@@ -15,6 +15,7 @@ namespace FileCabinetApp
         private readonly List<FileCabinetRecord> list = new ();
 
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new ();
+        private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new ();
 
         private readonly FileStream fileStream;
         private readonly IRecordValidator validator;
@@ -68,6 +69,8 @@ namespace FileCabinetApp
             if (this.list.Count != 0)
             {
                 this.list.Clear();
+                this.firstNameDictionary.Clear();
+                this.lastNameDictionary.Clear();
             }
 
             byte[] readBytes = new byte[this.fileStream.Length];
@@ -131,6 +134,7 @@ namespace FileCabinetApp
                 this.list.Add(record);
 
                 this.CreateRecordInDictionary(this.firstNameDictionary, readerFirstName);
+                this.CreateRecordInDictionary(this.lastNameDictionary, readerLastName);
 
                 offsetShift += this.recordSize;
             }
@@ -192,7 +196,8 @@ namespace FileCabinetApp
         /// <returns>The collection of records which by the <paramref name="lastName"/>.</returns>
         public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
         {
-            throw new NotImplementedException();
+            this.GetRecords();
+            return FindByKey(this.lastNameDictionary, lastName);
         }
 
         /// <summary>
