@@ -48,55 +48,7 @@ namespace FileCabinetApp
                 Property3 = v.Property3,
             };
 
-            static byte[] FuncRecordToByte(FileCabinetRecord fileCabinetRecord, int[] offset, int recordSize)
-            {
-                int writerId = fileCabinetRecord.Id;
-                char[] writerFirstName = fileCabinetRecord.FirstName.ToCharArray();
-                char[] writerLastName = fileCabinetRecord.LastName.ToCharArray();
-                int writerYearDateOfBirth = fileCabinetRecord.DateOfBirth.Year;
-                int writerMonthDateOfBirth = fileCabinetRecord.DateOfBirth.Month;
-                int writerDayDateOfBirth = fileCabinetRecord.DateOfBirth.Day;
-                short writerProperty1 = fileCabinetRecord.Property1;
-                decimal writerProperty2 = fileCabinetRecord.Property2;
-                char writerProperty3 = fileCabinetRecord.Property3;
-
-                byte[] writeBytes = new byte[recordSize];
-                using MemoryStream memoryStream = new (writeBytes);
-                using BinaryWriter binaryWriter = new (memoryStream);
-                binaryWriter.Seek(offset[1], SeekOrigin.Begin);
-                binaryWriter.Write(writerId);
-
-                binaryWriter.Seek(offset[2], SeekOrigin.Begin);
-                UnicodeEncoding unicode = new ();
-                byte[] firstNameBytes = unicode.GetBytes(writerFirstName);
-                binaryWriter.Write(firstNameBytes);
-
-                binaryWriter.Seek(offset[3], SeekOrigin.Begin);
-                byte[] lastNameBytes = unicode.GetBytes(writerLastName);
-                binaryWriter.Write(lastNameBytes);
-
-                binaryWriter.Seek(offset[4], SeekOrigin.Begin);
-                binaryWriter.Write(writerYearDateOfBirth);
-
-                binaryWriter.Seek(offset[5], SeekOrigin.Begin);
-                binaryWriter.Write(writerMonthDateOfBirth);
-
-                binaryWriter.Seek(offset[6], SeekOrigin.Begin);
-                binaryWriter.Write(writerDayDateOfBirth);
-
-                binaryWriter.Seek(offset[7], SeekOrigin.Begin);
-                binaryWriter.Write(writerProperty1);
-
-                binaryWriter.Seek(offset[8], SeekOrigin.Begin);
-                binaryWriter.Write(writerProperty2);
-
-                binaryWriter.Seek(offset[9], SeekOrigin.Begin);
-                binaryWriter.Write(writerProperty3);
-
-                return writeBytes;
-            }
-
-            byte[] recordBytes = FuncRecordToByte(record, this.offset, this.recordSize);
+            byte[] recordBytes = WriteToBytes(record, this.offset, this.recordSize);
             this.fileStream.Write(recordBytes, 0, recordBytes.Length);
             this.fileStream.Flush();
 
@@ -197,7 +149,22 @@ namespace FileCabinetApp
         /// <param name="v">Object with parameters.</param>
         public void EditRecord(int id, ParameterObject v)
         {
-            throw new NotImplementedException();
+            this.validator.ValidateParameters(v);
+            var record = new FileCabinetRecord
+            {
+                Id = id,
+                FirstName = v.FirstName,
+                LastName = v.LastName,
+                DateOfBirth = v.DateOfBirth,
+                Property1 = v.Property1,
+                Property2 = v.Property2,
+                Property3 = v.Property3,
+            };
+
+            byte[] recordBytes = WriteToBytes(record, this.offset, this.recordSize);
+            this.fileStream.Seek((id * this.recordSize) - this.recordSize, SeekOrigin.Begin);
+            this.fileStream.Write(recordBytes, 0, recordBytes.Length);
+            this.fileStream.Flush();
         }
 
         /// <summary>
@@ -237,6 +204,61 @@ namespace FileCabinetApp
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Converts record in bytes.
+        /// </summary>
+        /// <param name="record">Record.</param>
+        /// <param name="offset">An array of offset values for the record properties in the file.</param>
+        /// <param name="recordSize">Record size.</param>
+        /// <returns>Array with bytes.</returns>
+        private static byte[] WriteToBytes(FileCabinetRecord record, int[] offset, int recordSize)
+        {
+            int writerId = record.Id;
+            char[] writerFirstName = record.FirstName.ToCharArray();
+            char[] writerLastName = record.LastName.ToCharArray();
+            int writerYearDateOfBirth = record.DateOfBirth.Year;
+            int writerMonthDateOfBirth = record.DateOfBirth.Month;
+            int writerDayDateOfBirth = record.DateOfBirth.Day;
+            short writerProperty1 = record.Property1;
+            decimal writerProperty2 = record.Property2;
+            char writerProperty3 = record.Property3;
+
+            byte[] writeBytes = new byte[recordSize];
+            using MemoryStream memoryStream = new (writeBytes);
+            using BinaryWriter binaryWriter = new (memoryStream);
+            binaryWriter.Seek(offset[1], SeekOrigin.Begin);
+            binaryWriter.Write(writerId);
+
+            binaryWriter.Seek(offset[2], SeekOrigin.Begin);
+            UnicodeEncoding unicode = new ();
+            byte[] firstNameBytes = unicode.GetBytes(writerFirstName);
+            binaryWriter.Write(firstNameBytes);
+
+            binaryWriter.Seek(offset[3], SeekOrigin.Begin);
+            byte[] lastNameBytes = unicode.GetBytes(writerLastName);
+            binaryWriter.Write(lastNameBytes);
+
+            binaryWriter.Seek(offset[4], SeekOrigin.Begin);
+            binaryWriter.Write(writerYearDateOfBirth);
+
+            binaryWriter.Seek(offset[5], SeekOrigin.Begin);
+            binaryWriter.Write(writerMonthDateOfBirth);
+
+            binaryWriter.Seek(offset[6], SeekOrigin.Begin);
+            binaryWriter.Write(writerDayDateOfBirth);
+
+            binaryWriter.Seek(offset[7], SeekOrigin.Begin);
+            binaryWriter.Write(writerProperty1);
+
+            binaryWriter.Seek(offset[8], SeekOrigin.Begin);
+            binaryWriter.Write(writerProperty2);
+
+            binaryWriter.Seek(offset[9], SeekOrigin.Begin);
+            binaryWriter.Write(writerProperty3);
+
+            return writeBytes;
         }
     }
 }

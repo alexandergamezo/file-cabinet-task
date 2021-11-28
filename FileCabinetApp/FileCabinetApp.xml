@@ -92,6 +92,15 @@
             </summary>
             <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.WriteToBytes(FileCabinetApp.FileCabinetRecord,System.Int32[],System.Int32)">
+            <summary>
+            Converts record in bytes.
+            </summary>
+            <param name="record">Record.</param>
+            <param name="offset">An array of offset values for the record properties in the file.</param>
+            <param name="recordSize">Record size.</param>
+            <returns>Array with bytes.</returns>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetMemoryService">
             <summary>
             Reacts to user commands and executes some commands.
