@@ -26,6 +26,199 @@
             </summary>
             <param name="v">Object with parameters.</param>
         </member>
+        <member name="T:FileCabinetApp.FileCabinetFilesystemService">
+            <summary>
+            Reacts to user commands and executes some commands.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.#ctor(System.IO.FileStream,FileCabinetApp.IRecordValidator)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetFilesystemService"/> class.
+            Constructor which gets the stream.
+            </summary>
+            <param name="fileStream">Stream for recording.</param>
+            <param name="validator">Reference to one of the strategy objects.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.CreateRecord(FileCabinetApp.ParameterObject)">
+            <summary>
+            Creates records in the file.
+            </summary>
+            <param name="v">Object with parameters.</param>
+            <returns>The id number.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.GetRecords">
+            <summary>
+            Gets records from the file and puts them into a collection.
+            </summary>
+            <returns>The collection of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.GetStat">
+            <summary>
+            Defines the number of records in the file.
+            </summary>
+            <returns>The number of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.EditRecord(System.Int32,FileCabinetApp.ParameterObject)">
+            <summary>
+            Changes old record on the new one in the Dictionary and List.
+            </summary>
+            <param name="id">Id number.</param>
+            <param name="v">Object with parameters.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.FindByFirstName(System.String)">
+            <summary>
+            Finds records in the Dictionary by first name.
+            </summary>
+            <param name="firstName">First name.</param>
+            <returns>The collection of records found by the <paramref name="firstName"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.FindByLastName(System.String)">
+            <summary>
+            Finds records in the Dictionary by last name.
+            </summary>
+            <param name="lastName">Last name.</param>
+            <returns>The collection of records which by the <paramref name="lastName"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.FindByDateOfBirth(System.String)">
+            <summary>
+            Finds records in the Dictionary by date of birth.
+            </summary>
+            <param name="dateOfBirth">date of birth.</param>
+            <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.MakeSnapshot">
+            <summary>
+            Saves the current state inside a FileCabinetServiceSnapshot.
+            </summary>
+            <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.WriteToBytes(FileCabinetApp.FileCabinetRecord,System.Int32[],System.Int32)">
+            <summary>
+            Converts record in bytes.
+            </summary>
+            <param name="record">Record.</param>
+            <param name="offset">An array of offset values for the record properties in the file.</param>
+            <param name="recordSize">Record size.</param>
+            <returns>Array with bytes.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.FindByKey(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
+            <summary>
+            Finds records in the Dictionary by key.
+            </summary>
+            <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
+            <param name="currentDictKey">Current Dictionary key.</param>
+            <returns>The collection of records found by <paramref name="currentDictKey"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.CreateRecordInDictionary(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
+            <summary>
+            Creates record in the Dictionary.
+            </summary>
+            <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
+            <param name="newDictKey">New Dictionary key.</param>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetMemoryService">
+            <summary>
+            Reacts to user commands and executes some commands.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.#ctor(FileCabinetApp.IRecordValidator)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetMemoryService"/> class.
+            Provides a setter to change a strategy at runtime.
+            </summary>
+            <param name="validator">Reference to one of the strategy objects.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.CreateRecord(FileCabinetApp.ParameterObject)">
+            <summary>
+            Creates records in the List and the Dictionary.
+            </summary>
+            <param name="v">Object with parameters.</param>
+            <returns>The id number.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.GetRecords">
+            <summary>
+            Gets records from the List and puts them into a collection.
+            </summary>
+            <returns>The collection of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.GetStat">
+            <summary>
+            Defines the number of records in the List.
+            </summary>
+            <returns>The number of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.EditRecord(System.Int32,FileCabinetApp.ParameterObject)">
+            <summary>
+            Changes old record on the new one in the Dictionary and List.
+            </summary>
+            <param name="id">Id number.</param>
+            <param name="v">Object with parameters.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.FindByFirstName(System.String)">
+            <summary>
+            Finds records in the Dictionary by first name.
+            </summary>
+            <param name="firstName">First name.</param>
+            <returns>The collection of records found by the <paramref name="firstName"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.FindByLastName(System.String)">
+            <summary>
+            Finds records in the Dictionary by last name.
+            </summary>
+            <param name="lastName">Last name.</param>
+            <returns>The collection of records which by the <paramref name="lastName"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.FindByDateOfBirth(System.String)">
+            <summary>
+            Finds records in the Dictionary by date of birth.
+            </summary>
+            <param name="dateOfBirth">date of birth.</param>
+            <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.MakeSnapshot">
+            <summary>
+            Saves the current state inside a FileCabinetServiceSnapshot.
+            </summary>
+            <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.FindByKey(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
+            <summary>
+            Finds records in the Dictionary by key.
+            </summary>
+            <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
+            <param name="currentDictKey">Current Dictionary key.</param>
+            <returns>The collection of records found by <paramref name="currentDictKey"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.EditDictionary(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String,System.String,FileCabinetApp.FileCabinetRecord,System.Int32)">
+            <summary>
+            Changes old record on the new one in the Dictionary.
+            </summary>
+            <param name="nameOfDict">Name of the Dictionary which has to be changed.</param>
+            <param name="newDictKey">New Dictionary key.</param>
+            <param name="currentDictKey">Current Dictionary key.</param>
+            <param name="record">The new record which changes the old record.</param>
+            <param name="id">Id of old record.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.CreateRecordInDictionary(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
+            <summary>
+            Creates record in the Dictionary.
+            </summary>
+            <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
+            <param name="newDictKey">New Dictionary key.</param>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetMemoryService.CompareId">
+            <summary>
+            Contains comparison method.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.CompareId.CompareWithID(FileCabinetApp.FileCabinetRecord,FileCabinetApp.FileCabinetRecord)">
+            <summary>
+            Compares two integer instances.
+            </summary>
+            <param name="x">First integer instance.</param>
+            <param name="y">Second integer instance.</param>
+            <returns>The indication relative values of integer instances.</returns>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetRecord">
             <summary>
             Provides access to values of variables by using properties.
@@ -123,109 +316,6 @@
             </summary>
             <param name="record">State for recording.</param>
         </member>
-        <member name="T:FileCabinetApp.FileCabinetService">
-            <summary>
-            Reacts to user commands and executes some commands.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.#ctor(FileCabinetApp.IRecordValidator)">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetService"/> class.
-            Provides a setter to change a strategy at runtime.
-            </summary>
-            <param name="validator">Reference to one of the strategy objects.</param>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.CreateRecord(FileCabinetApp.ParameterObject)">
-            <summary>
-            Creates records in the List and the Dictionary.
-            </summary>
-            <param name="v">Object with parameters.</param>
-            <returns>The id number.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.GetRecords">
-            <summary>
-            Gets records from the List and puts them into a collection.
-            </summary>
-            <returns>The collection of records.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.GetStat">
-            <summary>
-            Defines the number of records in the List.
-            </summary>
-            <returns>The number of records.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.EditRecord(System.Int32,FileCabinetApp.ParameterObject)">
-            <summary>
-            Changes old record on the new one in the Dictionary and List.
-            </summary>
-            <param name="id">Id number.</param>
-            <param name="v">Object with parameters.</param>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.FindByFirstName(System.String)">
-            <summary>
-            Finds records in the Dictionary by first name.
-            </summary>
-            <param name="firstName">First name.</param>
-            <returns>The collection of records found by the <paramref name="firstName"/>.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.FindByLastName(System.String)">
-            <summary>
-            Finds records in the Dictionary by last name.
-            </summary>
-            <param name="lastName">Last name.</param>
-            <returns>The collection of records which by the <paramref name="lastName"/>.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.FindByDateOfBirth(System.String)">
-            <summary>
-            Finds records in the Dictionary by date of birth.
-            </summary>
-            <param name="dateOfBirth">date of birth.</param>
-            <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.MakeSnapshot">
-            <summary>
-            Saves the current state inside a FileCabinetServiceSnapshot.
-            </summary>
-            <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.FindByKey(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
-            <summary>
-            Finds records in the Dictionary by key.
-            </summary>
-            <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
-            <param name="currentDictKey">Current Dictionary key.</param>
-            <returns>The collection of records found by <paramref name="currentDictKey"/>.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.EditDictionary(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String,System.String,FileCabinetApp.FileCabinetRecord,System.Int32)">
-            <summary>
-            Changes old record on the new one in the Dictionary.
-            </summary>
-            <param name="nameOfDict">Name of the Dictionary which has to be changed.</param>
-            <param name="newDictKey">New Dictionary key.</param>
-            <param name="currentDictKey">Current Dictionary key.</param>
-            <param name="record">The new record which changes the old record.</param>
-            <param name="id">Id of old record.</param>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.CreateRecordInDictionary(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
-            <summary>
-            Creates record in the Dictionary.
-            </summary>
-            <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
-            <param name="newDictKey">New Dictionary key.</param>
-        </member>
-        <member name="T:FileCabinetApp.FileCabinetService.CompareId">
-            <summary>
-            Contains comparison method.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.CompareId.CompareWithID(FileCabinetApp.FileCabinetRecord,FileCabinetApp.FileCabinetRecord)">
-            <summary>
-            Compares two integer instances.
-            </summary>
-            <param name="x">First integer instance.</param>
-            <param name="y">Second integer instance.</param>
-            <returns>The indication relative values of integer instances.</returns>
-        </member>
         <member name="T:FileCabinetApp.FileCabinetServiceSnapshot">
             <summary>
             The FileCabinetServiceSnapshot contains the infrastructure for saving the FileCabinetService state.
@@ -301,6 +391,12 @@
             </summary>
             <param name="dateOfBirth">date of birth.</param>
             <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.MakeSnapshot">
+            <summary>
+            Saves the current state inside a FileCabinetServiceSnapshot.
+            </summary>
+            <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
         </member>
         <member name="T:FileCabinetApp.IRecordValidator">
             <summary>
