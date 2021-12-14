@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace FileCabinetGenerator
-{
+{      
     /// <summary>
     /// Provides access to values of variables by using properties.
     /// </summary>
     public class FileCabinetRecord
-    {
+    {        
         /// <summary>
         /// Gets or sets Id.
         /// </summary>
@@ -14,7 +16,7 @@ namespace FileCabinetGenerator
         /// Id.
         /// </value>
         public int Id { get; set; }
-
+                        
         /// <summary>
         /// Gets or sets First name.
         /// </summary>
@@ -22,7 +24,7 @@ namespace FileCabinetGenerator
         /// FirstName.
         /// </value>
         public string FirstName { get; set; }
-
+                
         /// <summary>
         /// Gets or sets Last name.
         /// </summary>
@@ -30,7 +32,7 @@ namespace FileCabinetGenerator
         /// LastName.
         /// </value>
         public string LastName { get; set; }
-
+        
         /// <summary>
         /// Gets or sets Date of birth.
         /// </summary>
@@ -38,7 +40,7 @@ namespace FileCabinetGenerator
         /// DateOfBirth.
         /// </value>
         public DateTime DateOfBirth { get; set; }
-
+        
         /// <summary>
         /// Gets or sets Property in "short" format.
         /// </summary>
@@ -46,7 +48,7 @@ namespace FileCabinetGenerator
         /// Property1.
         /// </value>
         public short Property1 { get; set; }
-
+        
         /// <summary>
         /// Gets or sets Property in "decimal" format.
         /// </summary>
@@ -54,7 +56,7 @@ namespace FileCabinetGenerator
         /// Property2.
         /// </value>
         public decimal Property2 { get; set; }
-
+       
         /// <summary>
         /// Gets or sets Property in "char" format.
         /// </summary>

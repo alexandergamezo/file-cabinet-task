@@ -43,7 +43,7 @@ namespace FileCabinetApp
         {
             XmlWriterSettings settings = new ();
             settings.Indent = true;
-            settings.IndentChars = "        ";
+            settings.IndentChars = "\t";
 
             using XmlWriter xmlWriter = XmlWriter.Create(writer, settings);
             FileCabinetRecordXmlWriter objFileCabRecXml = new (xmlWriter);
