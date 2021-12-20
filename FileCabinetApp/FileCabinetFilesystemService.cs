@@ -224,6 +224,16 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Restores the state from a snapshot object.
+        /// </summary>
+        /// <param name="snapshot">Snapshot of the object, where saved its state.</param>
+        /// <param name="count">Number of records that were imported with definite validation rules.</param>
+        public void Restore(FileCabinetServiceSnapshot snapshot, out int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Converts record in bytes.
         /// </summary>
         /// <param name="record">Record.</param>

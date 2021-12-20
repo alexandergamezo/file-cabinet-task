@@ -115,6 +115,7 @@ namespace FileCabinetGenerator
         private static void CsvWrite(string path, int id, int amount)
         {
             using StreamWriter writer = new(path);
+            writer.WriteLine("Id,First Name,Last Name,Date of Birth,Property1,Property2,Property3");
             int newId = id;
             while (newId <= id + amount - 1)
             {

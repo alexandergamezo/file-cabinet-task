@@ -10,6 +10,14 @@ namespace FileCabinetApp
     public class FileCabinetServiceSnapshot
     {
         private readonly FileCabinetRecord[] records;
+        private IReadOnlyCollection<FileCabinetRecord> listLoadFromCsv;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileCabinetServiceSnapshot"/> class.
+        /// </summary>
+        public FileCabinetServiceSnapshot()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetServiceSnapshot"/> class.
@@ -22,12 +30,22 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Gets a list of records from CSV file.
+        /// </summary>
+        /// <value>
+        /// A list of records from CSV file.
+        /// </value>
+        public IReadOnlyCollection<FileCabinetRecord> Records => this.listLoadFromCsv;
+
+        /// <summary>
         /// Saves the state to the CSV format.
         /// </summary>
         /// <param name="writer">Stream for writing state.</param>
         public void SaveToCsv(StreamWriter writer)
         {
             FileCabinetRecordCsvWriter objFileCabRec = new (writer);
+
+            writer.WriteLine("Id,First Name,Last Name,Date of Birth,Property1,Property2,Property3");
 
             foreach (var record in this.records)
             {
@@ -56,6 +74,16 @@ namespace FileCabinetApp
 
             xmlWriter.WriteEndElement();
             xmlWriter.Flush();
+        }
+
+        /// <summary>
+        /// Loads records from the CSV file.
+        /// </summary>
+        /// <param name="reader">Stream for reading records.</param>
+        public void LoadFromCsv(StreamReader reader)
+        {
+            FileCabinetRecordCsvReader fileCabinetRecordCsvReader = new (reader);
+            this.listLoadFromCsv = (IReadOnlyCollection<FileCabinetRecord>)fileCabinetRecordCsvReader.ReadAll();
         }
     }
 }
