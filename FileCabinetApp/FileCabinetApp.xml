@@ -92,6 +92,13 @@
             </summary>
             <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.Restore(FileCabinetApp.FileCabinetServiceSnapshot,System.Int32@)">
+            <summary>
+            Restores the state from a snapshot object.
+            </summary>
+            <param name="snapshot">Snapshot of the object, where saved its state.</param>
+            <param name="count">Number of records that were imported with definite validation rules.</param>
+        </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.WriteToBytes(FileCabinetApp.FileCabinetRecord,System.Int32[],System.Int32)">
             <summary>
             Converts record in bytes.
@@ -181,6 +188,13 @@
             </summary>
             <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.Restore(FileCabinetApp.FileCabinetServiceSnapshot,System.Int32@)">
+            <summary>
+            Restores the state from a snapshot object.
+            </summary>
+            <param name="snapshot">Snapshot of the object, where saved its state.</param>
+            <param name="count">Number of records that were imported with definite validation rules.</param>
+        </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.FindByKey(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
             <summary>
             Finds records in the Dictionary by key.
@@ -197,7 +211,7 @@
             <param name="newDictKey">New Dictionary key.</param>
             <param name="currentDictKey">Current Dictionary key.</param>
             <param name="record">The new record which changes the old record.</param>
-            <param name="id">Id of old record.</param>
+            <param name="realPosition">Id of old record.</param>
         </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.CreateRecordInDictionary(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
             <summary>
@@ -280,6 +294,24 @@
             Property3.
             </value>
         </member>
+        <member name="T:FileCabinetApp.FileCabinetRecordCsvReader">
+            <summary>
+            Deserializes records from the CSV format.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordCsvReader.#ctor(System.IO.StreamReader)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetRecordCsvReader"/> class.
+            Constructor which gets the stream.
+            </summary>
+            <param name="reader">Stream for recording.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordCsvReader.ReadAll">
+            <summary>
+            Reads records from the stream.
+            </summary>
+            <returns>The list of deserialized records.</returns>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetRecordCsvWriter">
             <summary>
             Serializes record to the CSV format.
@@ -297,6 +329,24 @@
             Writes a string to the stream.
             </summary>
             <param name="record">State for recording.</param>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetRecordXmlReader">
+            <summary>
+            Deserializes records from the XML format.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordXmlReader.#ctor(System.IO.StreamReader)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetRecordXmlReader"/> class.
+            Constructor which gets the stream.
+            </summary>
+            <param name="reader">Stream for recording.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordXmlReader.ReadAll">
+            <summary>
+            Reads records from the stream.
+            </summary>
+            <returns>The list of deserialized records.</returns>
         </member>
         <member name="T:FileCabinetApp.FileCabinetRecordXmlWriter">
             <summary>
@@ -321,12 +371,25 @@
             The FileCabinetServiceSnapshot contains the infrastructure for saving the FileCabinetService state.
             </summary>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/> class.
+            </summary>
+        </member>
         <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.#ctor(System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord})">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/> class.
             Constructor which gets FileCabinetService state.
             </summary>
             <param name="stateList">FileCabinetService state.</param>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetServiceSnapshot.Records">
+            <summary>
+            Gets a list of records from CSV file.
+            </summary>
+            <value>
+            A list of records from CSV file.
+            </value>
         </member>
         <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToCsv(System.IO.StreamWriter)">
             <summary>
@@ -339,6 +402,18 @@
             Saves the state to the XML format.
             </summary>
             <param name="writer">Stream for writing state.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.LoadFromCsv(System.IO.StreamReader)">
+            <summary>
+            Loads records from the CSV file.
+            </summary>
+            <param name="reader">Stream for reading records.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.LoadFromXml(System.IO.StreamReader)">
+            <summary>
+            Loads records from the XML file.
+            </summary>
+            <param name="reader">Stream for reading records.</param>
         </member>
         <member name="T:FileCabinetApp.IFileCabinetService">
             <summary>
@@ -397,6 +472,13 @@
             Saves the current state inside a FileCabinetServiceSnapshot.
             </summary>
             <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.Restore(FileCabinetApp.FileCabinetServiceSnapshot,System.Int32@)">
+            <summary>
+            Restores the state from a snapshot object.
+            </summary>
+            <param name="snapshot">Snapshot of the object, where saved its state.</param>
+            <param name="count">Number of records that were imported with definite validation rules.</param>
         </member>
         <member name="T:FileCabinetApp.IRecordValidator">
             <summary>

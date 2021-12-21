@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileCabinetApp", "FileCabinetApp\FileCabinetApp.csproj", "{0CBE908B-BDB6-4E64-8B7D-2EB990EBA780}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileCabinetApp", "FileCabinetApp\FileCabinetApp.csproj", "{0CBE908B-BDB6-4E64-8B7D-2EB990EBA780}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileCabinetGenerator", "FileCabinetGenerator\FileCabinetGenerator.csproj", "{5EB091C1-0589-4544-89DA-076939AE7B87}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,9 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0CBE908B-BDB6-4E64-8B7D-2EB990EBA780}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -30,5 +29,23 @@ Global
 		{0CBE908B-BDB6-4E64-8B7D-2EB990EBA780}.Release|x64.Build.0 = Release|Any CPU
 		{0CBE908B-BDB6-4E64-8B7D-2EB990EBA780}.Release|x86.ActiveCfg = Release|Any CPU
 		{0CBE908B-BDB6-4E64-8B7D-2EB990EBA780}.Release|x86.Build.0 = Release|Any CPU
+		{5EB091C1-0589-4544-89DA-076939AE7B87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EB091C1-0589-4544-89DA-076939AE7B87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EB091C1-0589-4544-89DA-076939AE7B87}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5EB091C1-0589-4544-89DA-076939AE7B87}.Debug|x64.Build.0 = Debug|Any CPU
+		{5EB091C1-0589-4544-89DA-076939AE7B87}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5EB091C1-0589-4544-89DA-076939AE7B87}.Debug|x86.Build.0 = Debug|Any CPU
+		{5EB091C1-0589-4544-89DA-076939AE7B87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EB091C1-0589-4544-89DA-076939AE7B87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EB091C1-0589-4544-89DA-076939AE7B87}.Release|x64.ActiveCfg = Release|Any CPU
+		{5EB091C1-0589-4544-89DA-076939AE7B87}.Release|x64.Build.0 = Release|Any CPU
+		{5EB091C1-0589-4544-89DA-076939AE7B87}.Release|x86.ActiveCfg = Release|Any CPU
+		{5EB091C1-0589-4544-89DA-076939AE7B87}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1B2972FD-C8AC-4739-BD35-FD4DC9CF9C11}
 	EndGlobalSection
 EndGlobal

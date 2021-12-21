@@ -36,17 +36,34 @@ namespace FileCabinetApp
         public int CreateRecord(ParameterObject v)
         {
             this.validator.ValidateParameters(v);
+            FileCabinetRecord record;
 
-            var record = new FileCabinetRecord
+            if (this.list.Count == 0)
             {
-                Id = this.list.Count + 1,
-                FirstName = v.FirstName,
-                LastName = v.LastName,
-                DateOfBirth = v.DateOfBirth,
-                Property1 = v.Property1,
-                Property2 = v.Property2,
-                Property3 = v.Property3,
-            };
+                record = new FileCabinetRecord
+                {
+                    Id = 1,
+                    FirstName = v.FirstName,
+                    LastName = v.LastName,
+                    DateOfBirth = v.DateOfBirth,
+                    Property1 = v.Property1,
+                    Property2 = v.Property2,
+                    Property3 = v.Property3,
+                };
+            }
+            else
+            {
+                record = new FileCabinetRecord
+                {
+                    Id = this.list[^1].Id + 1,
+                    FirstName = v.FirstName,
+                    LastName = v.LastName,
+                    DateOfBirth = v.DateOfBirth,
+                    Property1 = v.Property1,
+                    Property2 = v.Property2,
+                    Property3 = v.Property3,
+                };
+            }
 
             this.list.Add(record);
 
@@ -85,6 +102,15 @@ namespace FileCabinetApp
         {
             this.validator.ValidateParameters(v);
 
+            int realPosition = 0;
+            for (int i = 0; i < this.list.Count; i++)
+            {
+                if (id == this.list[i].Id)
+                {
+                    realPosition = i;
+                }
+            }
+
             var record = new FileCabinetRecord
             {
                 Id = id,
@@ -96,12 +122,12 @@ namespace FileCabinetApp
                 Property3 = v.Property3,
             };
 
-            this.EditDictionary(this.firstNameDictionary, v.FirstName, this.list[id - 1].FirstName, record, id);
-            this.EditDictionary(this.lastNameDictionary, v.LastName, this.list[id - 1].LastName, record, id);
-            this.EditDictionary(this.dateOfBirthDictionary, v.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), this.list[id - 1].DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), record, id);
+            this.EditDictionary(this.firstNameDictionary, v.FirstName, this.list[realPosition].FirstName, record, realPosition);
+            this.EditDictionary(this.lastNameDictionary, v.LastName, this.list[realPosition].LastName, record, realPosition);
+            this.EditDictionary(this.dateOfBirthDictionary, v.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), this.list[realPosition].DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), record, realPosition);
 
-            this.list.RemoveAt(id - 1);
-            this.list.Insert(id - 1, record);
+            this.list.RemoveAt(realPosition);
+            this.list.Insert(realPosition, record);
         }
 
         /// <summary>
@@ -144,6 +170,56 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Restores the state from a snapshot object.
+        /// </summary>
+        /// <param name="snapshot">Snapshot of the object, where saved its state.</param>
+        /// <param name="count">Number of records that were imported with definite validation rules.</param>
+        public void Restore(FileCabinetServiceSnapshot snapshot, out int count)
+        {
+            count = 0;
+            foreach (var a in snapshot.Records)
+            {
+                ParameterObject paramobj = new (a.FirstName, a.LastName, a.DateOfBirth, a.Property1, a.Property2, a.Property3);
+
+                try
+                {
+                    this.validator.ValidateParameters(paramobj);
+                }
+                catch (Exception exc)
+                {
+                    Console.WriteLine($"Error! Id #{a.Id}: {exc}");
+                    continue;
+                }
+
+                bool exist = false;
+                for (int i = 0; i < this.list.Count; i++)
+                {
+                    if (a.Id == this.list[i].Id)
+                    {
+                        exist = true;
+                        break;
+                    }
+                }
+
+                if (!exist)
+                {
+                    this.list.Add(a);
+
+                    this.CreateRecordInDictionary(this.firstNameDictionary, a.FirstName);
+                    this.CreateRecordInDictionary(this.lastNameDictionary, a.LastName);
+                    this.CreateRecordInDictionary(this.dateOfBirthDictionary, a.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture));
+
+                    count++;
+                }
+                else
+                {
+                    this.EditRecord(a.Id, paramobj);
+                    count++;
+                }
+            }
+        }
+
+        /// <summary>
         /// Finds records in the Dictionary by key.
         /// </summary>
         /// <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
@@ -182,10 +258,10 @@ namespace FileCabinetApp
         /// <param name="newDictKey">New Dictionary key.</param>
         /// <param name="currentDictKey">Current Dictionary key.</param>
         /// <param name="record">The new record which changes the old record.</param>
-        /// <param name="id">Id of old record.</param>
-        private void EditDictionary(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string newDictKey, string currentDictKey, FileCabinetRecord record, int id)
+        /// <param name="realPosition">Id of old record.</param>
+        private void EditDictionary(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string newDictKey, string currentDictKey, FileCabinetRecord record, int realPosition)
         {
-            int indexCurrent = nameOfDict[currentDictKey].IndexOf(this.list[id - 1]);
+            int indexCurrent = nameOfDict[currentDictKey].IndexOf(this.list[realPosition]);
             nameOfDict[currentDictKey].RemoveAt(indexCurrent);
             if (nameOfDict[currentDictKey].Count == 0)
             {

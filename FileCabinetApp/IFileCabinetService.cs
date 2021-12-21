@@ -59,5 +59,12 @@ namespace FileCabinetApp
         /// </summary>
         /// <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
         FileCabinetServiceSnapshot MakeSnapshot();
+
+        /// <summary>
+        /// Restores the state from a snapshot object.
+        /// </summary>
+        /// <param name="snapshot">Snapshot of the object, where saved its state.</param>
+        /// <param name="count">Number of records that were imported with definite validation rules.</param>
+        void Restore(FileCabinetServiceSnapshot snapshot, out int count);
     }
 }

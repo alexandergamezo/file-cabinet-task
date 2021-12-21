@@ -43,9 +43,17 @@ namespace FileCabinetApp
         public int CreateRecord(ParameterObject v)
         {
             this.validator.ValidateParameters(v);
+
+            int recordId = 1;
+            if (this.fileStream.Length != 0)
+            {
+                this.GetRecords();
+                recordId = this.list[^1].Id + 1;
+            }
+
             var record = new FileCabinetRecord
             {
-                Id = (int)((this.fileStream.Position / this.recordSize) + 1),
+                Id = recordId,
                 FirstName = v.FirstName,
                 LastName = v.LastName,
                 DateOfBirth = v.DateOfBirth,
@@ -89,7 +97,7 @@ namespace FileCabinetApp
 
                 char[] firstNameChars = binaryReader.ReadChars(this.offset[3] - this.offset[2]);
                 StringBuilder strBuilderFirstName = new ();
-                foreach (var a in firstNameChars)
+                foreach (char a in firstNameChars)
                 {
                     if (char.IsLetterOrDigit(a))
                     {
@@ -101,7 +109,7 @@ namespace FileCabinetApp
 
                 char[] ch = binaryReader.ReadChars(this.offset[4] - this.offset[3]);
                 StringBuilder strBuilderLastName = new ();
-                foreach (var a in ch)
+                foreach (char a in ch)
                 {
                     if (char.IsLetterOrDigit(a))
                     {
@@ -175,8 +183,17 @@ namespace FileCabinetApp
                 Property3 = v.Property3,
             };
 
+            int realPosition = 0;
+            for (int i = 0; i < this.list.Count; i++)
+            {
+                if (id == this.list[i].Id)
+                {
+                    realPosition = i;
+                }
+            }
+
             byte[] recordBytes = WriteToBytes(record, this.offset, this.recordSize);
-            this.fileStream.Seek((id * this.recordSize) - this.recordSize, SeekOrigin.Begin);
+            this.fileStream.Seek(((realPosition + 1) * this.recordSize) - this.recordSize, SeekOrigin.Begin);
             this.fileStream.Write(recordBytes, 0, recordBytes.Length);
             this.fileStream.Flush();
         }
@@ -221,6 +238,56 @@ namespace FileCabinetApp
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Restores the state from a snapshot object.
+        /// </summary>
+        /// <param name="snapshot">Snapshot of the object, where saved its state.</param>
+        /// <param name="count">Number of records that were imported with definite validation rules.</param>
+        public void Restore(FileCabinetServiceSnapshot snapshot, out int count)
+        {
+            count = 0;
+            foreach (FileCabinetRecord a in snapshot.Records)
+            {
+                ParameterObject paramobj = new (a.FirstName, a.LastName, a.DateOfBirth, a.Property1, a.Property2, a.Property3);
+
+                try
+                {
+                    this.validator.ValidateParameters(paramobj);
+                }
+                catch (Exception exc)
+                {
+                    Console.WriteLine($"Error! Id #{a.Id}: {exc}");
+                    continue;
+                }
+
+                this.GetRecords();
+
+                bool exist = false;
+                for (int i = 0; i < this.list.Count; i++)
+                {
+                    if (a.Id == this.list[i].Id)
+                    {
+                        exist = true;
+                        break;
+                    }
+                }
+
+                if (exist)
+                {
+                    this.EditRecord(a.Id, paramobj);
+                    count++;
+                }
+                else
+                {
+                    byte[] recordBytes = WriteToBytes(a, this.offset, this.recordSize);
+                    this.fileStream.Write(recordBytes, 0, recordBytes.Length);
+                    this.fileStream.Flush();
+
+                    count++;
+                }
+            }
         }
 
         /// <summary>
