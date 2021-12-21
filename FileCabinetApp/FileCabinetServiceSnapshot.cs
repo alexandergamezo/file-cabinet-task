@@ -10,7 +10,7 @@ namespace FileCabinetApp
     public class FileCabinetServiceSnapshot
     {
         private readonly FileCabinetRecord[] records;
-        private IReadOnlyCollection<FileCabinetRecord> listLoadFromCsv;
+        private IReadOnlyCollection<FileCabinetRecord> listLoadFrom;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetServiceSnapshot"/> class.
@@ -35,7 +35,7 @@ namespace FileCabinetApp
         /// <value>
         /// A list of records from CSV file.
         /// </value>
-        public IReadOnlyCollection<FileCabinetRecord> Records => this.listLoadFromCsv;
+        public IReadOnlyCollection<FileCabinetRecord> Records => this.listLoadFrom;
 
         /// <summary>
         /// Saves the state to the CSV format.
@@ -83,7 +83,17 @@ namespace FileCabinetApp
         public void LoadFromCsv(StreamReader reader)
         {
             FileCabinetRecordCsvReader fileCabinetRecordCsvReader = new (reader);
-            this.listLoadFromCsv = (IReadOnlyCollection<FileCabinetRecord>)fileCabinetRecordCsvReader.ReadAll();
+            this.listLoadFrom = (IReadOnlyCollection<FileCabinetRecord>)fileCabinetRecordCsvReader.ReadAll();
+        }
+
+        /// <summary>
+        /// Loads records from the XML file.
+        /// </summary>
+        /// <param name="reader">Stream for reading records.</param>
+        public void LoadFromXml(StreamReader reader)
+        {
+            FileCabinetRecordXmlReader fileCabinetRecordXmlReader = new (reader);
+            this.listLoadFrom = (IReadOnlyCollection<FileCabinetRecord>)fileCabinetRecordXmlReader.ReadAll();
         }
     }
 }

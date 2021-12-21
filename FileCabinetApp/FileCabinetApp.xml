@@ -330,6 +330,24 @@
             </summary>
             <param name="record">State for recording.</param>
         </member>
+        <member name="T:FileCabinetApp.FileCabinetRecordXmlReader">
+            <summary>
+            Deserializes records from the XML format.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordXmlReader.#ctor(System.IO.StreamReader)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetRecordXmlReader"/> class.
+            Constructor which gets the stream.
+            </summary>
+            <param name="reader">Stream for recording.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordXmlReader.ReadAll">
+            <summary>
+            Reads records from the stream.
+            </summary>
+            <returns>The list of deserialized records.</returns>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetRecordXmlWriter">
             <summary>
             Serializes record to the XML format.
@@ -388,6 +406,12 @@
         <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.LoadFromCsv(System.IO.StreamReader)">
             <summary>
             Loads records from the CSV file.
+            </summary>
+            <param name="reader">Stream for reading records.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.LoadFromXml(System.IO.StreamReader)">
+            <summary>
+            Loads records from the XML file.
             </summary>
             <param name="reader">Stream for reading records.</param>
         </member>

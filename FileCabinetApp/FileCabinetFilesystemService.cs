@@ -263,7 +263,18 @@ namespace FileCabinetApp
                 }
 
                 this.GetRecords();
-                if (this.fileStream.Length != 0 && this.list[^1].Id >= a.Id)
+
+                bool exist = false;
+                for (int i = 0; i < this.list.Count; i++)
+                {
+                    if (a.Id == this.list[i].Id)
+                    {
+                        exist = true;
+                        break;
+                    }
+                }
+
+                if (exist)
                 {
                     this.EditRecord(a.Id, paramobj);
                     count++;

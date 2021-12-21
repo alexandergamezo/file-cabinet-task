@@ -41,7 +41,7 @@ namespace FileCabinetApp
             new string[] { "edit", "edits a record", "The 'edit' edits a record." },
             new string[] { "find", "finds and returns a list of records", "The 'find' finds and returns a list of records. Parameters: 'firstname', 'lastname', 'dateofbirth'." },
             new string[] { "export", "exports service data into a file in the 'CSV' or 'XML' format", "The 'export' exports service data into a file in the 'CSV' or 'XML' format. Formats: 'csv', 'xml'." },
-            new string[] { "import", "imports service data into a file in the 'CSV' format", "The 'import' imports service data into a file in the 'CSV' format. Formats: 'csv'" },
+            new string[] { "import", "imports service data from from file in the 'CSV' or 'XML' format", "The 'import' imports service data from from file in the 'CSV' or 'XML' format. Formats: 'csv', 'xml'." },
         };
 
         private static IFileCabinetService fileCabinetService;
@@ -325,6 +325,11 @@ namespace FileCabinetApp
                 {
                     ImportFromCsvFormat(paramPath);
                 }
+
+                if (paramFormat == "xml")
+                {
+                    ImportFromXmlFormat(paramPath);
+                }
             }
 
             void ImportFromCsvFormat(string path)
@@ -332,6 +337,17 @@ namespace FileCabinetApp
                 StreamReader reader = new (new FileStream(path, FileMode.Open));
                 FileCabinetServiceSnapshot snapshot = new ();
                 snapshot.LoadFromCsv(reader);
+                fileCabinetService.Restore(snapshot, out int count);
+
+                reader.Close();
+                Console.WriteLine($"{count} records were imported from {paramPath}.");
+            }
+
+            void ImportFromXmlFormat(string path)
+            {
+                StreamReader reader = new (new FileStream(path, FileMode.Open));
+                FileCabinetServiceSnapshot snapshot = new ();
+                snapshot.LoadFromXml(reader);
                 fileCabinetService.Restore(snapshot, out int count);
 
                 reader.Close();

@@ -191,12 +191,17 @@ namespace FileCabinetApp
                     continue;
                 }
 
-                if (this.list.Count != 0 && this.list[^1].Id >= a.Id)
+                bool exist = false;
+                for (int i = 0; i < this.list.Count; i++)
                 {
-                    this.EditRecord(a.Id, paramobj);
-                    count++;
+                    if (a.Id == this.list[i].Id)
+                    {
+                        exist = true;
+                        break;
+                    }
                 }
-                else
+
+                if (!exist)
                 {
                     this.list.Add(a);
 
@@ -204,6 +209,11 @@ namespace FileCabinetApp
                     this.CreateRecordInDictionary(this.lastNameDictionary, a.LastName);
                     this.CreateRecordInDictionary(this.dateOfBirthDictionary, a.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture));
 
+                    count++;
+                }
+                else
+                {
+                    this.EditRecord(a.Id, paramobj);
                     count++;
                 }
             }
