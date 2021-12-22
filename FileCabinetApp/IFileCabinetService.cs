@@ -66,5 +66,11 @@ namespace FileCabinetApp
         /// <param name="snapshot">Snapshot of the object, where saved its state.</param>
         /// <param name="count">Number of records that were imported with definite validation rules.</param>
         void Restore(FileCabinetServiceSnapshot snapshot, out int count);
+
+        /// <summary>
+        /// Removes a record from the Dictionary and List.
+        /// </summary>
+        /// <param name="id">Id number.</param>
+        public void RemoveRecord(int id);
     }
 }

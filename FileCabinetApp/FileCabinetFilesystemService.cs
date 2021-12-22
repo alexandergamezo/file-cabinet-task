@@ -291,6 +291,15 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Removes a record from the Dictionary and List.
+        /// </summary>
+        /// <param name="id">Id number.</param>
+        public void RemoveRecord(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Converts record in bytes.
         /// </summary>
         /// <param name="record">Record.</param>

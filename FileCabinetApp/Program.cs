@@ -29,6 +29,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("find", Find),
             new Tuple<string, Action<string>>("export", Export),
             new Tuple<string, Action<string>>("import", Import),
+            new Tuple<string, Action<string>>("remove", Remove),
         };
 
         private static readonly string[][] HelpMessages = new string[][]
@@ -42,6 +43,7 @@ namespace FileCabinetApp
             new string[] { "find", "finds and returns a list of records", "The 'find' finds and returns a list of records. Parameters: 'firstname', 'lastname', 'dateofbirth'." },
             new string[] { "export", "exports service data into a file in the 'CSV' or 'XML' format", "The 'export' exports service data into a file in the 'CSV' or 'XML' format. Formats: 'csv', 'xml'." },
             new string[] { "import", "imports service data from from file in the 'CSV' or 'XML' format", "The 'import' imports service data from from file in the 'CSV' or 'XML' format. Formats: 'csv', 'xml'." },
+            new string[] { "remove", "removes a record", "The 'remove' removes a record." },
         };
 
         private static IFileCabinetService fileCabinetService;
@@ -153,7 +155,14 @@ namespace FileCabinetApp
         private static void List(string parameters)
         {
             var arr = fileCabinetService.GetRecords();
-            Show(arr);
+            if (arr.Count == 0)
+            {
+                Console.WriteLine("The list is empty.");
+            }
+            else
+            {
+                Show(arr);
+            }
         }
 
         private static void Edit(string parameters)
@@ -165,6 +174,12 @@ namespace FileCabinetApp
             }
 
             var onlyCollection = fileCabinetService.GetRecords();
+
+            if (onlyCollection.Count == 0)
+            {
+                Console.WriteLine($"#{parameters} record is not found.");
+            }
+
             for (int i = 0; i < onlyCollection.Count; i++)
             {
                 if (id == onlyCollection[i].Id)
@@ -352,6 +367,44 @@ namespace FileCabinetApp
 
                 reader.Close();
                 Console.WriteLine($"{count} records were imported from {paramPath}.");
+            }
+        }
+
+        private static void Remove(string parameters)
+        {
+            int id = -1;
+            if (!string.IsNullOrEmpty(parameters) && int.TryParse(parameters, out int enteredId))
+            {
+                id = enteredId;
+            }
+
+            var onlyCollection = fileCabinetService.GetRecords();
+
+            if (onlyCollection.Count == 0)
+            {
+                Console.WriteLine($"#{parameters} record is not found.");
+            }
+
+            for (int i = 0; i < onlyCollection.Count; i++)
+            {
+                if (id == onlyCollection[i].Id)
+                {
+                    try
+                    {
+                        fileCabinetService.RemoveRecord(id);
+                        Console.WriteLine($"Record #{id} is removed.");
+                        break;
+                    }
+                    catch (Exception exc)
+                    {
+                        Console.WriteLine(exc.Message);
+                    }
+                }
+
+                if (i == onlyCollection.Count - 1 || onlyCollection.Count == 0)
+                {
+                    Console.WriteLine($"Record #{parameters} doesn't exists.");
+                }
             }
         }
 
