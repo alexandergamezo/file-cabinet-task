@@ -308,12 +308,57 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Converts record in bytes.
+        /// Defrags a file.
         /// </summary>
-        /// <param name="record">Record.</param>
-        /// <param name="offset">An array of offset values for the record properties in the file.</param>
-        /// <param name="recordSize">Record size.</param>
-        /// <returns>Array with bytes.</returns>
+        /// <param name="destinationFileName">The destination file name.</param>
+        /// <param name="numNewRecords">The number of new records in a new file.</param>
+        /// <param name="numOldRecords">The number of old records in an old file.</param>
+        public void DefragFile(string destinationFileName, out int numNewRecords, out int numOldRecords)
+        {
+            using FileStream newFileStream = File.Open(destinationFileName, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+
+            byte[] readBytes = new byte[this.fileStream.Length];
+            this.fileStream.Seek(0, SeekOrigin.Begin);
+            this.fileStream.Read(readBytes, 0, readBytes.Length);
+            using MemoryStream memoryStream = new (readBytes);
+            using BinaryReader binaryReader = new (memoryStream);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+
+            int offsetShift = 0;
+            numNewRecords = 0;
+            numOldRecords = (int)this.fileStream.Length / this.recordSize;
+
+            while (memoryStream.Position <= (memoryStream.Length - this.recordSize))
+            {
+                memoryStream.Seek(offsetShift, SeekOrigin.Begin);
+
+                short reserved = binaryReader.ReadInt16();
+                if ((reserved >> 2 & 1) == 1)
+                {
+                    offsetShift += this.recordSize;
+                    continue;
+                }
+
+                byte[] newBytesRecord = new byte[this.recordSize];
+                Array.Copy(readBytes, offsetShift, newBytesRecord, 0, this.recordSize);
+
+                newFileStream.Write(newBytesRecord, 0, newBytesRecord.Length);
+
+                offsetShift += this.recordSize;
+                numNewRecords++;
+            }
+
+            newFileStream.Flush();
+            this.fileStream.Dispose();
+        }
+
+        /// <summary>
+            /// Converts record in bytes.
+            /// </summary>
+            /// <param name="record">Record.</param>
+            /// <param name="offset">An array of offset values for the record properties in the file.</param>
+            /// <param name="recordSize">Record size.</param>
+            /// <returns>Array with bytes.</returns>
         private static byte[] WriteToBytes(FileCabinetRecord record, int[] offset, int recordSize)
         {
             int writerId = record.Id;

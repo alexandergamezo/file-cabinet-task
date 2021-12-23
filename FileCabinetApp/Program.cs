@@ -17,6 +17,8 @@ namespace FileCabinetApp
         private const int ExplanationHelpIndex = 2;
 
         private const string Filename = "cabinet-records.db";
+        private const string SourceFileName = "temp.db";
+        private const string DestinationBackupFileName = "cabinet-records.db.bac";
 
         private static readonly Tuple<string, Action<string>>[] Commands = new Tuple<string, Action<string>>[]
         {
@@ -30,6 +32,7 @@ namespace FileCabinetApp
             new Tuple<string, Action<string>>("export", Export),
             new Tuple<string, Action<string>>("import", Import),
             new Tuple<string, Action<string>>("remove", Remove),
+            new Tuple<string, Action<string>>("purge", Purge),
         };
 
         private static readonly string[][] HelpMessages = new string[][]
@@ -44,11 +47,14 @@ namespace FileCabinetApp
             new string[] { "export", "exports service data into a file in the 'CSV' or 'XML' format", "The 'export' exports service data into a file in the 'CSV' or 'XML' format. Formats: 'csv', 'xml'." },
             new string[] { "import", "imports service data from from file in the 'CSV' or 'XML' format", "The 'import' imports service data from from file in the 'CSV' or 'XML' format. Formats: 'csv', 'xml'." },
             new string[] { "remove", "removes a record", "The 'remove' removes a record." },
+            new string[] { "purge", "defragments a file", "The 'purge' defragments a file." },
         };
 
         private static IFileCabinetService fileCabinetService;
 
         private static string commandLineParameter = string.Empty;
+
+        private static string[] initParams = new string[4];
 
         private static bool isRunning = true;
 
@@ -61,6 +67,7 @@ namespace FileCabinetApp
             Console.WriteLine($"File Cabinet Application, developed by {DeveloperName}");
 
             CommandLineParameter(args);
+            initParams = args;
 
             Console.WriteLine(HintMessage);
             Console.WriteLine();
@@ -405,6 +412,17 @@ namespace FileCabinetApp
                 {
                     Console.WriteLine($"Record #{parameters} doesn't exists.");
                 }
+            }
+        }
+
+        private static void Purge(string parameters)
+        {
+            fileCabinetService.DefragFile(SourceFileName, out int numNewRecords, out int numOldRecords);
+            if (numNewRecords != -1)
+            {
+                File.Replace(SourceFileName, Filename, DestinationBackupFileName);
+                Console.WriteLine($"Data file processing is completed: {numOldRecords - numNewRecords} of {numOldRecords} records were purged.");
+                CommandLineParameter(initParams);
             }
         }
 

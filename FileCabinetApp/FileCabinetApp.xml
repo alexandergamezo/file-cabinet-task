@@ -105,6 +105,14 @@
             </summary>
             <param name="id">Id number.</param>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.DefragFile(System.String,System.Int32@,System.Int32@)">
+            <summary>
+            Defrags a file.
+            </summary>
+            <param name="destinationFileName">The destination file name.</param>
+            <param name="numNewRecords">The number of new records in a new file.</param>
+            <param name="numOldRecords">The number of old records in an old file.</param>
+        </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.WriteToBytes(FileCabinetApp.FileCabinetRecord,System.Int32[],System.Int32)">
             <summary>
             Converts record in bytes.
@@ -206,6 +214,14 @@
             Removes a record from the Dictionary and List.
             </summary>
             <param name="id">Id number.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.DefragFile(System.String,System.Int32@,System.Int32@)">
+            <summary>
+            Defrags a file.
+            </summary>
+            <param name="destinationFileName">The destination file name.</param>
+            <param name="numNewRecords">The number of new records in a new file.</param>
+            <param name="numOldRecords">The number of old records in an old file.</param>
         </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.FindByKey(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
             <summary>
@@ -505,6 +521,14 @@
             Removes a record from the Dictionary and List.
             </summary>
             <param name="id">Id number.</param>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.DefragFile(System.String,System.Int32@,System.Int32@)">
+            <summary>
+            Defrags a file.
+            </summary>
+            <param name="destinationFileName">The destination file name.</param>
+            <param name="numNewRecords">The number of new records in a new file.</param>
+            <param name="numOldRecords">The number of old records in an old file.</param>
         </member>
         <member name="T:FileCabinetApp.IRecordValidator">
             <summary>

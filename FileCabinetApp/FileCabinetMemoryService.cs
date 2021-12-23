@@ -242,6 +242,19 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Defrags a file.
+        /// </summary>
+        /// <param name="destinationFileName">The destination file name.</param>
+        /// <param name="numNewRecords">The number of new records in a new file.</param>
+        /// <param name="numOldRecords">The number of old records in an old file.</param>
+        public void DefragFile(string destinationFileName, out int numNewRecords, out int numOldRecords)
+        {
+            numNewRecords = -1;
+            numOldRecords = -1;
+            Console.WriteLine("'Purge' isn't available for parameter '--storage=memory'");
+        }
+
+        /// <summary>
         /// Finds records in the Dictionary by key.
         /// </summary>
         /// <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
