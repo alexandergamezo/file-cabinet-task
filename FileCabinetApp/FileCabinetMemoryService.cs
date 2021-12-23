@@ -290,14 +290,15 @@ namespace FileCabinetApp
                 nameOfDict.Remove(currentDictKey);
             }
 
+            string appropriateNewDictKey = string.Concat(newDictKey[..1].ToUpper(), newDictKey[1..].ToLower());
             if (!nameOfDict.ContainsKey(newDictKey))
             {
-                nameOfDict[newDictKey] = new List<FileCabinetRecord> { record };
+                nameOfDict[appropriateNewDictKey] = new List<FileCabinetRecord> { record };
             }
             else
             {
-                nameOfDict[newDictKey].Add(record);
-                nameOfDict[newDictKey].Sort(CompareId.CompareWithID);
+                nameOfDict[appropriateNewDictKey].Add(record);
+                nameOfDict[appropriateNewDictKey].Sort(CompareId.CompareWithID);
             }
         }
 

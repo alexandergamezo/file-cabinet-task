@@ -92,30 +92,38 @@ namespace FileCabinetApp
             int offsetShift = 0;
             while (memoryStream.Position <= (memoryStream.Length - this.recordSize))
             {
-                memoryStream.Seek(offsetShift + this.offset[1], SeekOrigin.Begin);
+                memoryStream.Seek(offsetShift, SeekOrigin.Begin);
+
+                short reserved = binaryReader.ReadInt16();
+                if ((reserved >> 2 & 1) == 1)
+                {
+                    offsetShift += this.recordSize;
+                    continue;
+                }
+
                 int readerId = binaryReader.ReadInt32();
 
                 char[] firstNameChars = binaryReader.ReadChars(this.offset[3] - this.offset[2]);
                 StringBuilder strBuilderFirstName = new ();
                 foreach (char a in firstNameChars)
-                {
-                    if (char.IsLetterOrDigit(a))
                     {
-                        strBuilderFirstName.Append(a);
+                        if (char.IsLetterOrDigit(a))
+                        {
+                            strBuilderFirstName.Append(a);
+                        }
                     }
-                }
 
                 string readerFirstName = strBuilderFirstName.ToString();
 
                 char[] ch = binaryReader.ReadChars(this.offset[4] - this.offset[3]);
                 StringBuilder strBuilderLastName = new ();
                 foreach (char a in ch)
-                {
-                    if (char.IsLetterOrDigit(a))
                     {
-                        strBuilderLastName.Append(a);
+                        if (char.IsLetterOrDigit(a))
+                        {
+                            strBuilderLastName.Append(a);
+                        }
                     }
-                }
 
                 string readerLastName = strBuilderLastName.ToString();
 
@@ -131,15 +139,15 @@ namespace FileCabinetApp
                 char readerProperty3 = binaryReader.ReadChar();
 
                 var record = new FileCabinetRecord
-                {
-                    Id = readerId,
-                    FirstName = readerFirstName,
-                    LastName = readerLastName,
-                    DateOfBirth = readerDateOfBirth,
-                    Property1 = readerProperty1,
-                    Property2 = readerProperty2,
-                    Property3 = readerProperty3,
-                };
+                    {
+                        Id = readerId,
+                        FirstName = readerFirstName,
+                        LastName = readerLastName,
+                        DateOfBirth = readerDateOfBirth,
+                        Property1 = readerProperty1,
+                        Property2 = readerProperty2,
+                        Property3 = readerProperty3,
+                    };
 
                 this.list.Add(record);
 
@@ -183,17 +191,10 @@ namespace FileCabinetApp
                 Property3 = v.Property3,
             };
 
-            int realPosition = 0;
-            for (int i = 0; i < this.list.Count; i++)
-            {
-                if (id == this.list[i].Id)
-                {
-                    realPosition = i;
-                }
-            }
+            int realPosition = this.FindRealPosition(id);
 
             byte[] recordBytes = WriteToBytes(record, this.offset, this.recordSize);
-            this.fileStream.Seek(((realPosition + 1) * this.recordSize) - this.recordSize, SeekOrigin.Begin);
+            this.fileStream.Seek(realPosition, SeekOrigin.Begin);
             this.fileStream.Write(recordBytes, 0, recordBytes.Length);
             this.fileStream.Flush();
         }
@@ -237,7 +238,7 @@ namespace FileCabinetApp
         /// <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
-            throw new NotImplementedException();
+            return new FileCabinetServiceSnapshot(this.list);
         }
 
         /// <summary>
@@ -296,7 +297,14 @@ namespace FileCabinetApp
         /// <param name="id">Id number.</param>
         public void RemoveRecord(int id)
         {
-            throw new NotImplementedException();
+            int realPosition = this.FindRealPosition(id);
+
+            byte[] recordBytes = new byte[this.offset[1]];
+            recordBytes[0] = (byte)(recordBytes[0] | 0b_0000_0100);
+
+            this.fileStream.Seek(realPosition, SeekOrigin.Begin);
+            this.fileStream.Write(recordBytes, 0, recordBytes.Length);
+            this.fileStream.Flush();
         }
 
         /// <summary>
@@ -386,6 +394,39 @@ namespace FileCabinetApp
             return onlyCollection;
         }
 
+        private int FindRealPosition(int id)
+        {
+            byte[] readBytes = new byte[this.fileStream.Length];
+            this.fileStream.Seek(0, SeekOrigin.Begin);
+            this.fileStream.Read(readBytes, 0, readBytes.Length);
+            using MemoryStream memoryStream = new (readBytes);
+            using BinaryReader binaryReader = new (memoryStream);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            int offsetShift = 0;
+            int readerId = -1;
+            while (memoryStream.Position <= (memoryStream.Length - this.recordSize))
+            {
+                memoryStream.Seek(offsetShift, SeekOrigin.Begin);
+
+                short reserved = binaryReader.ReadInt16();
+                if ((reserved >> 2 & 1) == 1)
+                {
+                    offsetShift += this.recordSize;
+                    continue;
+                }
+
+                readerId = binaryReader.ReadInt32();
+                if (readerId == id)
+                {
+                    break;
+                }
+
+                offsetShift += this.recordSize;
+            }
+
+            return offsetShift;
+        }
+
         /// <summary>
         /// Creates record in the Dictionary.
         /// </summary>
@@ -393,13 +434,15 @@ namespace FileCabinetApp
         /// <param name="newDictKey">New Dictionary key.</param>
         private void CreateRecordInDictionary(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string newDictKey)
         {
-            if (!nameOfDict.ContainsKey(newDictKey))
+            string appropriateNewDictKey = string.Concat(newDictKey[..1].ToUpper(), newDictKey[1..].ToLower());
+
+            if (!nameOfDict.ContainsKey(appropriateNewDictKey))
             {
-                nameOfDict[newDictKey] = new List<FileCabinetRecord> { this.list[^1] };
+                nameOfDict[appropriateNewDictKey] = new List<FileCabinetRecord> { this.list[^1] };
             }
             else
             {
-                nameOfDict[newDictKey].Add(this.list[^1]);
+                nameOfDict[appropriateNewDictKey].Add(this.list[^1]);
             }
         }
     }
