@@ -169,6 +169,9 @@ namespace FileCabinetApp
         public int GetStat()
         {
             int count = (int)this.fileStream.Length / this.recordSize;
+
+            this.GetRecords();
+            Console.WriteLine($"{count - this.list.Count} deleted record(s).");
             return count;
         }
 
