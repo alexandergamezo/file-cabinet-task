@@ -66,5 +66,19 @@ namespace FileCabinetApp
         /// <param name="snapshot">Snapshot of the object, where saved its state.</param>
         /// <param name="count">Number of records that were imported with definite validation rules.</param>
         void Restore(FileCabinetServiceSnapshot snapshot, out int count);
+
+        /// <summary>
+        /// Removes a record from the Dictionary and List.
+        /// </summary>
+        /// <param name="id">Id number.</param>
+        public void RemoveRecord(int id);
+
+        /// <summary>
+        /// Defrags a file.
+        /// </summary>
+        /// <param name="destinationFileName">The destination file name.</param>
+        /// <param name="numNewRecords">The number of new records in a new file.</param>
+        /// <param name="numOldRecords">The number of old records in an old file.</param>
+        public void DefragFile(string destinationFileName, out int numNewRecords, out int numOldRecords);
     }
 }

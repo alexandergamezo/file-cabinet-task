@@ -220,6 +220,41 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Removes a record from the Dictionary and List.
+        /// </summary>
+        /// <param name="id">Id number.</param>
+        public void RemoveRecord(int id)
+        {
+            int realPosition = 0;
+            for (int i = 0; i < this.list.Count; i++)
+            {
+                if (id == this.list[i].Id)
+                {
+                    realPosition = i;
+                }
+            }
+
+            this.RemoveFromDictionary(this.firstNameDictionary, this.list[realPosition].FirstName, realPosition);
+            this.RemoveFromDictionary(this.lastNameDictionary, this.list[realPosition].LastName, realPosition);
+            this.RemoveFromDictionary(this.dateOfBirthDictionary, this.list[realPosition].DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), realPosition);
+
+            this.list.RemoveAt(realPosition);
+        }
+
+        /// <summary>
+        /// Defrags a file.
+        /// </summary>
+        /// <param name="destinationFileName">The destination file name.</param>
+        /// <param name="numNewRecords">The number of new records in a new file.</param>
+        /// <param name="numOldRecords">The number of old records in an old file.</param>
+        public void DefragFile(string destinationFileName, out int numNewRecords, out int numOldRecords)
+        {
+            numNewRecords = -1;
+            numOldRecords = -1;
+            Console.WriteLine("'Purge' isn't available for parameter '--storage=memory'");
+        }
+
+        /// <summary>
         /// Finds records in the Dictionary by key.
         /// </summary>
         /// <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
@@ -258,7 +293,7 @@ namespace FileCabinetApp
         /// <param name="newDictKey">New Dictionary key.</param>
         /// <param name="currentDictKey">Current Dictionary key.</param>
         /// <param name="record">The new record which changes the old record.</param>
-        /// <param name="realPosition">Id of old record.</param>
+        /// <param name="realPosition">The real position of old record Id.</param>
         private void EditDictionary(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string newDictKey, string currentDictKey, FileCabinetRecord record, int realPosition)
         {
             int indexCurrent = nameOfDict[currentDictKey].IndexOf(this.list[realPosition]);
@@ -268,15 +303,28 @@ namespace FileCabinetApp
                 nameOfDict.Remove(currentDictKey);
             }
 
+            string appropriateNewDictKey = string.Concat(newDictKey[..1].ToUpper(), newDictKey[1..].ToLower());
             if (!nameOfDict.ContainsKey(newDictKey))
             {
-                nameOfDict[newDictKey] = new List<FileCabinetRecord> { record };
+                nameOfDict[appropriateNewDictKey] = new List<FileCabinetRecord> { record };
             }
             else
             {
-                nameOfDict[newDictKey].Add(record);
-                nameOfDict[newDictKey].Sort(CompareId.CompareWithID);
+                nameOfDict[appropriateNewDictKey].Add(record);
+                nameOfDict[appropriateNewDictKey].Sort(CompareId.CompareWithID);
             }
+        }
+
+        /// <summary>
+        /// Removes a record from the Dictionary.
+        /// </summary>
+        /// <param name="nameOfDict">Name of the Dictionary which has to be changed.</param>
+        /// <param name="currentDictKey">Current Dictionary key.</param>
+        /// <param name="realPosition">The real position of old record Id.</param>
+        private void RemoveFromDictionary(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string currentDictKey, int realPosition)
+        {
+            int indexCurrent = nameOfDict[currentDictKey].IndexOf(this.list[realPosition]);
+            nameOfDict[currentDictKey].RemoveAt(indexCurrent);
         }
 
         /// <summary>
