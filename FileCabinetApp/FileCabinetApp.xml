@@ -4,6 +4,83 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
+        <member name="T:FileCabinetApp.CommandHandlers.AppCommandRequest">
+            <summary>
+            Application command request.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.CommandHandlers.AppCommandRequest.Command">
+            <summary>
+            Gets or sets Id.
+            </summary>
+            <value>
+            Command.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.CommandHandlers.AppCommandRequest.Parameters">
+            <summary>
+            Gets or sets Id.
+            </summary>
+            <value>
+            Parameters.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.CommandHandler">
+            <summary>
+            Handles a request.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.CommandHandler.CommandLineParameter(System.String[])">
+            <summary>
+            Reads parameters from the command line.
+            </summary>
+            <param name="args">Array with string parameters.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.CommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>
+            Executes a request.
+            </summary>
+            <param name="request">Command request.</param>
+            <returns>Method for executing a request.</returns>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.CommandHandlerBase">
+            <summary>
+            Base handler class.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.CommandHandlerBase.SetNext(FileCabinetApp.CommandHandlers.ICommandHandler)">
+            <summary>
+            Сonnects handlers.
+            </summary>
+            <param name="handler">The next handler in a chain.</param>
+            <returns>Returns the next handler in a chain.</returns>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.CommandHandlerBase.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>
+            Executes a request.
+            </summary>
+            <param name="request">Command request.</param>
+            <returns>Method for executing a request.</returns>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.ICommandHandler">
+            <summary>
+            Declares a methods for building the chain of handlers.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ICommandHandler.SetNext(FileCabinetApp.CommandHandlers.ICommandHandler)">
+            <summary>
+            Сonnects handlers.
+            </summary>
+            <param name="handler">The next handler in a chain.</param>
+            <returns>Returns the next handler in a chain.</returns>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ICommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>
+            Executes a request.
+            </summary>
+            <param name="request">Command request.</param>
+            <returns>Method for executing a request.</returns>
+        </member>
         <member name="T:FileCabinetApp.CustomValidator">
             <summary>
             The concrete strategy implements the definite algorithm.
@@ -609,6 +686,16 @@
         <member name="T:FileCabinetApp.Program">
             <summary>
             The main class for this app.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Program.fileCabinetService">
+            <summary>
+            Object reference.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.Program.isRunning">
+            <summary>
+            A parameter that defines the work of an app.
             </summary>
         </member>
         <member name="M:FileCabinetApp.Program.Main(System.String[])">
