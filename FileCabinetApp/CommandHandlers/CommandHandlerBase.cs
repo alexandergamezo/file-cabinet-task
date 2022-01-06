@@ -1,4 +1,6 @@
-﻿namespace FileCabinetApp.CommandHandlers
+﻿using System;
+
+namespace FileCabinetApp.CommandHandlers
 {
     /// <summary>
     /// Base handler class.
@@ -22,17 +24,22 @@
         /// Executes a request.
         /// </summary>
         /// <param name="request">Command request.</param>
-        /// <returns>Method for executing a request.</returns>
-        public virtual object Handle(AppCommandRequest request)
+        public virtual void Handle(AppCommandRequest request)
         {
             if (this.nextHandler != null)
             {
-                return this.nextHandler.Handle(request);
+                this.nextHandler.Handle(request);
             }
             else
             {
-                return null;
+                PrintMissedCommandInfo(request);
             }
+        }
+
+        private static void PrintMissedCommandInfo(AppCommandRequest request)
+        {
+            Console.WriteLine($"There is no '{request.Command}' command.");
+            Console.WriteLine();
         }
     }
 }

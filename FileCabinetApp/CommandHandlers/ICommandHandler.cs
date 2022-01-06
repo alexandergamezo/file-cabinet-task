@@ -16,7 +16,6 @@
         /// Executes a request.
         /// </summary>
         /// <param name="request">Command request.</param>
-        /// <returns>Method for executing a request.</returns>
-        object Handle(AppCommandRequest request);
+        void Handle(AppCommandRequest request);
     }
 }
