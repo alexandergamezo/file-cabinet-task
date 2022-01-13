@@ -26,7 +26,7 @@ namespace FileCabinetApp.CommandHandlers
         private static void Exit()
         {
             Console.WriteLine("Exiting an application...");
-            Program.isRunning = false;
+            Program.IsRunning = false;
         }
     }
 }

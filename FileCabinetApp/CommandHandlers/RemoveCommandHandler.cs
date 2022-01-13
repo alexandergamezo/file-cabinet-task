@@ -7,6 +7,17 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class RemoveCommandHandler : CommandHandlerBase
     {
+        private readonly IFileCabinetService service;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RemoveCommandHandler"/> class.
+        /// </summary>
+        /// <param name="fileCabinetService">Object reference.</param>
+        public RemoveCommandHandler(IFileCabinetService fileCabinetService)
+        {
+            this.service = fileCabinetService;
+        }
+
         /// <summary>
         /// Handlers a request.
         /// </summary>
@@ -15,7 +26,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command == "remove")
             {
-                Remove(request);
+                this.Remove(request);
             }
             else
             {
@@ -23,7 +34,7 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private static void Remove(AppCommandRequest request)
+        private void Remove(AppCommandRequest request)
         {
             int id = -1;
             if (!string.IsNullOrEmpty(request.Parameters) && int.TryParse(request.Parameters, out int enteredId))
@@ -31,7 +42,7 @@ namespace FileCabinetApp.CommandHandlers
                 id = enteredId;
             }
 
-            var onlyCollection = Program.fileCabinetService.GetRecords();
+            var onlyCollection = this.service.GetRecords();
 
             if (onlyCollection.Count == 0)
             {
@@ -44,7 +55,7 @@ namespace FileCabinetApp.CommandHandlers
                 {
                     try
                     {
-                        Program.fileCabinetService.RemoveRecord(id);
+                        this.service.RemoveRecord(id);
                         Console.WriteLine($"Record #{id} is removed.");
                         break;
                     }

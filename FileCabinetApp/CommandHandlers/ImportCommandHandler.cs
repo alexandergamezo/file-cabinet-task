@@ -8,6 +8,17 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class ImportCommandHandler : CommandHandlerBase
     {
+        private readonly IFileCabinetService service;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImportCommandHandler"/> class.
+        /// </summary>
+        /// <param name="fileCabinetService">Object reference.</param>
+        public ImportCommandHandler(IFileCabinetService fileCabinetService)
+        {
+            this.service = fileCabinetService;
+        }
+
         /// <summary>
         /// Handlers a request.
         /// </summary>
@@ -16,7 +27,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command == "export")
             {
-                Import(request);
+                this.Import(request);
             }
             else
             {
@@ -24,7 +35,7 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private static void Import(AppCommandRequest request)
+        private void Import(AppCommandRequest request)
         {
             string paramFormat;
             string paramPath = string.Empty;
@@ -70,7 +81,7 @@ namespace FileCabinetApp.CommandHandlers
                 StreamReader reader = new (new FileStream(path, FileMode.Open));
                 FileCabinetServiceSnapshot snapshot = new ();
                 snapshot.LoadFromCsv(reader);
-                Program.fileCabinetService.Restore(snapshot, out int count);
+                this.service.Restore(snapshot, out int count);
 
                 reader.Close();
                 Console.WriteLine($"{count} records were imported from {paramPath}.");
@@ -81,7 +92,7 @@ namespace FileCabinetApp.CommandHandlers
                 StreamReader reader = new (new FileStream(path, FileMode.Open));
                 FileCabinetServiceSnapshot snapshot = new ();
                 snapshot.LoadFromXml(reader);
-                Program.fileCabinetService.Restore(snapshot, out int count);
+                this.service.Restore(snapshot, out int count);
 
                 reader.Close();
                 Console.WriteLine($"{count} records were imported from {paramPath}.");

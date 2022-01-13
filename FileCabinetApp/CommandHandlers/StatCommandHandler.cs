@@ -7,6 +7,17 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class StatCommandHandler : CommandHandlerBase
     {
+        private readonly IFileCabinetService service;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StatCommandHandler"/> class.
+        /// </summary>
+        /// <param name="fileCabinetService">Object reference.</param>
+        public StatCommandHandler(IFileCabinetService fileCabinetService)
+        {
+            this.service = fileCabinetService;
+        }
+
         /// <summary>
         /// Handlers a request.
         /// </summary>
@@ -15,7 +26,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command == "stat")
             {
-                Stat();
+                this.Stat();
             }
             else
             {
@@ -23,9 +34,9 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private static void Stat()
+        private void Stat()
         {
-            var recordsCount = Program.fileCabinetService.GetStat();
+            var recordsCount = this.service.GetStat();
             Console.WriteLine($"{recordsCount} record(s).");
         }
     }

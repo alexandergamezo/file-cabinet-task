@@ -8,6 +8,17 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class FindCommandHandler : CommandHandlerBase
     {
+        private readonly IFileCabinetService service;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FindCommandHandler"/> class.
+        /// </summary>
+        /// <param name="fileCabinetService">Object reference.</param>
+        public FindCommandHandler(IFileCabinetService fileCabinetService)
+        {
+            this.service = fileCabinetService;
+        }
+
         /// <summary>
         /// Handlers a request.
         /// </summary>
@@ -16,7 +27,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command == "find")
             {
-                Find(request);
+                this.Find(request);
             }
             else
             {
@@ -24,7 +35,7 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private static void Find(AppCommandRequest request)
+        private void Find(AppCommandRequest request)
         {
             string[] inputs = request.Parameters.Split(' ', 2);
             const int commandIndex = 0;
@@ -54,11 +65,11 @@ namespace FileCabinetApp.CommandHandlers
             bool checkParameter = checkCommand && !string.IsNullOrEmpty(parameter) && !string.IsNullOrWhiteSpace(parameter);
             if (checkParameter)
             {
-                FindAppropriateMethod(originalParameters, command, parameter);
+                this.FindAppropriateMethod(originalParameters, command, parameter);
             }
         }
 
-        private static void FindAppropriateMethod(string[] originalParameters, string command, string parameter)
+        private void FindAppropriateMethod(string[] originalParameters, string command, string parameter)
         {
             bool checkParameterFirstName = originalParameters[0].Equals(command, StringComparison.InvariantCultureIgnoreCase);
             bool checkParameterLastName = originalParameters[1].Equals(command, StringComparison.InvariantCultureIgnoreCase);
@@ -66,7 +77,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (checkParameterFirstName)
             {
-                ReadOnlyCollection<FileCabinetRecord> onlyCollection = Program.fileCabinetService.FindByFirstName(parameter);
+                ReadOnlyCollection<FileCabinetRecord> onlyCollection = this.service.FindByFirstName(parameter);
                 if (onlyCollection.Count == 0)
                 {
                     Console.WriteLine("No results.");
@@ -79,7 +90,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (checkParameterLastName)
             {
-                ReadOnlyCollection<FileCabinetRecord> onlyCollection = Program.fileCabinetService.FindByLastName(parameter);
+                ReadOnlyCollection<FileCabinetRecord> onlyCollection = this.service.FindByLastName(parameter);
                 if (onlyCollection.Count == 0)
                 {
                     Console.WriteLine("No results.");
@@ -94,7 +105,7 @@ namespace FileCabinetApp.CommandHandlers
             {
                 try
                 {
-                    ReadOnlyCollection<FileCabinetRecord> onlyCollection = Program.fileCabinetService.FindByDateOfBirth(parameter.Trim('"'));
+                    ReadOnlyCollection<FileCabinetRecord> onlyCollection = this.service.FindByDateOfBirth(parameter.Trim('"'));
                     if (onlyCollection.Count == 0)
                     {
                         Console.WriteLine("No results.");

@@ -10,6 +10,22 @@ namespace FileCabinetApp.CommandHandlers
     {
         private const string SourceFileName = "temp.db";
         private const string DestinationBackupFileName = "cabinet-records.db.bac";
+        private readonly string filename;
+        private readonly IFileCabinetService service;
+        private readonly string[] initParams;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PurgeCommandHandler"/> class.
+        /// </summary>
+        /// <param name="fileCabinetService">Object reference.</param>
+        /// <param name="filename">Filename.</param>
+        /// <param name="initParams">Application arguments.</param>
+        public PurgeCommandHandler(IFileCabinetService fileCabinetService, string filename, string[] initParams)
+        {
+            this.service = fileCabinetService;
+            this.filename = filename;
+            this.initParams = initParams;
+        }
 
         /// <summary>
         /// Handlers a request.
@@ -19,7 +35,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command == "purge")
             {
-                Purge();
+                this.Purge();
             }
             else
             {
@@ -27,14 +43,14 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private static void Purge()
+        private void Purge()
         {
-            Program.fileCabinetService.DefragFile(SourceFileName, out int numNewRecords, out int numOldRecords);
+            this.service.DefragFile(SourceFileName, out int numNewRecords, out int numOldRecords);
             if (numNewRecords != -1)
             {
-                File.Replace(SourceFileName, Program.Filename, DestinationBackupFileName);
+                File.Replace(SourceFileName, this.filename, DestinationBackupFileName);
                 Console.WriteLine($"Data file processing is completed: {numOldRecords - numNewRecords} of {numOldRecords} records were purged.");
-                Program.CommandLineParameter(Program.initParams);
+                Program.CommandLineParameter(this.initParams);
             }
         }
     }

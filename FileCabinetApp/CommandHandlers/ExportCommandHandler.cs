@@ -8,6 +8,17 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class ExportCommandHandler : CommandHandlerBase
     {
+        private readonly IFileCabinetService service;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExportCommandHandler"/> class.
+        /// </summary>
+        /// <param name="fileCabinetService">Object reference.</param>
+        public ExportCommandHandler(IFileCabinetService fileCabinetService)
+        {
+            this.service = fileCabinetService;
+        }
+
         /// <summary>
         /// Handlers a request.
         /// </summary>
@@ -16,7 +27,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command == "export")
             {
-                Export(request);
+                this.Export(request);
             }
             else
             {
@@ -24,7 +35,7 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private static void Export(AppCommandRequest request)
+        private void Export(AppCommandRequest request)
         {
             string paramFormat;
             string paramPath = string.Empty;
@@ -77,7 +88,7 @@ namespace FileCabinetApp.CommandHandlers
             void SaveToCsvFormat(string path)
             {
                 StreamWriter writer = new (path);
-                Program.fileCabinetService.MakeSnapshot().SaveToCsv(writer);
+                this.service.MakeSnapshot().SaveToCsv(writer);
                 writer.Close();
                 Console.WriteLine($"All records are exported to file {paramPath}.");
             }
@@ -85,7 +96,7 @@ namespace FileCabinetApp.CommandHandlers
             void SaveToXmlFormat(string path)
             {
                 StreamWriter writer = new (path);
-                Program.fileCabinetService.MakeSnapshot().SaveToXmL(writer);
+                this.service.MakeSnapshot().SaveToXmL(writer);
                 writer.Close();
                 Console.WriteLine($"All records are exported to file {paramPath}.");
             }

@@ -7,6 +7,17 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class ListCommandHandler : CommandHandlerBase
     {
+        private readonly IFileCabinetService service;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ListCommandHandler"/> class.
+        /// </summary>
+        /// <param name="fileCabinetService">Object reference.</param>
+        public ListCommandHandler(IFileCabinetService fileCabinetService)
+        {
+            this.service = fileCabinetService;
+        }
+
         /// <summary>
         /// Handlers a request.
         /// </summary>
@@ -15,7 +26,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command == "list")
             {
-                List();
+                this.List();
             }
             else
             {
@@ -23,9 +34,9 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private static void List()
+        private void List()
         {
-            var arr = Program.fileCabinetService.GetRecords();
+            var arr = this.service.GetRecords();
             if (arr.Count == 0)
             {
                 Console.WriteLine("The list is empty.");

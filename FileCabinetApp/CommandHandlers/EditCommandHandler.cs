@@ -7,6 +7,17 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class EditCommandHandler : CommandHandlerBase
     {
+        private readonly IFileCabinetService service;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EditCommandHandler"/> class.
+        /// </summary>
+        /// <param name="fileCabinetService">Object reference.</param>
+        public EditCommandHandler(IFileCabinetService fileCabinetService)
+        {
+            this.service = fileCabinetService;
+        }
+
         /// <summary>
         /// Handlers a request.
         /// </summary>
@@ -15,7 +26,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             if (request.Command == "edit")
             {
-                Edit(request);
+                this.Edit(request);
             }
             else
             {
@@ -23,7 +34,7 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private static void Edit(AppCommandRequest request)
+        private void Edit(AppCommandRequest request)
         {
             int id = -1;
             if (!string.IsNullOrEmpty(request.Parameters) && int.TryParse(request.Parameters, out int enteredId))
@@ -31,7 +42,7 @@ namespace FileCabinetApp.CommandHandlers
                 id = enteredId;
             }
 
-            var onlyCollection = Program.fileCabinetService.GetRecords();
+            var onlyCollection = this.service.GetRecords();
 
             if (onlyCollection.Count == 0)
             {
@@ -46,7 +57,7 @@ namespace FileCabinetApp.CommandHandlers
                     {
                         Program.CheckInputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3);
                         ParameterObject paramobj = new (firstName, lastName, dateOfBirth, property1, property2, property3);
-                        Program.fileCabinetService.EditRecord(id, paramobj);
+                        this.service.EditRecord(id, paramobj);
                         Console.WriteLine($"Record #{id} is updated.");
                         break;
                     }

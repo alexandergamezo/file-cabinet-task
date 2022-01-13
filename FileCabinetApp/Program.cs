@@ -15,20 +15,20 @@ namespace FileCabinetApp
         /// File name.
         /// </summary>
         public const string Filename = "cabinet-records.db";
-        /// <summary>
-        /// Object reference.
-        /// </summary>
-        public static IFileCabinetService fileCabinetService;
 
         /// <summary>
         /// A parameter that defines the work of an app.
         /// </summary>
-        public static bool isRunning = true;
-
-        public static string[] initParams = new string[4];
+        public static bool IsRunning = true;
 
         private const string DeveloperName = "Alexander Gamezo";
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
+
+        /// <summary>
+        /// Object reference.
+        /// </summary>
+        private static IFileCabinetService fileCabinetService;
+        private static string[] initParams = new string[4];
         private static string commandLineParameter = string.Empty;
 
         /// <summary>
@@ -39,9 +39,8 @@ namespace FileCabinetApp
         {
             Console.WriteLine($"File Cabinet Application, developed by {DeveloperName}");
 
-            var commandHandler = CreateCommandHandlers();
-
             CommandLineParameter(args);
+            var commandHandler = CreateCommandHandlers();
 
             Console.WriteLine(HintMessage);
             Console.WriteLine();
@@ -65,7 +64,7 @@ namespace FileCabinetApp
                     commandHandler.Handle(new AppCommandRequest { Command = command, Parameters = parameters });
                 }
             }
-            while (isRunning);
+            while (IsRunning);
         }
 
         /// <summary>
@@ -94,7 +93,7 @@ namespace FileCabinetApp
                 {
                     Console.WriteLine("Using default validation rules. Storage is memory.");
                     FileCabinetMemoryService fileCabinetMemoryService = new (new DefaultValidator());
-                    Program.fileCabinetService = fileCabinetMemoryService;
+                    fileCabinetService = fileCabinetMemoryService;
                     commandLineParameter = "default";
                 }
                 else if (paramVariantTwo)
@@ -103,14 +102,14 @@ namespace FileCabinetApp
                     FileStream fileStream = File.Open(Filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
                     fileStream.Seek(0, SeekOrigin.End);
                     FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, new DefaultValidator());
-                    Program.fileCabinetService = fileCabinetFilesystemService;
+                    fileCabinetService = fileCabinetFilesystemService;
                     commandLineParameter = "default";
                 }
                 else if (paramVariantThree)
                 {
                     Console.WriteLine("Using custom validation rules. Storage is memory.");
                     FileCabinetMemoryService fileCabinetMemoryService = new (new CustomValidator());
-                    Program.fileCabinetService = fileCabinetMemoryService;
+                    fileCabinetService = fileCabinetMemoryService;
                     commandLineParameter = "custom";
                 }
                 else if (paramVariantFour)
@@ -119,7 +118,7 @@ namespace FileCabinetApp
                     FileStream fileStream = File.Open(Filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
                     fileStream.Seek(0, SeekOrigin.End);
                     FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, new CustomValidator());
-                    Program.fileCabinetService = fileCabinetFilesystemService;
+                    fileCabinetService = fileCabinetFilesystemService;
                     commandLineParameter = "custom";
                 }
                 else
@@ -127,7 +126,7 @@ namespace FileCabinetApp
                     Console.WriteLine("Validation-rules command line parameter is wrong. Check your input.");
                     Console.WriteLine("Using default validation rules. Storage is memory.");
                     FileCabinetMemoryService fileCabinetMemoryService = new (new DefaultValidator());
-                    Program.fileCabinetService = fileCabinetMemoryService;
+                    fileCabinetService = fileCabinetMemoryService;
                     commandLineParameter = "default";
                 }
             }
@@ -136,7 +135,7 @@ namespace FileCabinetApp
                 Console.WriteLine("Validation-rules command line parameter is wrong. Check your input.");
                 Console.WriteLine("Using default validation rules. Storage is memory.");
                 FileCabinetMemoryService fileCabinetMemoryService = new (new DefaultValidator());
-                Program.fileCabinetService = fileCabinetMemoryService;
+                fileCabinetService = fileCabinetMemoryService;
                 commandLineParameter = "default";
             }
         }
@@ -525,15 +524,15 @@ namespace FileCabinetApp
         {
             var helpHandler = new HelpCommandHandler();
             var exitHandler = new ExitCommandHandler();
-            var statHandler = new StatCommandHandler();
-            var createHandler = new CreateCommandHandler();
-            var listHandler = new ListCommandHandler();
-            var editHandler = new EditCommandHandler();
-            var findHandler = new FindCommandHandler();
-            var exportHandler = new ExportCommandHandler();
-            var importHandler = new ImportCommandHandler();
-            var removeHandler = new RemoveCommandHandler();
-            var purgeHandler = new PurgeCommandHandler();
+            var statHandler = new StatCommandHandler(fileCabinetService);
+            var createHandler = new CreateCommandHandler(fileCabinetService);
+            var listHandler = new ListCommandHandler(fileCabinetService);
+            var editHandler = new EditCommandHandler(fileCabinetService);
+            var findHandler = new FindCommandHandler(fileCabinetService);
+            var exportHandler = new ExportCommandHandler(fileCabinetService);
+            var importHandler = new ImportCommandHandler(fileCabinetService);
+            var removeHandler = new RemoveCommandHandler(fileCabinetService);
+            var purgeHandler = new PurgeCommandHandler(fileCabinetService, Filename, initParams);
 
             helpHandler.SetNext(exitHandler);
             exitHandler.SetNext(statHandler);
