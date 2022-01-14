@@ -8,13 +8,17 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class FindCommandHandler : ServiceCommandHandlerBase
     {
+        private readonly IRecordPrinter recordPrinter;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FindCommandHandler"/> class.
         /// </summary>
         /// <param name="fileCabinetService">Object reference.</param>
-        public FindCommandHandler(IFileCabinetService fileCabinetService)
+        /// <param name="recordPrinter">Reference to one of the strategy objects.</param>
+        public FindCommandHandler(IFileCabinetService fileCabinetService, IRecordPrinter recordPrinter)
             : base(fileCabinetService)
         {
+            this.recordPrinter = recordPrinter;
         }
 
         /// <summary>
@@ -82,7 +86,7 @@ namespace FileCabinetApp.CommandHandlers
                 }
                 else
                 {
-                    Program.Show(onlyCollection);
+                    this.recordPrinter.Print(onlyCollection);
                 }
             }
 
@@ -95,7 +99,7 @@ namespace FileCabinetApp.CommandHandlers
                 }
                 else
                 {
-                    Program.Show(onlyCollection);
+                    this.recordPrinter.Print(onlyCollection);
                 }
             }
 
@@ -110,7 +114,7 @@ namespace FileCabinetApp.CommandHandlers
                     }
                     else
                     {
-                        Program.Show(onlyCollection);
+                        this.recordPrinter.Print(onlyCollection);
                     }
                 }
                 catch (Exception)

@@ -7,13 +7,17 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class ListCommandHandler : ServiceCommandHandlerBase
     {
+        private readonly IRecordPrinter recordPrinter;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ListCommandHandler"/> class.
         /// </summary>
         /// <param name="fileCabinetService">Object reference.</param>
-        public ListCommandHandler(IFileCabinetService fileCabinetService)
+        /// <param name="recordPrinter">Reference to one of the strategy objects.</param>
+        public ListCommandHandler(IFileCabinetService fileCabinetService, IRecordPrinter recordPrinter)
             : base(fileCabinetService)
         {
+            this.recordPrinter = recordPrinter;
         }
 
         /// <summary>
@@ -41,7 +45,7 @@ namespace FileCabinetApp.CommandHandlers
             }
             else
             {
-                Program.Show(arr);
+                this.recordPrinter.Print(arr);
             }
         }
     }

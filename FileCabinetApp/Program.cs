@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using FileCabinetApp.CommandHandlers;
@@ -476,18 +475,6 @@ namespace FileCabinetApp
             }
         }
 
-        /// <summary>
-        /// Outputs collection to the console.
-        /// </summary>
-        /// <param name="onlyCollection">Collection.</param>
-        public static void Show(ReadOnlyCollection<FileCabinetRecord> onlyCollection)
-        {
-            foreach (var a in onlyCollection)
-            {
-                Console.WriteLine($"#{a.Id}, {a.FirstName}, {a.LastName}, {a.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, {a.Property1}, {a.Property2}, {a.Property3}");
-            }
-        }
-
         private static T ReadInput<T>(Func<string, Tuple<bool, string, T>> converter, Func<T, Tuple<bool, string>> validator)
         {
             do
@@ -519,13 +506,15 @@ namespace FileCabinetApp
 
         private static ICommandHandler CreateCommandHandlers()
         {
+            var recordPrinter = new DefaultRecordPrinter();
+
             var helpHandler = new HelpCommandHandler();
             var exitHandler = new ExitCommandHandler(Action);
             var statHandler = new StatCommandHandler(fileCabinetService);
             var createHandler = new CreateCommandHandler(fileCabinetService);
-            var listHandler = new ListCommandHandler(fileCabinetService);
+            var listHandler = new ListCommandHandler(fileCabinetService, recordPrinter);
             var editHandler = new EditCommandHandler(fileCabinetService);
-            var findHandler = new FindCommandHandler(fileCabinetService);
+            var findHandler = new FindCommandHandler(fileCabinetService, recordPrinter);
             var exportHandler = new ExportCommandHandler(fileCabinetService);
             var importHandler = new ImportCommandHandler(fileCabinetService);
             var removeHandler = new RemoveCommandHandler(fileCabinetService);
