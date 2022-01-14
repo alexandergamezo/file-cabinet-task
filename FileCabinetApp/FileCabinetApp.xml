@@ -82,6 +82,12 @@
             Handler for the 'exit' command.
             </summary>
         </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ExitCommandHandler.#ctor(System.Action{System.Boolean})">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ExitCommandHandler"/> class.
+            </summary>
+            <param name="action">Delegate.</param>
+        </member>
         <member name="M:FileCabinetApp.CommandHandlers.ExitCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
             Handlers a request.
@@ -220,6 +226,22 @@
             Handlers a request.
             </summary>
             <param name="request">Request.</param>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase">
+            <summary>
+            Base service handler class.
+            </summary>
+        </member>
+        <member name="F:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase.service">
+            <summary>
+            Object reference.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase.#ctor(FileCabinetApp.IFileCabinetService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase"/> class.
+            </summary>
+            <param name="service">Object reference.</param>
         </member>
         <member name="T:FileCabinetApp.CommandHandlers.StatCommandHandler">
             <summary>
@@ -848,11 +870,6 @@
         <member name="F:FileCabinetApp.Program.Filename">
             <summary>
             File name.
-            </summary>
-        </member>
-        <member name="F:FileCabinetApp.Program.IsRunning">
-            <summary>
-            A parameter that defines the work of an app.
             </summary>
         </member>
         <member name="F:FileCabinetApp.Program.fileCabinetService">

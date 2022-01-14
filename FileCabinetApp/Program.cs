@@ -15,14 +15,11 @@ namespace FileCabinetApp
         /// File name.
         /// </summary>
         public const string Filename = "cabinet-records.db";
-
-        /// <summary>
-        /// A parameter that defines the work of an app.
-        /// </summary>
-        public static bool IsRunning = true;
-
         private const string DeveloperName = "Alexander Gamezo";
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
+
+        private static readonly Action<bool> Action = ChangeIsRunning;
+        private static bool isRunning = true;
 
         /// <summary>
         /// Object reference.
@@ -64,7 +61,7 @@ namespace FileCabinetApp
                     commandHandler.Handle(new AppCommandRequest { Command = command, Parameters = parameters });
                 }
             }
-            while (IsRunning);
+            while (isRunning);
         }
 
         /// <summary>
@@ -523,7 +520,7 @@ namespace FileCabinetApp
         private static ICommandHandler CreateCommandHandlers()
         {
             var helpHandler = new HelpCommandHandler();
-            var exitHandler = new ExitCommandHandler();
+            var exitHandler = new ExitCommandHandler(Action);
             var statHandler = new StatCommandHandler(fileCabinetService);
             var createHandler = new CreateCommandHandler(fileCabinetService);
             var listHandler = new ListCommandHandler(fileCabinetService);
@@ -546,6 +543,11 @@ namespace FileCabinetApp
             removeHandler.SetNext(purgeHandler);
 
             return helpHandler;
+        }
+
+        private static void ChangeIsRunning(bool b)
+        {
+            isRunning = b;
         }
     }
 }

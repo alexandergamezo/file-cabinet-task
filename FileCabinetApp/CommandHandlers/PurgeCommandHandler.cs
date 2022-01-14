@@ -6,12 +6,11 @@ namespace FileCabinetApp.CommandHandlers
     /// <summary>
     /// Handler for the 'purge' command.
     /// </summary>
-    public class PurgeCommandHandler : CommandHandlerBase
+    public class PurgeCommandHandler : ServiceCommandHandlerBase
     {
         private const string SourceFileName = "temp.db";
         private const string DestinationBackupFileName = "cabinet-records.db.bac";
         private readonly string filename;
-        private readonly IFileCabinetService service;
         private readonly string[] initParams;
 
         /// <summary>
@@ -21,8 +20,8 @@ namespace FileCabinetApp.CommandHandlers
         /// <param name="filename">Filename.</param>
         /// <param name="initParams">Application arguments.</param>
         public PurgeCommandHandler(IFileCabinetService fileCabinetService, string filename, string[] initParams)
+            : base(fileCabinetService)
         {
-            this.service = fileCabinetService;
             this.filename = filename;
             this.initParams = initParams;
         }
