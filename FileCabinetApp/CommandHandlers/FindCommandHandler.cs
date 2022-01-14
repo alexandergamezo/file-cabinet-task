@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace FileCabinetApp.CommandHandlers
@@ -8,14 +9,14 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class FindCommandHandler : ServiceCommandHandlerBase
     {
-        private readonly IRecordPrinter recordPrinter;
+        private readonly Action<IEnumerable<FileCabinetRecord>> recordPrinter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FindCommandHandler"/> class.
         /// </summary>
         /// <param name="fileCabinetService">Object reference.</param>
-        /// <param name="recordPrinter">Reference to one of the strategy objects.</param>
-        public FindCommandHandler(IFileCabinetService fileCabinetService, IRecordPrinter recordPrinter)
+        /// <param name="recordPrinter">Delegate.</param>
+        public FindCommandHandler(IFileCabinetService fileCabinetService, Action<IEnumerable<FileCabinetRecord>> recordPrinter)
             : base(fileCabinetService)
         {
             this.recordPrinter = recordPrinter;
@@ -86,7 +87,7 @@ namespace FileCabinetApp.CommandHandlers
                 }
                 else
                 {
-                    this.recordPrinter.Print(onlyCollection);
+                    this.recordPrinter(onlyCollection);
                 }
             }
 
@@ -99,7 +100,7 @@ namespace FileCabinetApp.CommandHandlers
                 }
                 else
                 {
-                    this.recordPrinter.Print(onlyCollection);
+                    this.recordPrinter(onlyCollection);
                 }
             }
 
@@ -114,7 +115,7 @@ namespace FileCabinetApp.CommandHandlers
                     }
                     else
                     {
-                        this.recordPrinter.Print(onlyCollection);
+                        this.recordPrinter(onlyCollection);
                     }
                 }
                 catch (Exception)

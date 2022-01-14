@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace FileCabinetApp.CommandHandlers
 {
@@ -7,14 +8,14 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class ListCommandHandler : ServiceCommandHandlerBase
     {
-        private readonly IRecordPrinter recordPrinter;
+        private readonly Action<IEnumerable<FileCabinetRecord>> recordPrinter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ListCommandHandler"/> class.
         /// </summary>
         /// <param name="fileCabinetService">Object reference.</param>
-        /// <param name="recordPrinter">Reference to one of the strategy objects.</param>
-        public ListCommandHandler(IFileCabinetService fileCabinetService, IRecordPrinter recordPrinter)
+        /// <param name="recordPrinter">Delegate.</param>
+        public ListCommandHandler(IFileCabinetService fileCabinetService, Action<IEnumerable<FileCabinetRecord>> recordPrinter)
             : base(fileCabinetService)
         {
             this.recordPrinter = recordPrinter;
@@ -45,7 +46,7 @@ namespace FileCabinetApp.CommandHandlers
             }
             else
             {
-                this.recordPrinter.Print(arr);
+                this.recordPrinter(arr);
             }
         }
     }

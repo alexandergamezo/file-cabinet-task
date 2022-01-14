@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using FileCabinetApp.CommandHandlers;
@@ -17,6 +18,7 @@ namespace FileCabinetApp
         private const string DeveloperName = "Alexander Gamezo";
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
 
+        private static readonly Action<IEnumerable<FileCabinetRecord>> RecordPrinter = Print;
         private static readonly Action<bool> Action = ChangeIsRunning;
         private static bool isRunning = true;
 
@@ -506,15 +508,13 @@ namespace FileCabinetApp
 
         private static ICommandHandler CreateCommandHandlers()
         {
-            var recordPrinter = new DefaultRecordPrinter();
-
             var helpHandler = new HelpCommandHandler();
             var exitHandler = new ExitCommandHandler(Action);
             var statHandler = new StatCommandHandler(fileCabinetService);
             var createHandler = new CreateCommandHandler(fileCabinetService);
-            var listHandler = new ListCommandHandler(fileCabinetService, recordPrinter);
+            var listHandler = new ListCommandHandler(fileCabinetService, RecordPrinter);
             var editHandler = new EditCommandHandler(fileCabinetService);
-            var findHandler = new FindCommandHandler(fileCabinetService, recordPrinter);
+            var findHandler = new FindCommandHandler(fileCabinetService, RecordPrinter);
             var exportHandler = new ExportCommandHandler(fileCabinetService);
             var importHandler = new ImportCommandHandler(fileCabinetService);
             var removeHandler = new RemoveCommandHandler(fileCabinetService);
@@ -537,6 +537,14 @@ namespace FileCabinetApp
         private static void ChangeIsRunning(bool b)
         {
             isRunning = b;
+        }
+
+        private static void Print(IEnumerable<FileCabinetRecord> records)
+        {
+            foreach (var a in records)
+            {
+                Console.WriteLine($"#{a.Id}, {a.FirstName}, {a.LastName}, {a.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, {a.Property1}, {a.Property2}, {a.Property3}");
+            }
         }
     }
 }
