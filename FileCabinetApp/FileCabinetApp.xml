@@ -877,72 +877,6 @@
             <param name="path">Path of the file.</param>
             <param name="parameters">Parameters.</param>
         </member>
-        <member name="T:FileCabinetApp.RecordValidator.CustomDateOfBirthValidator">
-            <summary>
-            Custom DateOfBirth Validator.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.RecordValidator.CustomDateOfBirthValidator.ValidateParameters(FileCabinetApp.ParameterObject)">
-            <summary>
-            Validates parameters.
-            </summary>
-            <param name="v">Pararmeter object.</param>
-        </member>
-        <member name="T:FileCabinetApp.RecordValidator.CustomFirstNameValidator">
-            <summary>
-            Custom FirstName Validator.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.RecordValidator.CustomFirstNameValidator.ValidateParameters(FileCabinetApp.ParameterObject)">
-            <summary>
-            Validates parameters.
-            </summary>
-            <param name="v">Pararmeter object.</param>
-        </member>
-        <member name="T:FileCabinetApp.RecordValidator.CustomLastNameValidator">
-            <summary>
-            Custom LastName Validator.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.RecordValidator.CustomLastNameValidator.ValidateParameters(FileCabinetApp.ParameterObject)">
-            <summary>
-            Validates parameters.
-            </summary>
-            <param name="v">Pararmeter object.</param>
-        </member>
-        <member name="T:FileCabinetApp.RecordValidator.CustomProperty1Validator">
-            <summary>
-            Custom Property1 Validator.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.RecordValidator.CustomProperty1Validator.ValidateParameters(FileCabinetApp.ParameterObject)">
-            <summary>
-            Validates parameters.
-            </summary>
-            <param name="v">Pararmeter object.</param>
-        </member>
-        <member name="T:FileCabinetApp.RecordValidator.CustomProperty2Validator">
-            <summary>
-            Custom Property2 Validator.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.RecordValidator.CustomProperty2Validator.ValidateParameters(FileCabinetApp.ParameterObject)">
-            <summary>
-            Validates parameters.
-            </summary>
-            <param name="v">Pararmeter object.</param>
-        </member>
-        <member name="T:FileCabinetApp.RecordValidator.CustomProperty3Validator">
-            <summary>
-            Custom Property3 Validator.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.RecordValidator.CustomProperty3Validator.ValidateParameters(FileCabinetApp.ParameterObject)">
-            <summary>
-            Validates parameters.
-            </summary>
-            <param name="v">Pararmeter object.</param>
-        </member>
         <member name="T:FileCabinetApp.RecordValidator.CustomValidator">
             <summary>
             The concrete strategy implements the definite algorithm.
@@ -954,67 +888,19 @@
             </summary>
             <param name="v">Object with parameters.</param>
         </member>
-        <member name="T:FileCabinetApp.RecordValidator.DefaultDateOfBirthValidator">
+        <member name="T:FileCabinetApp.RecordValidator.DateOfBirthValidator">
             <summary>
-            Default DateOfBirth Validator.
+            DateOfBirth Validator.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.RecordValidator.DefaultDateOfBirthValidator.ValidateParameters(FileCabinetApp.ParameterObject)">
+        <member name="M:FileCabinetApp.RecordValidator.DateOfBirthValidator.#ctor(System.DateTime,System.DateTime)">
             <summary>
-            Validates parameters.
+            Initializes a new instance of the <see cref="T:FileCabinetApp.RecordValidator.DateOfBirthValidator"/> class.
             </summary>
-            <param name="v">Pararmeter object.</param>
+            <param name="from">The start date.</param>
+            <param name="to">The end date.</param>
         </member>
-        <member name="T:FileCabinetApp.RecordValidator.DefaultFirstNameValidator">
-            <summary>
-            Default FirstName Validator.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.RecordValidator.DefaultFirstNameValidator.ValidateParameters(FileCabinetApp.ParameterObject)">
-            <summary>
-            Validates parameters.
-            </summary>
-            <param name="v">Pararmeter object.</param>
-        </member>
-        <member name="T:FileCabinetApp.RecordValidator.DefaultLastNameValidator">
-            <summary>
-            Default LastName Validator.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.RecordValidator.DefaultLastNameValidator.ValidateParameters(FileCabinetApp.ParameterObject)">
-            <summary>
-            Validates parameters.
-            </summary>
-            <param name="v">Pararmeter object.</param>
-        </member>
-        <member name="T:FileCabinetApp.RecordValidator.DefaultProperty1Validator">
-            <summary>
-            Default Property1 Validator.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.RecordValidator.DefaultProperty1Validator.ValidateParameters(FileCabinetApp.ParameterObject)">
-            <summary>
-            Validates parameters.
-            </summary>
-            <param name="v">Pararmeter object.</param>
-        </member>
-        <member name="T:FileCabinetApp.RecordValidator.DefaultProperty2Validator">
-            <summary>
-            Default Property2 Validator.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.RecordValidator.DefaultProperty2Validator.ValidateParameters(FileCabinetApp.ParameterObject)">
-            <summary>
-            Validates parameters.
-            </summary>
-            <param name="v">Pararmeter object.</param>
-        </member>
-        <member name="T:FileCabinetApp.RecordValidator.DefaultProperty3Validator">
-            <summary>
-            Default Property3 Validator.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.RecordValidator.DefaultProperty3Validator.ValidateParameters(FileCabinetApp.ParameterObject)">
+        <member name="M:FileCabinetApp.RecordValidator.DateOfBirthValidator.ValidateParameters(FileCabinetApp.ParameterObject)">
             <summary>
             Validates parameters.
             </summary>
@@ -1030,6 +916,89 @@
             Checks input parameters on the wrong values.
             </summary>
             <param name="v">Object with parameters.</param>
+        </member>
+        <member name="T:FileCabinetApp.RecordValidator.FirstNameValidator">
+            <summary>
+            FirstName Validator.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.FirstNameValidator.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.RecordValidator.FirstNameValidator"/> class.
+            </summary>
+            <param name="min">The minimum length of the first name.</param>
+            <param name="max">The maximum length of the first name.</param>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.FirstNameValidator.ValidateParameters(FileCabinetApp.ParameterObject)">
+            <summary>
+            Validates parameters.
+            </summary>
+            <param name="v">Pararmeter object.</param>
+        </member>
+        <member name="T:FileCabinetApp.RecordValidator.LastNameValidator">
+            <summary>
+            LastName Validator.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.LastNameValidator.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.RecordValidator.LastNameValidator"/> class.
+            </summary>
+            <param name="min">The minimum length of the last name.</param>
+            <param name="max">The maximum length of the last name.</param>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.LastNameValidator.ValidateParameters(FileCabinetApp.ParameterObject)">
+            <summary>
+            Validates parameters.
+            </summary>
+            <param name="v">Pararmeter object.</param>
+        </member>
+        <member name="T:FileCabinetApp.RecordValidator.Property1Validator">
+            <summary>
+            Property1 Validator.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.Property1Validator.#ctor(System.Int16,System.Int16)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.RecordValidator.Property1Validator"/> class.
+            </summary>
+            <param name="min">The minimum value.</param>
+            <param name="max">The maximum value.</param>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.Property1Validator.ValidateParameters(FileCabinetApp.ParameterObject)">
+            <summary>
+            Validates parameters.
+            </summary>
+            <param name="v">Pararmeter object.</param>
+        </member>
+        <member name="T:FileCabinetApp.RecordValidator.Property2Validator">
+            <summary>
+            Property2 Validator.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.Property2Validator.#ctor(System.Decimal,System.Decimal)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.RecordValidator.Property2Validator"/> class.
+            </summary>
+            <param name="min">The minimum value.</param>
+            <param name="max">The maximum value.</param>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.Property2Validator.ValidateParameters(FileCabinetApp.ParameterObject)">
+            <summary>
+            Validates parameters.
+            </summary>
+            <param name="v">Pararmeter object.</param>
+        </member>
+        <member name="T:FileCabinetApp.RecordValidator.Property3Validator">
+            <summary>
+            Property3 Validator.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.Property3Validator.ValidateParameters(FileCabinetApp.ParameterObject)">
+            <summary>
+            Validates parameters.
+            </summary>
+            <param name="v">Pararmeter object.</param>
         </member>
         <member name="T:FileCabinetApp.IRecordValidator">
             <summary>

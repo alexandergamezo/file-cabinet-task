@@ -3,9 +3,9 @@
 namespace FileCabinetApp.RecordValidator
 {
     /// <summary>
-    /// Custom DateOfBirth Validator.
+    /// Property3 Validator.
     /// </summary>
-    public class CustomDateOfBirthValidator
+    public class Property3Validator : IRecordValidator
     {
         /// <summary>
         /// Validates parameters.
@@ -13,9 +13,9 @@ namespace FileCabinetApp.RecordValidator
         /// <param name="v">Pararmeter object.</param>
         public void ValidateParameters(ParameterObject v)
         {
-            if (v.DateOfBirth < new DateTime(2000, 01, 01) || v.DateOfBirth > DateTime.Today)
+            if (!char.IsLetter(v.Property3))
             {
-                throw new ArgumentException("DateOfBirth string has the wrong value and has to more than 2000-01-01", nameof(v));
+                throw new ArgumentOutOfRangeException(nameof(v), "Property3 value is not a <char> letter");
             }
         }
     }

@@ -13,23 +13,23 @@ namespace FileCabinetApp.RecordValidator
         /// <param name="v">Object with parameters.</param>
         public void ValidateParameters(ParameterObject v)
         {
-            var customFirstNameValidator = new CustomFirstNameValidator();
-            customFirstNameValidator.ValidateParameters(v);
+            var firstNameValidator = new FirstNameValidator(2, 60);
+            firstNameValidator.ValidateParameters(v);
 
-            var customLastNameValidator = new CustomLastNameValidator();
-            customLastNameValidator.ValidateParameters(v);
+            var lastNameValidator = new LastNameValidator(2, 60);
+            lastNameValidator.ValidateParameters(v);
 
-            var customDateOfBirthValidator = new CustomDateOfBirthValidator();
-            customDateOfBirthValidator.ValidateParameters(v);
+            var dateOfBirthValidator = new DateOfBirthValidator(new DateTime(2000, 01, 01), DateTime.Today);
+            dateOfBirthValidator.ValidateParameters(v);
 
-            var customProperty1Validator = new CustomProperty1Validator();
-            customProperty1Validator.ValidateParameters(v);
+            var property1Validator = new Property1Validator(short.MinValue, short.MaxValue);
+            property1Validator.ValidateParameters(v);
 
-            var customProperty2Validator = new CustomProperty2Validator();
-            customProperty2Validator.ValidateParameters(v);
+            var property2Validator = new Property2Validator(decimal.MinValue, decimal.MaxValue);
+            property2Validator.ValidateParameters(v);
 
-            var customProperty3Validator = new CustomProperty3Validator();
-            customProperty3Validator.ValidateParameters(v);
+            var property3Validator = new Property3Validator();
+            property3Validator.ValidateParameters(v);
         }
     }
 }
