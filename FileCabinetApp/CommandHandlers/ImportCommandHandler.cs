@@ -23,7 +23,7 @@ namespace FileCabinetApp.CommandHandlers
         /// <param name="request">Request.</param>
         public override void Handle(AppCommandRequest request)
         {
-            if (request.Command == "export")
+            if (request.Command == "import")
             {
                 this.Import(request);
             }

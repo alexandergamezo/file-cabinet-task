@@ -877,16 +877,22 @@
             <param name="path">Path of the file.</param>
             <param name="parameters">Parameters.</param>
         </member>
-        <member name="T:FileCabinetApp.RecordValidator.CustomValidator">
+        <member name="T:FileCabinetApp.RecordValidator.CompositeValidator">
             <summary>
-            The concrete strategy implements the definite algorithm.
+            The Composite class represents the complex components.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.RecordValidator.CustomValidator.ValidateParameters(FileCabinetApp.ParameterObject)">
+        <member name="M:FileCabinetApp.RecordValidator.CompositeValidator.#ctor(System.Collections.Generic.IEnumerable{FileCabinetApp.IRecordValidator})">
             <summary>
-            Checks input parameters on the wrong values.
+            Initializes a new instance of the <see cref="T:FileCabinetApp.RecordValidator.CompositeValidator"/> class.
             </summary>
-            <param name="v">Object with parameters.</param>
+            <param name="validators">List of validators.</param>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.CompositeValidator.ValidateParameters(FileCabinetApp.ParameterObject)">
+            <summary>
+            Validates parameters.
+            </summary>
+            <param name="v">Pararmeter object.</param>
         </member>
         <member name="T:FileCabinetApp.RecordValidator.DateOfBirthValidator">
             <summary>
@@ -905,17 +911,6 @@
             Validates parameters.
             </summary>
             <param name="v">Pararmeter object.</param>
-        </member>
-        <member name="T:FileCabinetApp.RecordValidator.DefaultValidator">
-            <summary>
-            The concrete strategy implements the definite algorithm.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.RecordValidator.DefaultValidator.ValidateParameters(FileCabinetApp.ParameterObject)">
-            <summary>
-            Checks input parameters on the wrong values.
-            </summary>
-            <param name="v">Object with parameters.</param>
         </member>
         <member name="T:FileCabinetApp.RecordValidator.FirstNameValidator">
             <summary>
@@ -999,6 +994,63 @@
             Validates parameters.
             </summary>
             <param name="v">Pararmeter object.</param>
+        </member>
+        <member name="T:FileCabinetApp.RecordValidator.ValidatorBuilder">
+            <summary>
+            Builder class.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.ValidatorBuilder.ValidateFirstName(System.Int32,System.Int32)">
+            <summary>
+            Adds a new reference of validator in the list of validators.
+            </summary>
+            <param name="min">The minimum length of the first name.</param>
+            <param name="max">The maximum length of the first name.</param>
+            <returns>Object reference.</returns>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.ValidatorBuilder.ValidateLastName(System.Int32,System.Int32)">
+            <summary>
+            Adds a new reference of validator in the list of validators.
+            </summary>
+            <param name="min">The minimum length of the last name.</param>
+            <param name="max">The maximum length of the last name.</param>
+            <returns>Object reference.</returns>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.ValidatorBuilder.ValidateDateOfBirth(System.DateTime,System.DateTime)">
+            <summary>
+            Adds a new reference of validator in the list of validators.
+            </summary>
+            <param name="from">The start date.</param>
+            <param name="to">The end date.</param>
+            <returns>A new reference with necessary validators.</returns>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.ValidatorBuilder.ValidateProperty1(System.Int16,System.Int16)">
+            <summary>
+            Adds a new reference of validator in the list of validators.
+            </summary>
+            <param name="min">The minimum value.</param>
+            <param name="max">The maximum value.</param>
+            <returns>A new reference with necessary validators.</returns>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.ValidatorBuilder.ValidateProperty2(System.Decimal,System.Decimal)">
+            <summary>
+            Adds a new reference of validator in the list of validators.
+            </summary>
+            <param name="min">The minimum value.</param>
+            <param name="max">The maximum value.</param>
+            <returns>A new reference with necessary validators.</returns>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.ValidatorBuilder.ValidateProperty3">
+            <summary>
+            Adds a new reference of validator in the list of validators.
+            </summary>
+            <returns>A new reference with necessary validators.</returns>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.ValidatorBuilder.Create">
+            <summary>
+            Makes a new reference with necessary validators.
+            </summary>
+            <returns>A new reference with necessary validators.</returns>
         </member>
         <member name="T:FileCabinetApp.IRecordValidator">
             <summary>
