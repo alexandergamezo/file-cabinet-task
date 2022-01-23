@@ -1,7 +1,10 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using FileCabinetApp.CommandHandlers;
+using FileCabinetApp.RecordValidator;
+using FileCabinetApp.RecordValidator.Extensions;
 
 namespace FileCabinetApp
 {
@@ -10,53 +13,23 @@ namespace FileCabinetApp
     /// </summary>
     public static class Program
     {
+        /// <summary>
+        /// File name.
+        /// </summary>
+        public const string Filename = "cabinet-records.db";
         private const string DeveloperName = "Alexander Gamezo";
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
-        private const int CommandHelpIndex = 0;
-        private const int DescriptionHelpIndex = 1;
-        private const int ExplanationHelpIndex = 2;
 
-        private const string Filename = "cabinet-records.db";
-        private const string SourceFileName = "temp.db";
-        private const string DestinationBackupFileName = "cabinet-records.db.bac";
-
-        private static readonly Tuple<string, Action<string>>[] Commands = new Tuple<string, Action<string>>[]
-        {
-            new Tuple<string, Action<string>>("help", PrintHelp),
-            new Tuple<string, Action<string>>("exit", Exit),
-            new Tuple<string, Action<string>>("stat", Stat),
-            new Tuple<string, Action<string>>("create", Create),
-            new Tuple<string, Action<string>>("list", List),
-            new Tuple<string, Action<string>>("edit", Edit),
-            new Tuple<string, Action<string>>("find", Find),
-            new Tuple<string, Action<string>>("export", Export),
-            new Tuple<string, Action<string>>("import", Import),
-            new Tuple<string, Action<string>>("remove", Remove),
-            new Tuple<string, Action<string>>("purge", Purge),
-        };
-
-        private static readonly string[][] HelpMessages = new string[][]
-        {
-            new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
-            new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
-            new string[] { "stat", "displays statistics on records", "The 'stat' command displays statistics on records." },
-            new string[] { "create", "creates a record", "The 'create' creates a record." },
-            new string[] { "list", "returns a list of records", "The 'list' returns a list of records." },
-            new string[] { "edit", "edits a record", "The 'edit' edits a record." },
-            new string[] { "find", "finds and returns a list of records", "The 'find' finds and returns a list of records. Parameters: 'firstname', 'lastname', 'dateofbirth'." },
-            new string[] { "export", "exports service data into a file in the 'CSV' or 'XML' format", "The 'export' exports service data into a file in the 'CSV' or 'XML' format. Formats: 'csv', 'xml'." },
-            new string[] { "import", "imports service data from from file in the 'CSV' or 'XML' format", "The 'import' imports service data from from file in the 'CSV' or 'XML' format. Formats: 'csv', 'xml'." },
-            new string[] { "remove", "removes a record", "The 'remove' removes a record." },
-            new string[] { "purge", "defragments a file", "The 'purge' defragments a file." },
-        };
-
-        private static IFileCabinetService fileCabinetService;
-
-        private static string commandLineParameter = string.Empty;
-
-        private static string[] initParams = new string[4];
-
+        private static readonly Action<IEnumerable<FileCabinetRecord>> RecordPrinter = Print;
+        private static readonly Action<bool> Action = ChangeIsRunning;
         private static bool isRunning = true;
+
+        /// <summary>
+        /// Object reference.
+        /// </summary>
+        private static IFileCabinetService fileCabinetService;
+        private static string[] initParams = new string[4];
+        private static string commandLineParameter = string.Empty;
 
         /// <summary>
         /// The main method for this app.
@@ -67,7 +40,7 @@ namespace FileCabinetApp
             Console.WriteLine($"File Cabinet Application, developed by {DeveloperName}");
 
             CommandLineParameter(args);
-            initParams = args;
+            var commandHandler = CreateCommandHandlers();
 
             Console.WriteLine(HintMessage);
             Console.WriteLine();
@@ -77,436 +50,109 @@ namespace FileCabinetApp
                 Console.Write("> ");
                 var inputs = Console.ReadLine().Split(' ', 2);
                 const int commandIndex = 0;
-                var command = inputs[commandIndex];
+                var command = inputs[commandIndex].ToLower();
 
                 if (string.IsNullOrEmpty(command))
                 {
                     Console.WriteLine(HintMessage);
-                    continue;
-                }
-
-                var index = Array.FindIndex(Commands, 0, Commands.Length, i => i.Item1.Equals(command, StringComparison.InvariantCultureIgnoreCase));
-                if (index >= 0)
-                {
-                    const int parametersIndex = 1;
-                    var parameters = inputs.Length > 1 ? inputs[parametersIndex] : string.Empty;
-                    Commands[index].Item2(parameters);
                 }
                 else
                 {
-                    PrintMissedCommandInfo(command);
+                    const int parametersIndex = 1;
+                    var parameters = inputs.Length > 1 ? inputs[parametersIndex] : string.Empty;
+
+                    commandHandler.Handle(new AppCommandRequest { Command = command, Parameters = parameters });
                 }
             }
             while (isRunning);
         }
 
-        private static void PrintMissedCommandInfo(string command)
+        /// <summary>
+        /// Reads parameters from the command line.
+        /// </summary>
+        /// <param name="args">Array with string parameters.</param>
+        public static void CommandLineParameter(string[] args)
         {
-            Console.WriteLine($"There is no '{command}' command.");
-            Console.WriteLine();
-        }
+            initParams = args;
 
-        private static void PrintHelp(string parameters)
-        {
-            if (!string.IsNullOrEmpty(parameters))
+            IRecordValidator defaultValidator = new ValidatorBuilder().CreateDefault();
+            IRecordValidator customValidator = new ValidatorBuilder().CreateCustom();
+
+            try
             {
-                var index = Array.FindIndex(HelpMessages, 0, HelpMessages.Length, i => string.Equals(i[Program.CommandHelpIndex], parameters, StringComparison.InvariantCultureIgnoreCase));
-                if (index >= 0)
+                bool paramVariantOne = (args[0].ToLowerInvariant().Equals("--validation-rules=default") || (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v default")) &&
+                                       (args[2].ToLowerInvariant().Equals("--storage=memory") || (args[2] + " " + args[3]).ToLowerInvariant().Equals("-s memory"));
+
+                bool paramVariantTwo = (args[0].ToLowerInvariant().Equals("--validation-rules=default") || (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v default")) &&
+                                       (args[2].ToLowerInvariant().Equals("--storage=file") || (args[2] + " " + args[3]).ToLowerInvariant().Equals("-s file"));
+
+                bool paramVariantThree = (args[0].ToLowerInvariant().Equals("--validation-rules=custom") || (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v custom")) &&
+                                         (args[2].ToLowerInvariant().Equals("--storage=memory") || (args[2] + " " + args[3]).ToLowerInvariant().Equals("-s memory"));
+
+                bool paramVariantFour = (args[0].ToLowerInvariant().Equals("--validation-rules=custom") || (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v custom")) &&
+                                        (args[2].ToLowerInvariant().Equals("--storage=file") || (args[2] + " " + args[3]).ToLowerInvariant().Equals("-s file"));
+
+                if (paramVariantOne)
                 {
-                    Console.WriteLine(HelpMessages[index][Program.ExplanationHelpIndex]);
+                    Console.WriteLine("Using default validation rules. Storage is memory.");
+                    FileCabinetMemoryService fileCabinetMemoryService = new (defaultValidator);
+                    fileCabinetService = fileCabinetMemoryService;
+                    commandLineParameter = "default";
+                }
+                else if (paramVariantTwo)
+                {
+                    Console.WriteLine("Using default validation rules. Storage is file.");
+                    FileStream fileStream = File.Open(Filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+                    fileStream.Seek(0, SeekOrigin.End);
+                    FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, defaultValidator);
+                    fileCabinetService = fileCabinetFilesystemService;
+                    commandLineParameter = "default";
+                }
+                else if (paramVariantThree)
+                {
+                    Console.WriteLine("Using custom validation rules. Storage is memory.");
+                    FileCabinetMemoryService fileCabinetMemoryService = new (customValidator);
+                    fileCabinetService = fileCabinetMemoryService;
+                    commandLineParameter = "custom";
+                }
+                else if (paramVariantFour)
+                {
+                    Console.WriteLine("Using custom validation rules. Storage is file.");
+                    FileStream fileStream = File.Open(Filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+                    fileStream.Seek(0, SeekOrigin.End);
+                    FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, customValidator);
+                    fileCabinetService = fileCabinetFilesystemService;
+                    commandLineParameter = "custom";
                 }
                 else
                 {
-                    Console.WriteLine($"There is no explanation for '{parameters}' command.");
+                    Console.WriteLine("Validation-rules command line parameter is wrong. Check your input.");
+                    Console.WriteLine("Using default validation rules. Storage is memory.");
+                    FileCabinetMemoryService fileCabinetMemoryService = new (defaultValidator);
+                    fileCabinetService = fileCabinetMemoryService;
+                    commandLineParameter = "default";
                 }
             }
-            else
+            catch
             {
-                Console.WriteLine("Available commands:");
-
-                foreach (var helpMessage in HelpMessages)
-                {
-                    Console.WriteLine("\t{0}\t- {1}", helpMessage[Program.CommandHelpIndex], helpMessage[Program.DescriptionHelpIndex]);
-                }
-            }
-
-            Console.WriteLine();
-        }
-
-        private static void Exit(string parameters)
-        {
-            Console.WriteLine("Exiting an application...");
-            isRunning = false;
-        }
-
-        private static void Stat(string parameters)
-        {
-            var recordsCount = fileCabinetService.GetStat();
-            Console.WriteLine($"{recordsCount} record(s).");
-        }
-
-        private static void Create(string parameters)
-        {
-            try
-            {
-                CheckInputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3);
-                ParameterObject paramobj = new (firstName, lastName, dateOfBirth, property1, property2, property3);
-                Console.WriteLine($"Record #{fileCabinetService.CreateRecord(paramobj)} is created.");
-            }
-            catch (Exception exc)
-            {
-                Console.WriteLine(exc.Message);
+                Console.WriteLine("Validation-rules command line parameter is wrong. Check your input.");
+                Console.WriteLine("Using default validation rules. Storage is memory.");
+                FileCabinetMemoryService fileCabinetMemoryService = new (defaultValidator);
+                fileCabinetService = fileCabinetMemoryService;
+                commandLineParameter = "default";
             }
         }
 
-        private static void List(string parameters)
-        {
-            var arr = fileCabinetService.GetRecords();
-            if (arr.Count == 0)
-            {
-                Console.WriteLine("The list is empty.");
-            }
-            else
-            {
-                Show(arr);
-            }
-        }
-
-        private static void Edit(string parameters)
-        {
-            int id = -1;
-            if (!string.IsNullOrEmpty(parameters) && int.TryParse(parameters, out int enteredId))
-            {
-                id = enteredId;
-            }
-
-            var onlyCollection = fileCabinetService.GetRecords();
-
-            if (onlyCollection.Count == 0)
-            {
-                Console.WriteLine($"#{parameters} record is not found.");
-            }
-
-            for (int i = 0; i < onlyCollection.Count; i++)
-            {
-                if (id == onlyCollection[i].Id)
-                {
-                    try
-                    {
-                        CheckInputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3);
-                        ParameterObject paramobj = new (firstName, lastName, dateOfBirth, property1, property2, property3);
-                        fileCabinetService.EditRecord(id, paramobj);
-                        Console.WriteLine($"Record #{id} is updated.");
-                        break;
-                    }
-                    catch (Exception exc)
-                    {
-                        Console.WriteLine(exc.Message);
-                    }
-                }
-
-                if (i == onlyCollection.Count - 1)
-                {
-                    Console.WriteLine($"#{parameters} record is not found.");
-                }
-            }
-        }
-
-        private static void Find(string parameters)
-        {
-            string[] inputs = parameters.Split(' ', 2);
-            const int commandIndex = 0;
-            const int parameterIndex = 1;
-
-            string[] originalParameters = { "firstname", "lastname", "dateofbirth" };
-
-            string command = inputs[commandIndex];
-            bool checkCommand = originalParameters[0].Equals(command, StringComparison.InvariantCultureIgnoreCase) ||
-                                originalParameters[1].Equals(command, StringComparison.InvariantCultureIgnoreCase) ||
-                                originalParameters[2].Equals(command, StringComparison.InvariantCultureIgnoreCase);
-            if (!checkCommand)
-            {
-                Console.WriteLine("Check your command.");
-            }
-
-            string parameter = string.Empty;
-            try
-            {
-                parameter = inputs[parameterIndex].Trim('"');
-            }
-            catch (IndexOutOfRangeException exc)
-            {
-                Console.WriteLine("Add your parameter(s). {0}", exc.Message);
-            }
-
-            bool checkParameter = checkCommand && !string.IsNullOrEmpty(parameter) && !string.IsNullOrWhiteSpace(parameter);
-            if (checkParameter)
-            {
-                FindAppropriateMethod(originalParameters, command, parameter);
-            }
-        }
-
-        private static void Export(string parameters)
-        {
-            string paramFormat;
-            string paramPath = string.Empty;
-            try
-            {
-                CheckInputParameters(out string f, out string p, parameters);
-                paramFormat = f;
-                paramPath = p;
-
-                if (!File.Exists(paramPath))
-                {
-                    FindAppropriateFunc();
-                }
-                else
-                {
-                    Console.Write($"File is exist - rewrite {paramPath}? [Y/n] ");
-                    string answer = Console.ReadLine();
-                    if (answer.ToLowerInvariant() == "y")
-                    {
-                        FindAppropriateFunc();
-                    }
-                    else if (answer.ToLowerInvariant() == "n")
-                    {
-                        Console.WriteLine($"Export failed: file {paramPath} was not rewrited.");
-                    }
-                }
-            }
-            catch (DirectoryNotFoundException exc)
-            {
-                Console.WriteLine($"Export failed: can't open file {paramPath}. {exc}.");
-            }
-            catch (Exception exc)
-            {
-                Console.WriteLine($"Check your input. {exc}.");
-            }
-
-            void FindAppropriateFunc()
-            {
-                if (paramFormat == "csv")
-                {
-                    SaveToCsvFormat(paramPath);
-                }
-
-                if (paramFormat == "xml")
-                {
-                    SaveToXmlFormat(paramPath);
-                }
-            }
-
-            void SaveToCsvFormat(string path)
-            {
-                StreamWriter writer = new (path);
-                fileCabinetService.MakeSnapshot().SaveToCsv(writer);
-                writer.Close();
-                Console.WriteLine($"All records are exported to file {paramPath}.");
-            }
-
-            void SaveToXmlFormat(string path)
-            {
-                StreamWriter writer = new (path);
-                fileCabinetService.MakeSnapshot().SaveToXmL(writer);
-                writer.Close();
-                Console.WriteLine($"All records are exported to file {paramPath}.");
-            }
-        }
-
-        private static void Import(string parameters)
-        {
-            string paramFormat;
-            string paramPath = string.Empty;
-            try
-            {
-                CheckInputParameters(out string f, out string p, parameters);
-                paramFormat = f;
-                paramPath = p;
-
-                if (File.Exists(paramPath))
-                {
-                    FindAppropriateFunc();
-                }
-                else
-                {
-                    Console.WriteLine($"Import error: file {paramPath} is not exist.");
-                }
-            }
-            catch (DirectoryNotFoundException exc)
-            {
-                Console.WriteLine($"Import failed: can't open file {paramPath}. {exc}.");
-            }
-            catch (Exception exc)
-            {
-                Console.WriteLine($"Check your input. {exc}.");
-            }
-
-            void FindAppropriateFunc()
-            {
-                if (paramFormat == "csv")
-                {
-                    ImportFromCsvFormat(paramPath);
-                }
-
-                if (paramFormat == "xml")
-                {
-                    ImportFromXmlFormat(paramPath);
-                }
-            }
-
-            void ImportFromCsvFormat(string path)
-            {
-                StreamReader reader = new (new FileStream(path, FileMode.Open));
-                FileCabinetServiceSnapshot snapshot = new ();
-                snapshot.LoadFromCsv(reader);
-                fileCabinetService.Restore(snapshot, out int count);
-
-                reader.Close();
-                Console.WriteLine($"{count} records were imported from {paramPath}.");
-            }
-
-            void ImportFromXmlFormat(string path)
-            {
-                StreamReader reader = new (new FileStream(path, FileMode.Open));
-                FileCabinetServiceSnapshot snapshot = new ();
-                snapshot.LoadFromXml(reader);
-                fileCabinetService.Restore(snapshot, out int count);
-
-                reader.Close();
-                Console.WriteLine($"{count} records were imported from {paramPath}.");
-            }
-        }
-
-        private static void Remove(string parameters)
-        {
-            int id = -1;
-            if (!string.IsNullOrEmpty(parameters) && int.TryParse(parameters, out int enteredId))
-            {
-                id = enteredId;
-            }
-
-            var onlyCollection = fileCabinetService.GetRecords();
-
-            if (onlyCollection.Count == 0)
-            {
-                Console.WriteLine($"#{parameters} record is not found.");
-            }
-
-            for (int i = 0; i < onlyCollection.Count; i++)
-            {
-                if (id == onlyCollection[i].Id)
-                {
-                    try
-                    {
-                        fileCabinetService.RemoveRecord(id);
-                        Console.WriteLine($"Record #{id} is removed.");
-                        break;
-                    }
-                    catch (Exception exc)
-                    {
-                        Console.WriteLine(exc.Message);
-                    }
-                }
-
-                if (i == onlyCollection.Count - 1 || onlyCollection.Count == 0)
-                {
-                    Console.WriteLine($"Record #{parameters} doesn't exists.");
-                }
-            }
-        }
-
-        private static void Purge(string parameters)
-        {
-            fileCabinetService.DefragFile(SourceFileName, out int numNewRecords, out int numOldRecords);
-            if (numNewRecords != -1)
-            {
-                File.Replace(SourceFileName, Filename, DestinationBackupFileName);
-                Console.WriteLine($"Data file processing is completed: {numOldRecords - numNewRecords} of {numOldRecords} records were purged.");
-                CommandLineParameter(initParams);
-            }
-        }
-
-        private static void CheckInputParameters(out string format, out string path, string parameters)
-        {
-            string[] inputs = parameters.Split(' ', 2);
-            const int recordFormat = 0;
-            const int fileName = 1;
-
-            string[] originalParameters = { "csv", "xml" };
-
-            format = inputs[recordFormat].ToLowerInvariant();
-            bool checkFormat = originalParameters[0].Equals(format, StringComparison.InvariantCultureIgnoreCase) ||
-                               originalParameters[1].Equals(format, StringComparison.InvariantCultureIgnoreCase);
-            if (!checkFormat)
-            {
-                throw new ArgumentOutOfRangeException(nameof(format), "Check your format.");
-            }
-
-            path = string.Empty;
-            try
-            {
-                path = inputs[fileName];
-            }
-            catch (IndexOutOfRangeException exc)
-            {
-                Console.WriteLine("Add your filename(path). {0}", exc.Message);
-            }
-        }
-
-        private static void FindAppropriateMethod(string[] originalParameters, string command, string parameter)
-        {
-            bool checkParameterFirstName = originalParameters[0].Equals(command, StringComparison.InvariantCultureIgnoreCase);
-            bool checkParameterLastName = originalParameters[1].Equals(command, StringComparison.InvariantCultureIgnoreCase);
-            bool checkParameterDateOfBirth = originalParameters[2].Equals(command, StringComparison.InvariantCultureIgnoreCase);
-
-            if (checkParameterFirstName)
-            {
-                ReadOnlyCollection<FileCabinetRecord> onlyCollection = fileCabinetService.FindByFirstName(parameter);
-                if (onlyCollection.Count == 0)
-                {
-                    Console.WriteLine("No results.");
-                }
-                else
-                {
-                    Show(onlyCollection);
-                }
-            }
-
-            if (checkParameterLastName)
-            {
-                ReadOnlyCollection<FileCabinetRecord> onlyCollection = fileCabinetService.FindByLastName(parameter);
-                if (onlyCollection.Count == 0)
-                {
-                    Console.WriteLine("No results.");
-                }
-                else
-                {
-                    Show(onlyCollection);
-                }
-            }
-
-            if (checkParameterDateOfBirth)
-            {
-                try
-                {
-                    ReadOnlyCollection<FileCabinetRecord> onlyCollection = fileCabinetService.FindByDateOfBirth(parameter.Trim('"'));
-                    if (onlyCollection.Count == 0)
-                    {
-                        Console.WriteLine("No results.");
-                    }
-                    else
-                    {
-                        Show(onlyCollection);
-                    }
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine($"The '{originalParameters[2]}' parameter has the wrong format.");
-                }
-            }
-        }
-
-        private static void CheckInputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3)
+        /// <summary>
+        /// Checks input from the line.
+        /// </summary>
+        /// <param name="firstName">First name.</param>
+        /// <param name="lastName">Last name.</param>
+        /// <param name="dateOfBirth">Date of birth.</param>
+        /// <param name="property1">Property in "short" format.</param>
+        /// <param name="property2">Property in "decimal" format.</param>
+        /// <param name="property3">Property in "char" format.</param>
+        public static void CheckInputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3)
         {
             Tuple<bool, string, string> StringConverter(string str)
             {
@@ -803,6 +449,39 @@ namespace FileCabinetApp
             property3 = ReadInput(charConverter, charValidator);
         }
 
+        /// <summary>
+        /// Defines the format and path of the file from parameters.
+        /// </summary>
+        /// <param name="format">Format of the file.</param>
+        /// <param name="path">Path of the file.</param>
+        /// <param name="parameters">Parameters.</param>
+        public static void CheckInputParameters(out string format, out string path, string parameters)
+        {
+            string[] inputs = parameters.Split(' ', 2);
+            const int recordFormat = 0;
+            const int fileName = 1;
+
+            string[] originalParameters = { "csv", "xml" };
+
+            format = inputs[recordFormat].ToLowerInvariant();
+            bool checkFormat = originalParameters[0].Equals(format, StringComparison.InvariantCultureIgnoreCase) ||
+                               originalParameters[1].Equals(format, StringComparison.InvariantCultureIgnoreCase);
+            if (!checkFormat)
+            {
+                throw new ArgumentOutOfRangeException(nameof(format), "Check your format.");
+            }
+
+            path = string.Empty;
+            try
+            {
+                path = inputs[fileName];
+            }
+            catch (IndexOutOfRangeException exc)
+            {
+                Console.WriteLine("Add your filename(path). {0}", exc.Message);
+            }
+        }
+
         private static T ReadInput<T>(Func<string, Tuple<bool, string, T>> converter, Func<T, Tuple<bool, string>> validator)
         {
             do
@@ -832,76 +511,42 @@ namespace FileCabinetApp
             while (true);
         }
 
-        private static void CommandLineParameter(string[] args)
+        private static ICommandHandler CreateCommandHandlers()
         {
-            try
-            {
-                bool paramVariantOne = (args[0].ToLowerInvariant().Equals("--validation-rules=default") || (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v default")) &&
-                                       (args[2].ToLowerInvariant().Equals("--storage=memory") || (args[2] + " " + args[3]).ToLowerInvariant().Equals("-s memory"));
+            var helpHandler = new HelpCommandHandler();
+            var exitHandler = new ExitCommandHandler(Action);
+            var statHandler = new StatCommandHandler(fileCabinetService);
+            var createHandler = new CreateCommandHandler(fileCabinetService);
+            var listHandler = new ListCommandHandler(fileCabinetService, RecordPrinter);
+            var editHandler = new EditCommandHandler(fileCabinetService);
+            var findHandler = new FindCommandHandler(fileCabinetService, RecordPrinter);
+            var exportHandler = new ExportCommandHandler(fileCabinetService);
+            var importHandler = new ImportCommandHandler(fileCabinetService);
+            var removeHandler = new RemoveCommandHandler(fileCabinetService);
+            var purgeHandler = new PurgeCommandHandler(fileCabinetService, Filename, initParams);
 
-                bool paramVariantTwo = (args[0].ToLowerInvariant().Equals("--validation-rules=default") || (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v default")) &&
-                                       (args[2].ToLowerInvariant().Equals("--storage=file") || (args[2] + " " + args[3]).ToLowerInvariant().Equals("-s file"));
+            helpHandler.SetNext(exitHandler);
+            exitHandler.SetNext(statHandler);
+            statHandler.SetNext(createHandler);
+            createHandler.SetNext(listHandler);
+            listHandler.SetNext(editHandler);
+            editHandler.SetNext(findHandler);
+            findHandler.SetNext(exportHandler);
+            exportHandler.SetNext(importHandler);
+            importHandler.SetNext(removeHandler);
+            removeHandler.SetNext(purgeHandler);
 
-                bool paramVariantThree = (args[0].ToLowerInvariant().Equals("--validation-rules=custom") || (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v custom")) &&
-                                         (args[2].ToLowerInvariant().Equals("--storage=memory") || (args[2] + " " + args[3]).ToLowerInvariant().Equals("-s memory"));
-
-                bool paramVariantFour = (args[0].ToLowerInvariant().Equals("--validation-rules=custom") || (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v custom")) &&
-                                        (args[2].ToLowerInvariant().Equals("--storage=file") || (args[2] + " " + args[3]).ToLowerInvariant().Equals("-s file"));
-
-                if (paramVariantOne)
-                {
-                    Console.WriteLine("Using default validation rules. Storage is memory.");
-                    FileCabinetMemoryService fileCabinetMemoryService = new (new DefaultValidator());
-                    fileCabinetService = fileCabinetMemoryService;
-                    commandLineParameter = "default";
-                }
-                else if (paramVariantTwo)
-                {
-                    Console.WriteLine("Using default validation rules. Storage is file.");
-                    FileStream fileStream = File.Open(Filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-                    fileStream.Seek(0, SeekOrigin.End);
-                    FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, new DefaultValidator());
-                    fileCabinetService = fileCabinetFilesystemService;
-                    commandLineParameter = "default";
-                }
-                else if (paramVariantThree)
-                {
-                    Console.WriteLine("Using custom validation rules. Storage is memory.");
-                    FileCabinetMemoryService fileCabinetMemoryService = new (new CustomValidator());
-                    fileCabinetService = fileCabinetMemoryService;
-                    commandLineParameter = "custom";
-                }
-                else if (paramVariantFour)
-                {
-                    Console.WriteLine("Using custom validation rules. Storage is file.");
-                    FileStream fileStream = File.Open(Filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-                    fileStream.Seek(0, SeekOrigin.End);
-                    FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, new CustomValidator());
-                    fileCabinetService = fileCabinetFilesystemService;
-                    commandLineParameter = "custom";
-                }
-                else
-                {
-                    Console.WriteLine("Validation-rules command line parameter is wrong. Check your input.");
-                    Console.WriteLine("Using default validation rules. Storage is memory.");
-                    FileCabinetMemoryService fileCabinetMemoryService = new (new DefaultValidator());
-                    fileCabinetService = fileCabinetMemoryService;
-                    commandLineParameter = "default";
-                }
-            }
-            catch
-            {
-                Console.WriteLine("Validation-rules command line parameter is wrong. Check your input.");
-                Console.WriteLine("Using default validation rules. Storage is memory.");
-                FileCabinetMemoryService fileCabinetMemoryService = new (new DefaultValidator());
-                fileCabinetService = fileCabinetMemoryService;
-                commandLineParameter = "default";
-            }
+            return helpHandler;
         }
 
-        private static void Show(ReadOnlyCollection<FileCabinetRecord> onlyCollection)
+        private static void ChangeIsRunning(bool b)
         {
-            foreach (var a in onlyCollection)
+            isRunning = b;
+        }
+
+        private static void Print(IEnumerable<FileCabinetRecord> records)
+        {
+            foreach (var a in records)
             {
                 Console.WriteLine($"#{a.Id}, {a.FirstName}, {a.LastName}, {a.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, {a.Property1}, {a.Property2}, {a.Property3}");
             }
