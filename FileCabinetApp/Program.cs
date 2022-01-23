@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using FileCabinetApp.CommandHandlers;
 using FileCabinetApp.RecordValidator;
+using FileCabinetApp.RecordValidator.Extensions;
 
 namespace FileCabinetApp
 {
@@ -74,6 +75,9 @@ namespace FileCabinetApp
         {
             initParams = args;
 
+            IRecordValidator defaultValidator = new ValidatorBuilder().CreateDefault();
+            IRecordValidator customValidator = new ValidatorBuilder().CreateCustom();
+
             try
             {
                 bool paramVariantOne = (args[0].ToLowerInvariant().Equals("--validation-rules=default") || (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v default")) &&
@@ -91,10 +95,7 @@ namespace FileCabinetApp
                 if (paramVariantOne)
                 {
                     Console.WriteLine("Using default validation rules. Storage is memory.");
-
-                    IRecordValidator recordValidator = new ValidatorBuilder().ValidateFirstName(2, 60).ValidateLastName(2, 60).ValidateDateOfBirth(new DateTime(1950, 01, 01), DateTime.Today).ValidateProperty1(short.MinValue, short.MaxValue).ValidateProperty2(decimal.MinValue, decimal.MaxValue).ValidateProperty3().Create();
-
-                    FileCabinetMemoryService fileCabinetMemoryService = new (recordValidator);
+                    FileCabinetMemoryService fileCabinetMemoryService = new (defaultValidator);
                     fileCabinetService = fileCabinetMemoryService;
                     commandLineParameter = "default";
                 }
@@ -103,20 +104,14 @@ namespace FileCabinetApp
                     Console.WriteLine("Using default validation rules. Storage is file.");
                     FileStream fileStream = File.Open(Filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
                     fileStream.Seek(0, SeekOrigin.End);
-
-                    IRecordValidator recordValidator = new ValidatorBuilder().ValidateFirstName(2, 60).ValidateLastName(2, 60).ValidateDateOfBirth(new DateTime(1950, 01, 01), DateTime.Today).ValidateProperty1(short.MinValue, short.MaxValue).ValidateProperty2(decimal.MinValue, decimal.MaxValue).ValidateProperty3().Create();
-
-                    FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, recordValidator);
+                    FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, defaultValidator);
                     fileCabinetService = fileCabinetFilesystemService;
                     commandLineParameter = "default";
                 }
                 else if (paramVariantThree)
                 {
                     Console.WriteLine("Using custom validation rules. Storage is memory.");
-
-                    IRecordValidator recordValidator = new ValidatorBuilder().ValidateFirstName(2, 60).ValidateLastName(2, 60).ValidateDateOfBirth(new DateTime(2000, 01, 01), DateTime.Today).ValidateProperty1(short.MinValue, short.MaxValue).ValidateProperty2(decimal.MinValue, decimal.MaxValue).ValidateProperty3().Create();
-
-                    FileCabinetMemoryService fileCabinetMemoryService = new (recordValidator);
+                    FileCabinetMemoryService fileCabinetMemoryService = new (customValidator);
                     fileCabinetService = fileCabinetMemoryService;
                     commandLineParameter = "custom";
                 }
@@ -125,10 +120,7 @@ namespace FileCabinetApp
                     Console.WriteLine("Using custom validation rules. Storage is file.");
                     FileStream fileStream = File.Open(Filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
                     fileStream.Seek(0, SeekOrigin.End);
-
-                    IRecordValidator recordValidator = new ValidatorBuilder().ValidateFirstName(2, 60).ValidateLastName(2, 60).ValidateDateOfBirth(new DateTime(2000, 01, 01), DateTime.Today).ValidateProperty1(short.MinValue, short.MaxValue).ValidateProperty2(decimal.MinValue, decimal.MaxValue).ValidateProperty3().Create();
-
-                    FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, recordValidator);
+                    FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, customValidator);
                     fileCabinetService = fileCabinetFilesystemService;
                     commandLineParameter = "custom";
                 }
@@ -136,10 +128,7 @@ namespace FileCabinetApp
                 {
                     Console.WriteLine("Validation-rules command line parameter is wrong. Check your input.");
                     Console.WriteLine("Using default validation rules. Storage is memory.");
-
-                    IRecordValidator recordValidator = new ValidatorBuilder().ValidateFirstName(2, 60).ValidateLastName(2, 60).ValidateDateOfBirth(new DateTime(1950, 01, 01), DateTime.Today).ValidateProperty1(short.MinValue, short.MaxValue).ValidateProperty2(decimal.MinValue, decimal.MaxValue).ValidateProperty3().Create();
-
-                    FileCabinetMemoryService fileCabinetMemoryService = new (recordValidator);
+                    FileCabinetMemoryService fileCabinetMemoryService = new (defaultValidator);
                     fileCabinetService = fileCabinetMemoryService;
                     commandLineParameter = "default";
                 }
@@ -148,10 +137,7 @@ namespace FileCabinetApp
             {
                 Console.WriteLine("Validation-rules command line parameter is wrong. Check your input.");
                 Console.WriteLine("Using default validation rules. Storage is memory.");
-
-                IRecordValidator recordValidator = new ValidatorBuilder().ValidateFirstName(2, 60).ValidateLastName(2, 60).ValidateDateOfBirth(new DateTime(1950, 01, 01), DateTime.Today).ValidateProperty1(short.MinValue, short.MaxValue).ValidateProperty2(decimal.MinValue, decimal.MaxValue).ValidateProperty3().Create();
-
-                FileCabinetMemoryService fileCabinetMemoryService = new (recordValidator);
+                FileCabinetMemoryService fileCabinetMemoryService = new (defaultValidator);
                 fileCabinetService = fileCabinetMemoryService;
                 commandLineParameter = "default";
             }

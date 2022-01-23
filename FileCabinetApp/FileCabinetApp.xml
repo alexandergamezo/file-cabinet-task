@@ -912,6 +912,25 @@
             </summary>
             <param name="v">Pararmeter object.</param>
         </member>
+        <member name="T:FileCabinetApp.RecordValidator.Extensions.RecordValidatorExtension">
+            <summary>
+            Class for extension methods.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.Extensions.RecordValidatorExtension.CreateDefault(FileCabinetApp.RecordValidator.ValidatorBuilder)">
+            <summary>
+            Checks record with default parameters.
+            </summary>
+            <param name="validatorBuilder">Object reference.</param>
+            <returns>A new reference with default validators.</returns>
+        </member>
+        <member name="M:FileCabinetApp.RecordValidator.Extensions.RecordValidatorExtension.CreateCustom(FileCabinetApp.RecordValidator.ValidatorBuilder)">
+            <summary>
+            Checks record with custom parameters.
+            </summary>
+            <param name="validatorBuilder">Object reference.</param>
+            <returns>A new reference with custom validators.</returns>
+        </member>
         <member name="T:FileCabinetApp.RecordValidator.FirstNameValidator">
             <summary>
             FirstName Validator.
