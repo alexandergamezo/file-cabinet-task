@@ -5,6 +5,7 @@ using System.IO;
 using FileCabinetApp.CommandHandlers;
 using FileCabinetApp.RecordValidator;
 using FileCabinetApp.RecordValidator.Extensions;
+using Microsoft.Extensions.Configuration;
 
 namespace FileCabinetApp
 {
@@ -28,7 +29,6 @@ namespace FileCabinetApp
         /// Object reference.
         /// </summary>
         private static IFileCabinetService fileCabinetService;
-        private static string[] initParams = new string[4];
         private static string commandLineParameter = string.Empty;
 
         /// <summary>
@@ -73,10 +73,13 @@ namespace FileCabinetApp
         /// <param name="args">Array with string parameters.</param>
         public static void CommandLineParameter(string[] args)
         {
-            initParams = args;
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("validation-rules.json")
+                .Build();
 
-            IRecordValidator defaultValidator = new ValidatorBuilder().CreateDefault();
-            IRecordValidator customValidator = new ValidatorBuilder().CreateCustom();
+            IRecordValidator defaultValidator = new ValidatorBuilder().CreateDefault(builder);
+            IRecordValidator customValidator = new ValidatorBuilder().CreateCustom(builder);
 
             try
             {
@@ -523,7 +526,7 @@ namespace FileCabinetApp
             var exportHandler = new ExportCommandHandler(fileCabinetService);
             var importHandler = new ImportCommandHandler(fileCabinetService);
             var removeHandler = new RemoveCommandHandler(fileCabinetService);
-            var purgeHandler = new PurgeCommandHandler(fileCabinetService, Filename, initParams);
+            var purgeHandler = new PurgeCommandHandler(fileCabinetService, Filename);
 
             helpHandler.SetNext(exitHandler);
             exitHandler.SetNext(statHandler);

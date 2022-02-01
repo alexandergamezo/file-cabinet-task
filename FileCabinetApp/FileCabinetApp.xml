@@ -198,13 +198,12 @@
             Handler for the 'purge' command.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.CommandHandlers.PurgeCommandHandler.#ctor(FileCabinetApp.IFileCabinetService,System.String,System.String[])">
+        <member name="M:FileCabinetApp.CommandHandlers.PurgeCommandHandler.#ctor(FileCabinetApp.IFileCabinetService,System.String)">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.PurgeCommandHandler"/> class.
             </summary>
             <param name="fileCabinetService">Object reference.</param>
             <param name="filename">Filename.</param>
-            <param name="initParams">Application arguments.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.PurgeCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
@@ -766,6 +765,116 @@
             <param name="numNewRecords">The number of new records in a new file.</param>
             <param name="numOldRecords">The number of old records in an old file.</param>
         </member>
+        <member name="T:FileCabinetApp.Models.Validation">
+            <summary>
+            Validation.
+            </summary>
+        </member>
+        <member name="T:FileCabinetApp.Models.Validation.FirstName">
+            <summary>
+            First name.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Models.Validation.FirstName.Min">
+            <summary>
+            Gets or sets min value.
+            </summary>
+            <value>
+            Min value.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Models.Validation.FirstName.Max">
+            <summary>
+            Gets or sets max value.
+            </summary>
+            <value>
+            Max value.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.Models.Validation.LastName">
+            <summary>
+            Last name.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Models.Validation.LastName.Min">
+            <summary>
+            Gets or sets min value.
+            </summary>
+            <value>
+            Min value.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Models.Validation.LastName.Max">
+            <summary>
+            Gets or sets max value.
+            </summary>
+            <value>
+            Max value.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.Models.Validation.DateOfBirth">
+            <summary>
+            Date of birth.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Models.Validation.DateOfBirth.From">
+            <summary>
+            Gets or sets min value.
+            </summary>
+            <value>
+            Min value.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Models.Validation.DateOfBirth.To">
+            <summary>
+            Gets or sets max value.
+            </summary>
+            <value>
+            Max value.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.Models.Validation.Property1">
+            <summary>
+            Property 1.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Models.Validation.Property1.Min">
+            <summary>
+            Gets or sets min value.
+            </summary>
+            <value>
+            Min value.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Models.Validation.Property1.Max">
+            <summary>
+            Gets or sets max value.
+            </summary>
+            <value>
+            Max value.
+            </value>
+        </member>
+        <member name="T:FileCabinetApp.Models.Validation.Property2">
+            <summary>
+            Property 2.
+            </summary>
+        </member>
+        <member name="P:FileCabinetApp.Models.Validation.Property2.Min">
+            <summary>
+            Gets or sets min value.
+            </summary>
+            <value>
+            Min value.
+            </value>
+        </member>
+        <member name="P:FileCabinetApp.Models.Validation.Property2.Max">
+            <summary>
+            Gets or sets max value.
+            </summary>
+            <value>
+            Max value.
+            </value>
+        </member>
         <member name="T:FileCabinetApp.ParameterObject">
             <summary>
             Contains method for pass parameters.
@@ -917,18 +1026,20 @@
             Class for extension methods.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.RecordValidator.Extensions.RecordValidatorExtension.CreateDefault(FileCabinetApp.RecordValidator.ValidatorBuilder)">
+        <member name="M:FileCabinetApp.RecordValidator.Extensions.RecordValidatorExtension.CreateDefault(FileCabinetApp.RecordValidator.ValidatorBuilder,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             Checks record with default parameters.
             </summary>
             <param name="validatorBuilder">Object reference.</param>
+            <param name="builder">Configuration settings.</param>
             <returns>A new reference with default validators.</returns>
         </member>
-        <member name="M:FileCabinetApp.RecordValidator.Extensions.RecordValidatorExtension.CreateCustom(FileCabinetApp.RecordValidator.ValidatorBuilder)">
+        <member name="M:FileCabinetApp.RecordValidator.Extensions.RecordValidatorExtension.CreateCustom(FileCabinetApp.RecordValidator.ValidatorBuilder,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             Checks record with custom parameters.
             </summary>
             <param name="validatorBuilder">Object reference.</param>
+            /// <param name="builder">Configuration settings.</param>
             <returns>A new reference with custom validators.</returns>
         </member>
         <member name="T:FileCabinetApp.RecordValidator.FirstNameValidator">

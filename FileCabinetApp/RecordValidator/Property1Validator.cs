@@ -29,7 +29,7 @@ namespace FileCabinetApp.RecordValidator
         {
             if (v.Property1 < this.minValue || v.Property1 > this.maxValue)
             {
-                throw new ArgumentOutOfRangeException(nameof(v), "Property1 value is not a <short> number");
+                throw new ArgumentOutOfRangeException(nameof(v), "Property1 value is not a correct number");
             }
         }
     }
