@@ -1193,5 +1193,90 @@
             </summary>
             <param name="v">Object with parameters.</param>
         </member>
+        <member name="T:FileCabinetApp.ServiceMeter">
+            <summary>
+            Provides a set of methods that determine the execution time.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.#ctor(FileCabinetApp.IFileCabinetService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.ServiceMeter"/> class.
+            </summary>
+            <param name="service">Object reference.</param>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.CreateRecord(FileCabinetApp.ParameterObject)">
+            <summary>
+            Creates records in the List and the Dictionary.
+            </summary>
+            <param name="v">Object with parameters.</param>
+            <returns>The id number.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.DefragFile(System.String,System.Int32@,System.Int32@)">
+            <summary>
+            Defrags a file.
+            </summary>
+            <param name="destinationFileName">The destination file name.</param>
+            <param name="numNewRecords">The number of new records in a new file.</param>
+            <param name="numOldRecords">The number of old records in an old file.</param>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.EditRecord(System.Int32,FileCabinetApp.ParameterObject)">
+            <summary>
+            Changes old record on the new one in the Dictionary and List.
+            </summary>
+            <param name="id">Id number.</param>
+            <param name="v">Object with parameters.</param>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.FindByDateOfBirth(System.String)">
+            <summary>
+            Finds records in the Dictionary by date of birth.
+            </summary>
+            <param name="dateOfBirth">date of birth.</param>
+            <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.FindByFirstName(System.String)">
+            <summary>
+            Finds records in the Dictionary by first name.
+            </summary>
+            <param name="firstName">First name.</param>
+            <returns>The collection of records found by the <paramref name="firstName"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.FindByLastName(System.String)">
+            <summary>
+            Finds records in the Dictionary by last name.
+            </summary>
+            <param name="lastName">Last name.</param>
+            <returns>The collection of records which by the <paramref name="lastName"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.GetRecords">
+            <summary>
+            Gets records from the List and puts them into a collection.
+            </summary>
+            <returns>The collection of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.GetStat">
+            <summary>
+            Defines the number of records in the List.
+            </summary>
+            <returns>The number of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.MakeSnapshot">
+            <summary>
+            Saves the current state inside a FileCabinetServiceSnapshot.
+            </summary>
+            <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.RemoveRecord(System.Int32)">
+            <summary>
+            Removes a record from the Dictionary and List.
+            </summary>
+            <param name="id">Id number.</param>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.Restore(FileCabinetApp.FileCabinetServiceSnapshot,System.Int32@)">
+            <summary>
+            Restores the state from a snapshot object.
+            </summary>
+            <param name="snapshot">Snapshot of the object, where saved its state.</param>
+            <param name="count">Number of records that were imported with definite validation rules.</param>
+        </member>
     </members>
 </doc>

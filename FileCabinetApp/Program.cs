@@ -95,11 +95,15 @@ namespace FileCabinetApp
                 bool paramVariantFour = (args[0].ToLowerInvariant().Equals("--validation-rules=custom") || (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v custom")) &&
                                         (args[2].ToLowerInvariant().Equals("--storage=file") || (args[2] + " " + args[3]).ToLowerInvariant().Equals("-s file"));
 
+                bool paramVariantFive = args[4].ToLowerInvariant().Equals("use-stopwatch");
+
+                IFileCabinetService fileCabinetBase;
+
                 if (paramVariantOne)
                 {
                     Console.WriteLine("Using default validation rules. Storage is memory.");
                     FileCabinetMemoryService fileCabinetMemoryService = new (defaultValidator);
-                    fileCabinetService = fileCabinetMemoryService;
+                    fileCabinetBase = fileCabinetMemoryService;
                     commandLineParameter = "default";
                 }
                 else if (paramVariantTwo)
@@ -108,14 +112,14 @@ namespace FileCabinetApp
                     FileStream fileStream = File.Open(Filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
                     fileStream.Seek(0, SeekOrigin.End);
                     FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, defaultValidator);
-                    fileCabinetService = fileCabinetFilesystemService;
+                    fileCabinetBase = fileCabinetFilesystemService;
                     commandLineParameter = "default";
                 }
                 else if (paramVariantThree)
                 {
                     Console.WriteLine("Using custom validation rules. Storage is memory.");
                     FileCabinetMemoryService fileCabinetMemoryService = new (customValidator);
-                    fileCabinetService = fileCabinetMemoryService;
+                    fileCabinetBase = fileCabinetMemoryService;
                     commandLineParameter = "custom";
                 }
                 else if (paramVariantFour)
@@ -124,7 +128,7 @@ namespace FileCabinetApp
                     FileStream fileStream = File.Open(Filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
                     fileStream.Seek(0, SeekOrigin.End);
                     FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, customValidator);
-                    fileCabinetService = fileCabinetFilesystemService;
+                    fileCabinetBase = fileCabinetFilesystemService;
                     commandLineParameter = "custom";
                 }
                 else
@@ -132,8 +136,17 @@ namespace FileCabinetApp
                     Console.WriteLine("Validation-rules command line parameter is wrong. Check your input.");
                     Console.WriteLine("Using default validation rules. Storage is memory.");
                     FileCabinetMemoryService fileCabinetMemoryService = new (defaultValidator);
-                    fileCabinetService = fileCabinetMemoryService;
+                    fileCabinetBase = fileCabinetMemoryService;
                     commandLineParameter = "default";
+                }
+
+                if (paramVariantFive)
+                {
+                    fileCabinetService = new ServiceMeter(fileCabinetBase);
+                }
+                else
+                {
+                    fileCabinetService = fileCabinetBase;
                 }
             }
             catch
