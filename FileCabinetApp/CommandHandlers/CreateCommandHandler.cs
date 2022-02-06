@@ -38,7 +38,11 @@ namespace FileCabinetApp.CommandHandlers
             {
                 Program.CheckInputFromLine(out string firstName, out string lastName, out DateTime dateOfBirth, out short property1, out decimal property2, out char property3);
                 ParameterObject paramobj = new (firstName, lastName, dateOfBirth, property1, property2, property3);
-                Console.WriteLine($"Record #{this.service.CreateRecord(paramobj)} is created.");
+                int result = this.service.CreateRecord(paramobj);
+                if (result > 0)
+                {
+                    Console.WriteLine($"Record #{result} is created.");
+                }
             }
             catch (Exception exc)
             {

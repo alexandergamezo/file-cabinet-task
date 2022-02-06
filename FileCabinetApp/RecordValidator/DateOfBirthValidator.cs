@@ -29,7 +29,7 @@ namespace FileCabinetApp.RecordValidator
         {
             if (v.DateOfBirth < this.from || v.DateOfBirth > this.to)
             {
-                throw new ArgumentException("DateOfBirth string has the wrong value", nameof(v));
+                throw new ArgumentException("DateOfBirth string must be more or equal than 'from' value and less or equal than 'to' value (validation-rules.json)", nameof(v));
             }
         }
     }

@@ -28,7 +28,7 @@ namespace FileCabinetApp.RecordValidator
         {
             if (v.Property2 < this.minValue || v.Property2 > this.maxValue)
             {
-                throw new ArgumentOutOfRangeException(nameof(v), "Property2 value is not a correct number");
+                throw new ArgumentOutOfRangeException(nameof(v), "Property2 must be more or equal than 'min' value and less or equal than 'max' value (validation-rules.json)");
             }
         }
     }
