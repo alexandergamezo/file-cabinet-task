@@ -35,7 +35,7 @@ namespace FileCabinetApp.RecordValidator
             if (v.LastName.Length < this.minLength || v.LastName.Length > this.maxLength)
             {
                 throw new ArgumentException(
-                    "All names must be more or equal than 2-letters and less or equal than 60-letters", nameof(v));
+                    "All names must be more or equal than 'min' value and less or equal than 'max' value (validation-rules.json)", nameof(v));
             }
         }
     }
