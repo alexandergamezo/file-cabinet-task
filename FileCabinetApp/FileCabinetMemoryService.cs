@@ -334,13 +334,24 @@ namespace FileCabinetApp
         /// <param name="newDictKey">New Dictionary key.</param>
         private void CreateRecordInDictionary(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string newDictKey)
         {
-            if (!nameOfDict.ContainsKey(newDictKey))
+            string appropriateNewDictKey;
+
+            if (!char.IsNumber(newDictKey[0]))
             {
-                nameOfDict[newDictKey] = new List<FileCabinetRecord> { this.list[^1] };
+                appropriateNewDictKey = string.Concat(newDictKey[..1].ToUpper(), newDictKey[1..].ToLower());
             }
             else
             {
-                nameOfDict[newDictKey].Add(this.list[^1]);
+                appropriateNewDictKey = newDictKey;
+            }
+
+            if (!nameOfDict.ContainsKey(appropriateNewDictKey))
+            {
+                nameOfDict[appropriateNewDictKey] = new List<FileCabinetRecord> { this.list[^1] };
+            }
+            else
+            {
+                nameOfDict[appropriateNewDictKey].Add(this.list[^1]);
             }
         }
 

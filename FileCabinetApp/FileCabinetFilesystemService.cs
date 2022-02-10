@@ -14,9 +14,9 @@ namespace FileCabinetApp
     {
         private readonly List<FileCabinetRecord> list = new ();
 
-        private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new ();
-        private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new ();
-        private readonly Dictionary<string, List<FileCabinetRecord>> dateOfBirthDictionary = new ();
+        private readonly Dictionary<string, List<int>> firstNameDictionary = new ();
+        private readonly Dictionary<string, List<int>> lastNameDictionary = new ();
+        private readonly Dictionary<string, List<int>> dateOfBirthDictionary = new ();
 
         private readonly FileStream fileStream;
         private readonly IRecordValidator validator;
@@ -101,59 +101,13 @@ namespace FileCabinetApp
                     continue;
                 }
 
-                int readerId = binaryReader.ReadInt32();
-
-                char[] firstNameChars = binaryReader.ReadChars(this.offset[3] - this.offset[2]);
-                StringBuilder strBuilderFirstName = new ();
-                foreach (char a in firstNameChars)
-                    {
-                        if (char.IsLetterOrDigit(a))
-                        {
-                            strBuilderFirstName.Append(a);
-                        }
-                    }
-
-                string readerFirstName = strBuilderFirstName.ToString();
-
-                char[] ch = binaryReader.ReadChars(this.offset[4] - this.offset[3]);
-                StringBuilder strBuilderLastName = new ();
-                foreach (char a in ch)
-                    {
-                        if (char.IsLetterOrDigit(a))
-                        {
-                            strBuilderLastName.Append(a);
-                        }
-                    }
-
-                string readerLastName = strBuilderLastName.ToString();
-
-                int readerYearDateOfBirth = binaryReader.ReadInt32();
-                int readerMonthDateOfBirth = binaryReader.ReadInt32();
-                int readerDayDateOfBirth = binaryReader.ReadInt32();
-
-                string dateOfBirth = string.Concat(readerMonthDateOfBirth, "/", readerDayDateOfBirth, "/", readerYearDateOfBirth);
-                DateTime readerDateOfBirth = DateTime.Parse(dateOfBirth);
-
-                short readerProperty1 = binaryReader.ReadInt16();
-                decimal readerProperty2 = binaryReader.ReadDecimal();
-                char readerProperty3 = binaryReader.ReadChar();
-
-                var record = new FileCabinetRecord
-                    {
-                        Id = readerId,
-                        FirstName = readerFirstName,
-                        LastName = readerLastName,
-                        DateOfBirth = readerDateOfBirth,
-                        Property1 = readerProperty1,
-                        Property2 = readerProperty2,
-                        Property3 = readerProperty3,
-                    };
+                FileCabinetRecord record = this.ReadRecordByBinaryReader(binaryReader);
 
                 this.list.Add(record);
 
-                this.CreateRecordInDictionary(this.firstNameDictionary, readerFirstName);
-                this.CreateRecordInDictionary(this.lastNameDictionary, readerLastName);
-                this.CreateRecordInDictionary(this.dateOfBirthDictionary, readerDateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture));
+                this.CreateRecordInDictionary(this.firstNameDictionary, record.FirstName, offsetShift);
+                this.CreateRecordInDictionary(this.lastNameDictionary, record.LastName, offsetShift);
+                this.CreateRecordInDictionary(this.dateOfBirthDictionary, record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), offsetShift);
 
                 offsetShift += this.recordSize;
             }
@@ -210,7 +164,7 @@ namespace FileCabinetApp
         public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
         {
             this.GetRecords();
-            return FindByKey(this.firstNameDictionary, firstName);
+            return this.FindByKey(this.firstNameDictionary, firstName);
         }
 
         /// <summary>
@@ -221,7 +175,7 @@ namespace FileCabinetApp
         public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
         {
             this.GetRecords();
-            return FindByKey(this.lastNameDictionary, lastName);
+            return this.FindByKey(this.lastNameDictionary, lastName);
         }
 
         /// <summary>
@@ -232,7 +186,7 @@ namespace FileCabinetApp
         public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
         {
             this.GetRecords();
-            return FindByKey(this.dateOfBirthDictionary, dateOfBirth);
+            return this.FindByKey(this.dateOfBirthDictionary, dateOfBirth);
         }
 
         /// <summary>
@@ -416,7 +370,7 @@ namespace FileCabinetApp
         /// <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
         /// <param name="currentDictKey">Current Dictionary key.</param>
         /// <returns>The collection of records found by <paramref name="currentDictKey"/>.</returns>
-        private static ReadOnlyCollection<FileCabinetRecord> FindByKey(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string currentDictKey)
+        private ReadOnlyCollection<FileCabinetRecord> FindByKey(Dictionary<string, List<int>> nameOfDict, string currentDictKey)
         {
             List<FileCabinetRecord> onlyList = new ();
             ReadOnlyCollection<FileCabinetRecord> onlyCollection;
@@ -433,9 +387,23 @@ namespace FileCabinetApp
 
             if (nameOfDict.ContainsKey(appropriateFormat))
             {
-                onlyList = nameOfDict[appropriateFormat];
-                onlyCollection = new (onlyList);
-                return onlyCollection;
+                List<int> offsetShiftList = nameOfDict[appropriateFormat];
+
+                byte[] readBytes = new byte[this.fileStream.Length];
+                this.fileStream.Seek(0, SeekOrigin.Begin);
+                this.fileStream.Read(readBytes, 0, readBytes.Length);
+                using MemoryStream memoryStream = new (readBytes);
+                using BinaryReader binaryReader = new (memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                foreach (int offsetShift in offsetShiftList)
+                {
+                    memoryStream.Seek(offsetShift, SeekOrigin.Begin);
+                    short reserved = binaryReader.ReadInt16();
+                    FileCabinetRecord record = this.ReadRecordByBinaryReader(binaryReader);
+
+                    onlyList.Add(record);
+                }
             }
 
             onlyCollection = new (onlyList);
@@ -480,18 +448,79 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
         /// <param name="newDictKey">New Dictionary key.</param>
-        private void CreateRecordInDictionary(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string newDictKey)
+        private void CreateRecordInDictionary(Dictionary<string, List<int>> nameOfDict, string newDictKey, int offsetShift)
         {
-            string appropriateNewDictKey = string.Concat(newDictKey[..1].ToUpper(), newDictKey[1..].ToLower());
+            string appropriateNewDictKey;
 
-            if (!nameOfDict.ContainsKey(appropriateNewDictKey))
+            if (!char.IsNumber(newDictKey[0]))
             {
-                nameOfDict[appropriateNewDictKey] = new List<FileCabinetRecord> { this.list[^1] };
+                appropriateNewDictKey = string.Concat(newDictKey[..1].ToUpper(), newDictKey[1..].ToLower());
             }
             else
             {
-                nameOfDict[appropriateNewDictKey].Add(this.list[^1]);
+                appropriateNewDictKey = newDictKey;
             }
+
+            if (!nameOfDict.ContainsKey(appropriateNewDictKey))
+            {
+                nameOfDict[appropriateNewDictKey] = new List<int> { offsetShift };
+            }
+            else
+            {
+                nameOfDict[appropriateNewDictKey].Add(offsetShift);
+            }
+        }
+
+        private FileCabinetRecord ReadRecordByBinaryReader(BinaryReader binaryReader)
+        {
+            int readerId = binaryReader.ReadInt32();
+
+            char[] firstNameChars = binaryReader.ReadChars(this.offset[3] - this.offset[2]);
+            StringBuilder strBuilderFirstName = new ();
+            foreach (char a in firstNameChars)
+            {
+                if (char.IsLetterOrDigit(a))
+                {
+                    strBuilderFirstName.Append(a);
+                }
+            }
+
+            string readerFirstName = strBuilderFirstName.ToString();
+
+            char[] ch = binaryReader.ReadChars(this.offset[4] - this.offset[3]);
+            StringBuilder strBuilderLastName = new ();
+            foreach (char a in ch)
+            {
+                if (char.IsLetterOrDigit(a))
+                {
+                    strBuilderLastName.Append(a);
+                }
+            }
+
+            string readerLastName = strBuilderLastName.ToString();
+
+            int readerYearDateOfBirth = binaryReader.ReadInt32();
+            int readerMonthDateOfBirth = binaryReader.ReadInt32();
+            int readerDayDateOfBirth = binaryReader.ReadInt32();
+            string dateOfBirth = string.Concat(readerMonthDateOfBirth, "/", readerDayDateOfBirth, "/", readerYearDateOfBirth);
+            DateTime readerDateOfBirth = DateTime.Parse(dateOfBirth);
+
+            short readerProperty1 = binaryReader.ReadInt16();
+            decimal readerProperty2 = binaryReader.ReadDecimal();
+            char readerProperty3 = binaryReader.ReadChar();
+
+            FileCabinetRecord record = new ()
+            {
+                Id = readerId,
+                FirstName = readerFirstName,
+                LastName = readerLastName,
+                DateOfBirth = readerDateOfBirth,
+                Property1 = readerProperty1,
+                Property2 = readerProperty2,
+                Property3 = readerProperty3,
+            };
+
+            return record;
         }
     }
 }

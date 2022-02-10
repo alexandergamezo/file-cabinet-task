@@ -357,7 +357,7 @@
             <param name="recordSize">Record size.</param>
             <returns>Array with bytes.</returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.FindByKey(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.FindByKey(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{System.Int32}},System.String)">
             <summary>
             Finds records in the Dictionary by key.
             </summary>
@@ -365,7 +365,7 @@
             <param name="currentDictKey">Current Dictionary key.</param>
             <returns>The collection of records found by <paramref name="currentDictKey"/>.</returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.CreateRecordInDictionary(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{FileCabinetApp.FileCabinetRecord}},System.String)">
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.CreateRecordInDictionary(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{System.Int32}},System.String,System.Int32)">
             <summary>
             Creates record in the Dictionary.
             </summary>
