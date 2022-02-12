@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
+using FileCabinetApp.RecordIterator;
 
 namespace FileCabinetApp
 {
@@ -11,11 +11,6 @@ namespace FileCabinetApp
     public class FileCabinetMemoryService : IFileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new ();
-
-        private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new ();
-        private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new ();
-        private readonly Dictionary<string, List<FileCabinetRecord>> dateOfBirthDictionary = new ();
-
         private readonly IRecordValidator validator;
 
         /// <summary>
@@ -29,7 +24,7 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Creates records in the List and the Dictionary.
+        /// Creates records in the List.
         /// </summary>
         /// <param name="v">Object with parameters.</param>
         /// <returns>The id number.</returns>
@@ -67,10 +62,6 @@ namespace FileCabinetApp
 
             this.list.Add(record);
 
-            this.CreateRecordInDictionary(this.firstNameDictionary, v.FirstName);
-            this.CreateRecordInDictionary(this.lastNameDictionary, v.LastName);
-            this.CreateRecordInDictionary(this.dateOfBirthDictionary, v.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture));
-
             return record.Id;
         }
 
@@ -94,7 +85,7 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Changes old record on the new one in the Dictionary and List.
+        /// Changes old record on the new one in the List.
         /// </summary>
         /// <param name="id">Id number.</param>
         /// <param name="v">Object with parameters.</param>
@@ -122,42 +113,38 @@ namespace FileCabinetApp
                 Property3 = v.Property3,
             };
 
-            this.EditDictionary(this.firstNameDictionary, v.FirstName, this.list[realPosition].FirstName, record, realPosition);
-            this.EditDictionary(this.lastNameDictionary, v.LastName, this.list[realPosition].LastName, record, realPosition);
-            this.EditDictionary(this.dateOfBirthDictionary, v.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), this.list[realPosition].DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), record, realPosition);
-
             this.list.RemoveAt(realPosition);
             this.list.Insert(realPosition, record);
         }
 
         /// <summary>
-        /// Finds records in the Dictionary by first name.
+        /// Finds records by first name.
         /// </summary>
         /// <param name="firstName">First name.</param>
         /// <returns>The collection of records found by the <paramref name="firstName"/>.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        public IRecordIterator FindByFirstName(string firstName)
         {
-            return FindByKey(this.firstNameDictionary, firstName);
+            return new MemoryIterator(this, firstName);
         }
 
         /// <summary>
-        /// Finds records in the Dictionary by last name.
+        /// Finds records by last name.
         /// </summary>
         /// <param name="lastName">Last name.</param>
         /// <returns>The collection of records which by the <paramref name="lastName"/>.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        public IRecordIterator FindByLastName(string lastName)
         {
-            return FindByKey(this.lastNameDictionary, lastName);
+            return new MemoryIterator(this, lastName);
         }
 
         /// <summary>
-        /// Finds records in the Dictionary by date of birth.
+        /// Finds records by date of birth.
         /// </summary>
         /// <param name="dateOfBirth">date of birth.</param>
         /// <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
+        public IRecordIterator FindByDateOfBirth(string dateOfBirth)
         {
-            return FindByKey(this.dateOfBirthDictionary, dateOfBirth);
+            return new MemoryIterator(this, dateOfBirth);
         }
 
         /// <summary>
@@ -204,11 +191,6 @@ namespace FileCabinetApp
                 if (!exist)
                 {
                     this.list.Add(a);
-
-                    this.CreateRecordInDictionary(this.firstNameDictionary, a.FirstName);
-                    this.CreateRecordInDictionary(this.lastNameDictionary, a.LastName);
-                    this.CreateRecordInDictionary(this.dateOfBirthDictionary, a.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture));
-
                     count++;
                 }
                 else
@@ -220,7 +202,7 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Removes a record from the Dictionary and List.
+        /// Removes a record.
         /// </summary>
         /// <param name="id">Id number.</param>
         public void RemoveRecord(int id)
@@ -233,10 +215,6 @@ namespace FileCabinetApp
                     realPosition = i;
                 }
             }
-
-            this.RemoveFromDictionary(this.firstNameDictionary, this.list[realPosition].FirstName, realPosition);
-            this.RemoveFromDictionary(this.lastNameDictionary, this.list[realPosition].LastName, realPosition);
-            this.RemoveFromDictionary(this.dateOfBirthDictionary, this.list[realPosition].DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), realPosition);
 
             this.list.RemoveAt(realPosition);
         }
@@ -252,125 +230,6 @@ namespace FileCabinetApp
             numNewRecords = -1;
             numOldRecords = -1;
             Console.WriteLine("'Purge' isn't available for parameter '--storage=memory'");
-        }
-
-        /// <summary>
-        /// Finds records in the Dictionary by key.
-        /// </summary>
-        /// <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
-        /// <param name="currentDictKey">Current Dictionary key.</param>
-        /// <returns>The collection of records found by <paramref name="currentDictKey"/>.</returns>
-        private static ReadOnlyCollection<FileCabinetRecord> FindByKey(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string currentDictKey)
-        {
-            List<FileCabinetRecord> onlyList = new ();
-            ReadOnlyCollection<FileCabinetRecord> onlyCollection;
-            string appropriateFormat;
-            if (DateTime.TryParse(currentDictKey, out DateTime appropriateValue))
-            {
-                string str = appropriateValue.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
-                appropriateFormat = string.Concat(str[..6].ToUpper(), str[6..].ToLower());
-            }
-            else
-            {
-                appropriateFormat = string.Concat(currentDictKey[..1].ToUpper(), currentDictKey[1..].ToLower());
-            }
-
-            if (nameOfDict.ContainsKey(appropriateFormat))
-            {
-                onlyList = nameOfDict[appropriateFormat];
-                onlyCollection = new (onlyList);
-                return onlyCollection;
-            }
-
-            onlyCollection = new (onlyList);
-            return onlyCollection;
-        }
-
-        /// <summary>
-        /// Changes old record on the new one in the Dictionary.
-        /// </summary>
-        /// <param name="nameOfDict">Name of the Dictionary which has to be changed.</param>
-        /// <param name="newDictKey">New Dictionary key.</param>
-        /// <param name="currentDictKey">Current Dictionary key.</param>
-        /// <param name="record">The new record which changes the old record.</param>
-        /// <param name="realPosition">The real position of old record Id.</param>
-        private void EditDictionary(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string newDictKey, string currentDictKey, FileCabinetRecord record, int realPosition)
-        {
-            int indexCurrent = nameOfDict[currentDictKey].IndexOf(this.list[realPosition]);
-            nameOfDict[currentDictKey].RemoveAt(indexCurrent);
-            if (nameOfDict[currentDictKey].Count == 0)
-            {
-                nameOfDict.Remove(currentDictKey);
-            }
-
-            string appropriateNewDictKey = string.Concat(newDictKey[..1].ToUpper(), newDictKey[1..].ToLower());
-            if (!nameOfDict.ContainsKey(newDictKey))
-            {
-                nameOfDict[appropriateNewDictKey] = new List<FileCabinetRecord> { record };
-            }
-            else
-            {
-                nameOfDict[appropriateNewDictKey].Add(record);
-                nameOfDict[appropriateNewDictKey].Sort(CompareId.CompareWithID);
-            }
-        }
-
-        /// <summary>
-        /// Removes a record from the Dictionary.
-        /// </summary>
-        /// <param name="nameOfDict">Name of the Dictionary which has to be changed.</param>
-        /// <param name="currentDictKey">Current Dictionary key.</param>
-        /// <param name="realPosition">The real position of old record Id.</param>
-        private void RemoveFromDictionary(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string currentDictKey, int realPosition)
-        {
-            int indexCurrent = nameOfDict[currentDictKey].IndexOf(this.list[realPosition]);
-            nameOfDict[currentDictKey].RemoveAt(indexCurrent);
-        }
-
-        /// <summary>
-        /// Creates record in the Dictionary.
-        /// </summary>
-        /// <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
-        /// <param name="newDictKey">New Dictionary key.</param>
-        private void CreateRecordInDictionary(Dictionary<string, List<FileCabinetRecord>> nameOfDict, string newDictKey)
-        {
-            string appropriateNewDictKey;
-
-            if (!char.IsNumber(newDictKey[0]))
-            {
-                appropriateNewDictKey = string.Concat(newDictKey[..1].ToUpper(), newDictKey[1..].ToLower());
-            }
-            else
-            {
-                appropriateNewDictKey = newDictKey;
-            }
-
-            if (!nameOfDict.ContainsKey(appropriateNewDictKey))
-            {
-                nameOfDict[appropriateNewDictKey] = new List<FileCabinetRecord> { this.list[^1] };
-            }
-            else
-            {
-                nameOfDict[appropriateNewDictKey].Add(this.list[^1]);
-            }
-        }
-
-        /// <summary>
-        /// Contains comparison method.
-        /// </summary>
-        private static class CompareId
-        {
-            /// <summary>
-            /// Compares two integer instances.
-            /// </summary>
-            /// <param name="x">First integer instance.</param>
-            /// <param name="y">Second integer instance.</param>
-            /// <returns>The indication relative values of integer instances.</returns>
-            public static int CompareWithID(FileCabinetRecord x, FileCabinetRecord y)
-            {
-                int val = x.Id.CompareTo(y.Id);
-                return (val != 0) ? val : 0;
-            }
         }
     }
 }

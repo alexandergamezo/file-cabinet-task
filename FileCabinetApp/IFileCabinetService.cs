@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using FileCabinetApp.RecordIterator;
 
 namespace FileCabinetApp
 {
@@ -8,7 +9,7 @@ namespace FileCabinetApp
     public interface IFileCabinetService
     {
         /// <summary>
-        /// Creates records in the List and the Dictionary.
+        /// Creates records.
         /// </summary>
         /// <param name="v">Object with parameters.</param>
         /// <returns>The id number.</returns>
@@ -27,32 +28,32 @@ namespace FileCabinetApp
         int GetStat();
 
         /// <summary>
-        /// Changes old record on the new one in the Dictionary and List.
+        /// Changes old record on the new one.
         /// </summary>
         /// <param name="id">Id number.</param>
         /// <param name="v">Object with parameters.</param>
         void EditRecord(int id, ParameterObject v);
 
         /// <summary>
-        /// Finds records in the Dictionary by first name.
+        /// Finds records by first name.
         /// </summary>
         /// <param name="firstName">First name.</param>
         /// <returns>The collection of records found by the <paramref name="firstName"/>.</returns>
-        ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName);
+        IRecordIterator FindByFirstName(string firstName);
 
         /// <summary>
-        /// Finds records in the Dictionary by last name.
+        /// Finds records last name.
         /// </summary>
         /// <param name="lastName">Last name.</param>
         /// <returns>The collection of records which by the <paramref name="lastName"/>.</returns>
-        ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName);
+        IRecordIterator FindByLastName(string lastName);
 
         /// <summary>
-        /// Finds records in the Dictionary by date of birth.
+        /// Finds records by date of birth.
         /// </summary>
         /// <param name="dateOfBirth">date of birth.</param>
         /// <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
-        ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth);
+        IRecordIterator FindByDateOfBirth(string dateOfBirth);
 
         /// <summary>
         /// Saves the current state inside a FileCabinetServiceSnapshot.
@@ -68,7 +69,7 @@ namespace FileCabinetApp
         void Restore(FileCabinetServiceSnapshot snapshot, out int count);
 
         /// <summary>
-        /// Removes a record from the Dictionary and List.
+        /// Removes a record.
         /// </summary>
         /// <param name="id">Id number.</param>
         public void RemoveRecord(int id);

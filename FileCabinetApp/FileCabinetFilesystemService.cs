@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.IO;
 using System.Text;
+using FileCabinetApp.RecordIterator;
 
 namespace FileCabinetApp
 {
@@ -14,14 +14,11 @@ namespace FileCabinetApp
     {
         private readonly List<FileCabinetRecord> list = new ();
 
-        private readonly Dictionary<string, List<int>> firstNameDictionary = new ();
-        private readonly Dictionary<string, List<int>> lastNameDictionary = new ();
-        private readonly Dictionary<string, List<int>> dateOfBirthDictionary = new ();
-
         private readonly FileStream fileStream;
         private readonly IRecordValidator validator;
         private readonly int recordSize = 277;
         private readonly int[] offset = { 0, 2, 6, 126, 246, 250, 254, 258, 260, 276 };
+        private readonly Func<BinaryReader, int[], FileCabinetRecord> readBinaryRecord = ReadRecordByBinaryReader;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetFilesystemService"/> class.
@@ -78,9 +75,6 @@ namespace FileCabinetApp
             if (this.list.Count != 0)
             {
                 this.list.Clear();
-                this.firstNameDictionary.Clear();
-                this.lastNameDictionary.Clear();
-                this.dateOfBirthDictionary.Clear();
             }
 
             byte[] readBytes = new byte[this.fileStream.Length];
@@ -101,13 +95,9 @@ namespace FileCabinetApp
                     continue;
                 }
 
-                FileCabinetRecord record = this.ReadRecordByBinaryReader(binaryReader);
+                FileCabinetRecord record = ReadRecordByBinaryReader(binaryReader, this.offset);
 
                 this.list.Add(record);
-
-                this.CreateRecordInDictionary(this.firstNameDictionary, record.FirstName, offsetShift);
-                this.CreateRecordInDictionary(this.lastNameDictionary, record.LastName, offsetShift);
-                this.CreateRecordInDictionary(this.dateOfBirthDictionary, record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture), offsetShift);
 
                 offsetShift += this.recordSize;
             }
@@ -130,7 +120,7 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Changes old record on the new one in the Dictionary and List.
+        /// Changes old record on the new one.
         /// </summary>
         /// <param name="id">Id number.</param>
         /// <param name="v">Object with parameters.</param>
@@ -157,36 +147,33 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Finds records in the Dictionary by first name.
+        /// Finds records by first name.
         /// </summary>
         /// <param name="firstName">First name.</param>
         /// <returns>The collection of records found by the <paramref name="firstName"/>.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        public IRecordIterator FindByFirstName(string firstName)
         {
-            this.GetRecords();
-            return this.FindByKey(this.firstNameDictionary, firstName);
+            return new FilesystemIterator(this, firstName, this.recordSize, this.offset, this.readBinaryRecord);
         }
 
         /// <summary>
-        /// Finds records in the Dictionary by last name.
+        /// Finds records by last name.
         /// </summary>
         /// <param name="lastName">Last name.</param>
         /// <returns>The collection of records which by the <paramref name="lastName"/>.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        public IRecordIterator FindByLastName(string lastName)
         {
-            this.GetRecords();
-            return this.FindByKey(this.lastNameDictionary, lastName);
+            return new FilesystemIterator(this, lastName, this.recordSize, this.offset, this.readBinaryRecord);
         }
 
         /// <summary>
-        /// Finds records in the Dictionary by date of birth.
+        /// Finds records by date of birth.
         /// </summary>
         /// <param name="dateOfBirth">date of birth.</param>
         /// <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
+        public IRecordIterator FindByDateOfBirth(string dateOfBirth)
         {
-            this.GetRecords();
-            return this.FindByKey(this.dateOfBirthDictionary, dateOfBirth);
+            return new FilesystemIterator(this, dateOfBirth, this.recordSize, this.offset, this.readBinaryRecord);
         }
 
         /// <summary>
@@ -249,7 +236,7 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Removes a record from the Dictionary and List.
+        /// Removes a record.
         /// </summary>
         /// <param name="id">Id number.</param>
         public void RemoveRecord(int id)
@@ -310,12 +297,21 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-            /// Converts record in bytes.
-            /// </summary>
-            /// <param name="record">Record.</param>
-            /// <param name="offset">An array of offset values for the record properties in the file.</param>
-            /// <param name="recordSize">Record size.</param>
-            /// <returns>Array with bytes.</returns>
+        /// Returns fileStream.
+        /// </summary>
+        /// <returns>fileStream.</returns>
+        public FileStream GetFileStream()
+        {
+            return this.fileStream;
+        }
+
+        /// <summary>
+        /// Converts record in bytes.
+        /// </summary>
+        /// <param name="record">Record.</param>
+        /// <param name="offset">An array of offset values for the record properties in the file.</param>
+        /// <param name="recordSize">Record size.</param>
+        /// <returns>Array with bytes.</returns>
         private static byte[] WriteToBytes(FileCabinetRecord record, int[] offset, int recordSize)
         {
             int writerId = record.Id;
@@ -364,118 +360,11 @@ namespace FileCabinetApp
             return writeBytes;
         }
 
-        /// <summary>
-        /// Finds records in the Dictionary by key.
-        /// </summary>
-        /// <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
-        /// <param name="currentDictKey">Current Dictionary key.</param>
-        /// <returns>The collection of records found by <paramref name="currentDictKey"/>.</returns>
-        private ReadOnlyCollection<FileCabinetRecord> FindByKey(Dictionary<string, List<int>> nameOfDict, string currentDictKey)
-        {
-            List<FileCabinetRecord> onlyList = new ();
-            ReadOnlyCollection<FileCabinetRecord> onlyCollection;
-            string appropriateFormat;
-            if (DateTime.TryParse(currentDictKey, out DateTime appropriateValue))
-            {
-                string str = appropriateValue.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
-                appropriateFormat = string.Concat(str[..6].ToUpper(), str[6..].ToLower());
-            }
-            else
-            {
-                appropriateFormat = string.Concat(currentDictKey[..1].ToUpper(), currentDictKey[1..].ToLower());
-            }
-
-            if (nameOfDict.ContainsKey(appropriateFormat))
-            {
-                List<int> offsetShiftList = nameOfDict[appropriateFormat];
-
-                byte[] readBytes = new byte[this.fileStream.Length];
-                this.fileStream.Seek(0, SeekOrigin.Begin);
-                this.fileStream.Read(readBytes, 0, readBytes.Length);
-                using MemoryStream memoryStream = new (readBytes);
-                using BinaryReader binaryReader = new (memoryStream);
-                memoryStream.Seek(0, SeekOrigin.Begin);
-
-                foreach (int offsetShift in offsetShiftList)
-                {
-                    memoryStream.Seek(offsetShift, SeekOrigin.Begin);
-                    short reserved = binaryReader.ReadInt16();
-                    FileCabinetRecord record = this.ReadRecordByBinaryReader(binaryReader);
-
-                    onlyList.Add(record);
-                }
-            }
-
-            onlyCollection = new (onlyList);
-            return onlyCollection;
-        }
-
-        private int FindRealPosition(int id)
-        {
-            byte[] readBytes = new byte[this.fileStream.Length];
-            this.fileStream.Seek(0, SeekOrigin.Begin);
-            this.fileStream.Read(readBytes, 0, readBytes.Length);
-            using MemoryStream memoryStream = new (readBytes);
-            using BinaryReader binaryReader = new (memoryStream);
-            memoryStream.Seek(0, SeekOrigin.Begin);
-            int offsetShift = 0;
-            int readerId = -1;
-            while (memoryStream.Position <= (memoryStream.Length - this.recordSize))
-            {
-                memoryStream.Seek(offsetShift, SeekOrigin.Begin);
-
-                short reserved = binaryReader.ReadInt16();
-                if ((reserved >> 2 & 1) == 1)
-                {
-                    offsetShift += this.recordSize;
-                    continue;
-                }
-
-                readerId = binaryReader.ReadInt32();
-                if (readerId == id)
-                {
-                    break;
-                }
-
-                offsetShift += this.recordSize;
-            }
-
-            return offsetShift;
-        }
-
-        /// <summary>
-        /// Creates record in the Dictionary.
-        /// </summary>
-        /// <param name="nameOfDict">The name of the Dictionary in which searches records by key.</param>
-        /// <param name="newDictKey">New Dictionary key.</param>
-        private void CreateRecordInDictionary(Dictionary<string, List<int>> nameOfDict, string newDictKey, int offsetShift)
-        {
-            string appropriateNewDictKey;
-
-            if (!char.IsNumber(newDictKey[0]))
-            {
-                appropriateNewDictKey = string.Concat(newDictKey[..1].ToUpper(), newDictKey[1..].ToLower());
-            }
-            else
-            {
-                appropriateNewDictKey = newDictKey;
-            }
-
-            if (!nameOfDict.ContainsKey(appropriateNewDictKey))
-            {
-                nameOfDict[appropriateNewDictKey] = new List<int> { offsetShift };
-            }
-            else
-            {
-                nameOfDict[appropriateNewDictKey].Add(offsetShift);
-            }
-        }
-
-        private FileCabinetRecord ReadRecordByBinaryReader(BinaryReader binaryReader)
+        private static FileCabinetRecord ReadRecordByBinaryReader(BinaryReader binaryReader, int[] offset)
         {
             int readerId = binaryReader.ReadInt32();
 
-            char[] firstNameChars = binaryReader.ReadChars(this.offset[3] - this.offset[2]);
+            char[] firstNameChars = binaryReader.ReadChars(offset[3] - offset[2]);
             StringBuilder strBuilderFirstName = new ();
             foreach (char a in firstNameChars)
             {
@@ -487,7 +376,7 @@ namespace FileCabinetApp
 
             string readerFirstName = strBuilderFirstName.ToString();
 
-            char[] ch = binaryReader.ReadChars(this.offset[4] - this.offset[3]);
+            char[] ch = binaryReader.ReadChars(offset[4] - offset[3]);
             StringBuilder strBuilderLastName = new ();
             foreach (char a in ch)
             {
@@ -521,6 +410,39 @@ namespace FileCabinetApp
             };
 
             return record;
+        }
+
+        private int FindRealPosition(int id)
+        {
+            byte[] readBytes = new byte[this.fileStream.Length];
+            this.fileStream.Seek(0, SeekOrigin.Begin);
+            this.fileStream.Read(readBytes, 0, readBytes.Length);
+            using MemoryStream memoryStream = new (readBytes);
+            using BinaryReader binaryReader = new (memoryStream);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            int offsetShift = 0;
+            int readerId = -1;
+            while (memoryStream.Position <= (memoryStream.Length - this.recordSize))
+            {
+                memoryStream.Seek(offsetShift, SeekOrigin.Begin);
+
+                short reserved = binaryReader.ReadInt16();
+                if ((reserved >> 2 & 1) == 1)
+                {
+                    offsetShift += this.recordSize;
+                    continue;
+                }
+
+                readerId = binaryReader.ReadInt32();
+                if (readerId == id)
+                {
+                    break;
+                }
+
+                offsetShift += this.recordSize;
+            }
+
+            return offsetShift;
         }
     }
 }
