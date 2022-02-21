@@ -469,18 +469,6 @@
             <param name="numNewRecords">The number of new records in a new file.</param>
             <param name="numOldRecords">The number of old records in an old file.</param>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.GetEnumerator">
-            <summary>
-            Returns an enumerator that iterates through the collection.
-            </summary>
-            <returns>An enumerator that can be used to iterate through the collection.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.System#Collections#IEnumerable#GetEnumerator">
-            <summary>
-            Returns an enumerator that iterates through the collection.
-            </summary>
-            <returns>An IEnumearator object that can be used to iterate through the collection.</returns>
-        </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.GetFindList(System.String,System.String)">
             <summary>
             Creates a new list with found records.
@@ -1027,30 +1015,6 @@
             Protected implementation of Dispose pattern.
             </summary>
             <param name="disposing"> Indicates whether the method call comes from a Dispose method or from a finalizer.</param>
-        </member>
-        <member name="T:FileCabinetApp.RecordIterator.IRecordIterator">
-            <summary>
-            Declares a methods for IRecordIterator.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.RecordIterator.IRecordIterator.GetNext">
-            <summary>
-            Move forward to next element.
-            </summary>
-            <returns>next element.</returns>
-        </member>
-        <member name="M:FileCabinetApp.RecordIterator.IRecordIterator.HasMore">
-            <summary>
-            Checks the end of the file.
-            </summary>
-            <returns>boolean.</returns>
-        </member>
-        <member name="M:FileCabinetApp.RecordIterator.IRecordIterator.GetFindList(System.String)">
-            <summary>
-            Creates a new list with found records.
-            </summary>
-            <param name="whatFind">the parameter for finding.</param>
-            <returns>the list with found records.</returns>
         </member>
         <member name="T:FileCabinetApp.RecordValidator.CompositeValidator">
             <summary>

@@ -313,14 +313,12 @@ namespace FileCabinetApp
         /// <param name="whatFind">the parameter for finding.</param>
         /// <param name="parameter">firstName, lastName or dateOfBirth.</param>
         /// <returns>the list with found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> GetFindList(string whatFind, string parameter)
+        public IEnumerable<FileCabinetRecord> GetFindList(string whatFind, string parameter)
         {
             bool firstname = whatFind.Equals("firstname");
             bool lastname = whatFind.Equals("lastname");
             bool dateofbirth = whatFind.Equals("dateofbirth");
 
-            List<FileCabinetRecord> onlyList = new ();
-            ReadOnlyCollection<FileCabinetRecord> onlyCollection;
             string appropriateFormat;
             if (dateofbirth && DateTime.TryParse(parameter, out DateTime appropriateValue))
             {
@@ -340,23 +338,17 @@ namespace FileCabinetApp
 
                 if (firstname && record.FirstName.Equals(appropriateFormat))
                 {
-                    onlyList.Add(record);
+                    yield return record;
                 }
-
-                if (lastname && record.LastName.Equals(appropriateFormat))
+                else if (lastname && record.LastName.Equals(appropriateFormat))
                 {
-                    onlyList.Add(record);
+                    yield return record;
                 }
-
-                if (dateofbirth && record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).Equals(appropriateFormat))
+                else if (dateofbirth && record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).Equals(appropriateFormat))
                 {
-                    onlyList.Add(record);
+                    yield return record;
                 }
             }
-
-            onlyCollection = new (onlyList);
-
-            return onlyCollection;
         }
 
         /// <summary>

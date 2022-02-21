@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using FileCabinetApp.RecordIterator;
 
 namespace FileCabinetApp
 {
     /// <summary>
     /// Reacts to user commands and executes some commands.
     /// </summary>
-    public class FileCabinetMemoryService : IFileCabinetService, IEnumerable<FileCabinetRecord>
+    public class FileCabinetMemoryService : IFileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new ();
         private readonly IRecordValidator validator;
@@ -235,39 +233,17 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<FileCabinetRecord> GetEnumerator()
-        {
-            return this.list.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An IEnumearator object that can be used to iterate through the collection.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-
-        /// <summary>
         /// Creates a new list with found records.
         /// </summary>
         /// <param name="whatFind">the parameter for finding.</param>
         /// <param name="parameter">firstName, lastName or dateOfBirth.</param>
         /// <returns>the list with found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> GetFindList(string whatFind, string parameter)
+        public IEnumerable<FileCabinetRecord> GetFindList(string whatFind, string parameter)
         {
-            IEnumerator<FileCabinetRecord> b = this.GetEnumerator();
-
             bool firstname = whatFind.Equals("firstname");
             bool lastname = whatFind.Equals("lastname");
             bool dateofbirth = whatFind.Equals("dateofbirth");
 
-            List<FileCabinetRecord> onlyList = new ();
-            ReadOnlyCollection<FileCabinetRecord> onlyCollection;
             string appropriateFormat;
             if (dateofbirth && DateTime.TryParse(parameter, out DateTime appropriateValue))
             {
@@ -279,29 +255,21 @@ namespace FileCabinetApp
                 appropriateFormat = string.Concat(parameter[..1].ToUpper(), parameter[1..].ToLower());
             }
 
-            while (b.MoveNext())
+            foreach (var record in this.list)
             {
-                FileCabinetRecord record = b.Current;
-
                 if (firstname && record.FirstName.Equals(appropriateFormat))
                 {
-                    onlyList.Add(record);
+                    yield return record;
                 }
-
-                if (lastname && record.LastName.Equals(appropriateFormat))
+                else if (lastname && record.LastName.Equals(appropriateFormat))
                 {
-                    onlyList.Add(record);
+                    yield return record;
                 }
-
-                if (dateofbirth && record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).Equals(appropriateFormat))
+                else if (dateofbirth && record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).Equals(appropriateFormat))
                 {
-                    onlyList.Add(record);
+                    yield return record;
                 }
             }
-
-            onlyCollection = new (onlyList);
-
-            return onlyCollection;
         }
     }
 }
