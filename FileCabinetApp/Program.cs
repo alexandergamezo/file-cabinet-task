@@ -22,7 +22,7 @@ namespace FileCabinetApp
         /// <summary>
         /// Log name.
         /// </summary>
-        public const string Logname = "log.txt";
+        private const string Logname = "log.txt";
         private const string DeveloperName = "Alexander Gamezo";
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
 
@@ -100,9 +100,9 @@ namespace FileCabinetApp
                 bool paramVariantFour = (args[0].ToLowerInvariant().Equals("--validation-rules=custom") || (args[0] + " " + args[1]).ToLowerInvariant().Equals("-v custom")) &&
                                         (args[2].ToLowerInvariant().Equals("--storage=file") || (args[2] + " " + args[3]).ToLowerInvariant().Equals("-s file"));
 
-                bool paramVariantFive = args[4].ToLowerInvariant().Equals("use-stopwatch") && string.IsNullOrEmpty(args[5]);
+                bool paramVariantFive = args.Length == 5 && args[4].ToLowerInvariant().Equals("use-stopwatch");
 
-                bool paramVariantSix = args[4].ToLowerInvariant().Equals("use-stopwatch") && args[5].ToLowerInvariant().Equals("use-logger");
+                bool paramVariantSix = args.Length == 6 && args[4].ToLowerInvariant().Equals("use-stopwatch") && args[5].ToLowerInvariant().Equals("use-logger");
 
                 IFileCabinetService fileCabinetBase;
 

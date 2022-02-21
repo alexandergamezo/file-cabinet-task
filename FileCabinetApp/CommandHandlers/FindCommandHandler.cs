@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace FileCabinetApp.CommandHandlers
 {
@@ -78,29 +77,31 @@ namespace FileCabinetApp.CommandHandlers
             bool checkParameterLastName = originalParameters[1].Equals(command, StringComparison.InvariantCultureIgnoreCase);
             bool checkParameterDateOfBirth = originalParameters[2].Equals(command, StringComparison.InvariantCultureIgnoreCase);
 
+            int count = 0;
+
             if (checkParameterFirstName)
             {
-                ReadOnlyCollection<FileCabinetRecord> onlyCollection = this.service.FindByFirstName(parameter);
-                if (onlyCollection.Count == 0)
+                IEnumerable<FileCabinetRecord> collection = this.service.FindByFirstName(parameter);
+                foreach (var a in collection)
                 {
-                    Console.WriteLine("No results.");
-                }
-                else
-                {
-                    this.recordPrinter(onlyCollection);
+                    if (a != null)
+                    {
+                        count++;
+                        this.recordPrinter(new List<FileCabinetRecord> { a });
+                    }
                 }
             }
 
             if (checkParameterLastName)
             {
-                ReadOnlyCollection<FileCabinetRecord> onlyCollection = this.service.FindByLastName(parameter);
-                if (onlyCollection.Count == 0)
+                IEnumerable<FileCabinetRecord> collection = this.service.FindByLastName(parameter);
+                foreach (var a in collection)
                 {
-                    Console.WriteLine("No results.");
-                }
-                else
-                {
-                    this.recordPrinter(onlyCollection);
+                    if (a != null)
+                    {
+                        count++;
+                        this.recordPrinter(new List<FileCabinetRecord> { a });
+                    }
                 }
             }
 
@@ -108,20 +109,25 @@ namespace FileCabinetApp.CommandHandlers
             {
                 try
                 {
-                    ReadOnlyCollection<FileCabinetRecord> onlyCollection = this.service.FindByDateOfBirth(parameter.Trim('"'));
-                    if (onlyCollection.Count == 0)
+                    IEnumerable<FileCabinetRecord> collection = this.service.FindByDateOfBirth(parameter.Trim('"'));
+                    foreach (var a in collection)
                     {
-                        Console.WriteLine("No results.");
-                    }
-                    else
-                    {
-                        this.recordPrinter(onlyCollection);
+                        if (a != null)
+                        {
+                            count++;
+                            this.recordPrinter(new List<FileCabinetRecord> { a });
+                        }
                     }
                 }
                 catch (Exception)
                 {
                     Console.WriteLine($"The '{originalParameters[2]}' parameter has the wrong format.");
                 }
+            }
+
+            if (count == 0)
+            {
+                Console.WriteLine("No results.");
             }
         }
     }

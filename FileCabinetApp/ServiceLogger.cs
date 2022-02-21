@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 
 namespace FileCabinetApp
 {
@@ -26,7 +27,7 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Creates records in the List and the Dictionary.
+        /// Creates records.
         /// </summary>
         /// <param name="v">Object with parameters.</param>
         /// <returns>The id number.</returns>
@@ -67,7 +68,7 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Changes old record on the new one in the Dictionary and List.
+        /// Changes old record on the new one.
         /// </summary>
         /// <param name="id">Id number.</param>
         /// <param name="v">Object with parameters.</param>
@@ -92,48 +93,51 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Finds records in the Dictionary by date of birth.
+        /// Finds records by date of birth.
         /// </summary>
         /// <param name="dateOfBirth">date of birth.</param>
         /// <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
+        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
         {
             this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Calling Find() by dateofbirth = '{dateOfBirth}'");
-            ReadOnlyCollection<FileCabinetRecord> result = this.service.FindByDateOfBirth(dateOfBirth);
-            this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Find() returned '{result.Count}' record(s)");
+            IEnumerable<FileCabinetRecord> result = this.service.FindByDateOfBirth(dateOfBirth);
+            int num = result.Count();
+            this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Find() returned '{num}' record(s)");
             this.writer.Flush();
 
-            return result;
+            return this.service.FindByDateOfBirth(dateOfBirth);
         }
 
         /// <summary>
-        /// Finds records in the Dictionary by first name.
+        /// Finds records by first name.
         /// </summary>
         /// <param name="firstName">First name.</param>
         /// <returns>The collection of records found by the <paramref name="firstName"/>.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Calling Find() by firstname = '{firstName}'");
-            ReadOnlyCollection<FileCabinetRecord> result = this.service.FindByFirstName(firstName);
-            this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Find() returned '{result.Count}' record(s)");
+            IEnumerable<FileCabinetRecord> result = this.service.FindByFirstName(firstName);
+            int num = result.Count();
+            this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Find() returned '{num}' record(s)");
             this.writer.Flush();
 
-            return result;
+            return this.service.FindByFirstName(firstName);
         }
 
         /// <summary>
-        /// Finds records in the Dictionary by last name.
+        /// Finds records by last name.
         /// </summary>
         /// <param name="lastName">Last name.</param>
         /// <returns>The collection of records which by the <paramref name="lastName"/>.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Calling Find() by lastname = '{lastName}'");
-            ReadOnlyCollection<FileCabinetRecord> result = this.service.FindByLastName(lastName);
-            this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Find() returned '{result.Count}' record(s)");
+            IEnumerable<FileCabinetRecord> result = this.service.FindByLastName(lastName);
+            int num = result.Count();
+            this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Find() returned '{num}' record(s)");
             this.writer.Flush();
 
-            return result;
+            return this.service.FindByLastName(lastName);
         }
 
         /// <summary>
@@ -178,7 +182,7 @@ namespace FileCabinetApp
         }
 
         /// <summary>
-        /// Removes a record from the Dictionary and List.
+        /// Removes a record.
         /// </summary>
         /// <param name="id">Id number.</param>
         public void RemoveRecord(int id)
