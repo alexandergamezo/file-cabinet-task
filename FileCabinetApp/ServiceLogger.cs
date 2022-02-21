@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using FileCabinetApp.RecordIterator;
 
 namespace FileCabinetApp
@@ -96,11 +99,11 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="dateOfBirth">date of birth.</param>
         /// <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
-        public IRecordIterator FindByDateOfBirth(string dateOfBirth)
+        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
         {
             this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Calling Find() by dateofbirth = '{dateOfBirth}'");
-            IRecordIterator result = this.service.FindByDateOfBirth(dateOfBirth);
-            int num = result.GetFindList("dateofbirth").Count;
+            IEnumerable<FileCabinetRecord> result = this.service.FindByDateOfBirth(dateOfBirth);
+            int num = result.Count();
             this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Find() returned '{num}' record(s)");
             this.writer.Flush();
 
@@ -112,11 +115,11 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="firstName">First name.</param>
         /// <returns>The collection of records found by the <paramref name="firstName"/>.</returns>
-        public IRecordIterator FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Calling Find() by firstname = '{firstName}'");
-            IRecordIterator result = this.service.FindByFirstName(firstName);
-            int num = result.GetFindList("firstname").Count;
+            IEnumerable<FileCabinetRecord> result = this.service.FindByFirstName(firstName);
+            int num = result.Count();
             this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Find() returned '{num}' record(s)");
             this.writer.Flush();
 
@@ -128,11 +131,11 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="lastName">Last name.</param>
         /// <returns>The collection of records which by the <paramref name="lastName"/>.</returns>
-        public IRecordIterator FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Calling Find() by lastname = '{lastName}'");
-            IRecordIterator result = this.service.FindByLastName(lastName);
-            int num = result.GetFindList("lastname").Count;
+            IEnumerable<FileCabinetRecord> result = this.service.FindByLastName(lastName);
+            int num = result.Count();
             this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Find() returned '{num}' record(s)");
             this.writer.Flush();
 

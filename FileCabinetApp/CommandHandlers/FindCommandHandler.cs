@@ -80,7 +80,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (checkParameterFirstName)
             {
-                ReadOnlyCollection<FileCabinetRecord> onlyCollection = this.service.FindByFirstName(parameter).GetFindList("firstname");
+                ReadOnlyCollection<FileCabinetRecord> onlyCollection = (ReadOnlyCollection<FileCabinetRecord>)this.service.FindByFirstName(parameter);
                 if (onlyCollection.Count == 0)
                 {
                     Console.WriteLine("No results.");
@@ -93,7 +93,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (checkParameterLastName)
             {
-                ReadOnlyCollection<FileCabinetRecord> onlyCollection = this.service.FindByLastName(parameter).GetFindList("lastname");
+                ReadOnlyCollection<FileCabinetRecord> onlyCollection = (ReadOnlyCollection<FileCabinetRecord>)this.service.FindByLastName(parameter);
                 if (onlyCollection.Count == 0)
                 {
                     Console.WriteLine("No results.");
@@ -108,7 +108,7 @@ namespace FileCabinetApp.CommandHandlers
             {
                 try
                 {
-                    ReadOnlyCollection<FileCabinetRecord> onlyCollection = this.service.FindByDateOfBirth(parameter.Trim('"')).GetFindList("dateofbirth");
+                    ReadOnlyCollection<FileCabinetRecord> onlyCollection = (ReadOnlyCollection<FileCabinetRecord>)this.service.FindByDateOfBirth(parameter.Trim('"'));
                     if (onlyCollection.Count == 0)
                     {
                         Console.WriteLine("No results.");

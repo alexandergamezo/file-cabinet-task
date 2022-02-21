@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using FileCabinetApp.RecordIterator;
@@ -10,7 +12,7 @@ namespace FileCabinetApp
     /// <summary>
     /// Reacts to user commands and executes some commands.
     /// </summary>
-    public class FileCabinetFilesystemService : IFileCabinetService
+    public class FileCabinetFilesystemService : IFileCabinetService, IEnumerable<FileCabinetRecord>
     {
         private readonly List<FileCabinetRecord> list = new ();
 
@@ -151,9 +153,9 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="firstName">First name.</param>
         /// <returns>The collection of records found by the <paramref name="firstName"/>.</returns>
-        public IRecordIterator FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
-            return new FilesystemIterator(this, firstName, this.recordSize, this.offset, this.readBinaryRecord);
+            return this.GetFindList("firstname", firstName);
         }
 
         /// <summary>
@@ -161,9 +163,9 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="lastName">Last name.</param>
         /// <returns>The collection of records which by the <paramref name="lastName"/>.</returns>
-        public IRecordIterator FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
-            return new FilesystemIterator(this, lastName, this.recordSize, this.offset, this.readBinaryRecord);
+            return this.GetFindList("lastname", lastName);
         }
 
         /// <summary>
@@ -171,9 +173,9 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="dateOfBirth">date of birth.</param>
         /// <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
-        public IRecordIterator FindByDateOfBirth(string dateOfBirth)
+        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
         {
-            return new FilesystemIterator(this, dateOfBirth, this.recordSize, this.offset, this.readBinaryRecord);
+            return this.GetFindList("dateofbirth", dateOfBirth);
         }
 
         /// <summary>
@@ -303,6 +305,76 @@ namespace FileCabinetApp
         public FileStream GetFileStream()
         {
             return this.fileStream;
+        }
+
+        /// <summary>
+        /// Creates a new list with found records.
+        /// </summary>
+        /// <param name="whatFind">the parameter for finding.</param>
+        /// <param name="parameter">firstName, lastName or dateOfBirth.</param>
+        /// <returns>the list with found records.</returns>
+        public ReadOnlyCollection<FileCabinetRecord> GetFindList(string whatFind, string parameter)
+        {
+            bool firstname = whatFind.Equals("firstname");
+            bool lastname = whatFind.Equals("lastname");
+            bool dateofbirth = whatFind.Equals("dateofbirth");
+
+            List<FileCabinetRecord> onlyList = new ();
+            ReadOnlyCollection<FileCabinetRecord> onlyCollection;
+            string appropriateFormat;
+            if (dateofbirth && DateTime.TryParse(parameter, out DateTime appropriateValue))
+            {
+                string str = appropriateValue.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
+                appropriateFormat = string.Concat(str[..6].ToUpper(), str[6..].ToLower());
+            }
+            else
+            {
+                appropriateFormat = string.Concat(parameter[..1].ToUpper(), parameter[1..].ToLower());
+            }
+
+            IEnumerator<FileCabinetRecord> b = this.GetEnumerator();
+
+            while (b.MoveNext())
+            {
+                FileCabinetRecord record = b.Current;
+
+                if (firstname && record.FirstName.Equals(appropriateFormat))
+                {
+                    onlyList.Add(record);
+                }
+
+                if (lastname && record.LastName.Equals(appropriateFormat))
+                {
+                    onlyList.Add(record);
+                }
+
+                if (dateofbirth && record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).Equals(appropriateFormat))
+                {
+                    onlyList.Add(record);
+                }
+            }
+
+            onlyCollection = new (onlyList);
+
+            return onlyCollection;
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        public IEnumerator<FileCabinetRecord> GetEnumerator()
+        {
+            return new FilesystemIterator(this, this.recordSize, this.offset, this.readBinaryRecord);
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An IEnumearator object that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
 
         /// <summary>

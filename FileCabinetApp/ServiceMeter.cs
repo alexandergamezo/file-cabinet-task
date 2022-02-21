@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using FileCabinetApp.RecordIterator;
@@ -77,12 +78,12 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="dateOfBirth">date of birth.</param>
         /// <returns>The collection of records found by <paramref name="dateOfBirth"/>.</returns>
-        public IRecordIterator FindByDateOfBirth(string dateOfBirth)
+        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
         {
             Stopwatch time = new ();
             time.Start();
 
-            IRecordIterator result = this.service.FindByDateOfBirth(dateOfBirth);
+            IEnumerable<FileCabinetRecord> result = this.service.FindByDateOfBirth(dateOfBirth);
 
             time.Stop();
             Console.WriteLine($"Find method execution duration is {time.ElapsedTicks} ticks.");
@@ -95,12 +96,12 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="firstName">First name.</param>
         /// <returns>The collection of records found by the <paramref name="firstName"/>.</returns>
-        public IRecordIterator FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             Stopwatch time = new ();
             time.Start();
 
-            IRecordIterator result = this.service.FindByFirstName(firstName);
+            IEnumerable<FileCabinetRecord> result = this.service.FindByFirstName(firstName);
 
             time.Stop();
             Console.WriteLine($"Find method execution duration is {time.ElapsedTicks} ticks.");
@@ -113,12 +114,12 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="lastName">Last name.</param>
         /// <returns>The collection of records which by the <paramref name="lastName"/>.</returns>
-        public IRecordIterator FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             Stopwatch time = new ();
             time.Start();
 
-            IRecordIterator result = this.service.FindByLastName(lastName);
+            IEnumerable<FileCabinetRecord> result = this.service.FindByLastName(lastName);
 
             time.Stop();
             Console.WriteLine($"Find method execution duration is {time.ElapsedTicks} ticks.");

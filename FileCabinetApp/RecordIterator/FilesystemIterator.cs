@@ -1,7 +1,6 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
 using System.IO;
 
 namespace FileCabinetApp.RecordIterator
@@ -9,62 +8,75 @@ namespace FileCabinetApp.RecordIterator
     /// <summary>
     /// FilesystemIterator.
     /// </summary>
-    public class FilesystemIterator : IRecordIterator
+    public class FilesystemIterator : IEnumerator<FileCabinetRecord>
     {
-        private readonly string parameter;
         private readonly int recordSize;
         private readonly int[] offset;
         private readonly FileStream fileStream;
         private readonly Func<BinaryReader, int[], FileCabinetRecord> readBinaryRecord;
         private int position;
+        private bool disposedValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FilesystemIterator"/> class.
         /// </summary>
         /// <param name="collection">collection.</param>
-        /// <param name="parameter">parameter.</param>
         /// <param name="recordSize">recordSize.</param>
         /// <param name="offset">offset.</param>
         /// <param name="readBinaryRecord">Func Delegate.</param>
         public FilesystemIterator(
             FileCabinetFilesystemService collection,
-            string parameter,
             int recordSize,
             int[] offset,
             Func<BinaryReader, int[], FileCabinetRecord> readBinaryRecord)
         {
-            this.parameter = parameter;
             this.recordSize = recordSize;
             this.offset = offset;
             this.fileStream = collection.GetFileStream();
             this.readBinaryRecord = readBinaryRecord;
+            this.position = -recordSize;
         }
 
         /// <summary>
-        /// Move forward to next element.
+        /// Gets current element.
         /// </summary>
-        /// <returns>next element.</returns>
-        public FileCabinetRecord GetNext()
+        /// <value>
+        /// Current element.
+        /// </value>
+        public FileCabinetRecord Current
         {
-            byte[] readBytes = new byte[this.fileStream.Length];
-            this.fileStream.Seek(0, SeekOrigin.Begin);
-            this.fileStream.Read(readBytes, 0, readBytes.Length);
-            using MemoryStream memoryStream = new (readBytes);
-            using BinaryReader binaryReader = new (memoryStream);
-            memoryStream.Seek(this.position, SeekOrigin.Begin);
+            get
+            {
+                byte[] readBytes = new byte[this.fileStream.Length];
+                this.fileStream.Seek(0, SeekOrigin.Begin);
+                this.fileStream.Read(readBytes, 0, readBytes.Length);
+                using MemoryStream memoryStream = new (readBytes);
+                using BinaryReader binaryReader = new (memoryStream);
+                memoryStream.Seek(this.position, SeekOrigin.Begin);
 
-            binaryReader.ReadInt16();
-            FileCabinetRecord record = this.readBinaryRecord(binaryReader, this.offset);
+                binaryReader.ReadInt16();
+                FileCabinetRecord record = this.readBinaryRecord(binaryReader, this.offset);
 
-            return record;
+                return record;
+            }
         }
+
+        /// <summary>
+        /// Gets the element in the collection at the current position of the enumerator.
+        /// </summary>
+        /// <value>
+        /// Record.
+        /// </value>
+        object IEnumerator.Current => this.Current;
 
         /// <summary>
         /// Checks the end of the file.
         /// </summary>
         /// <returns>boolean.</returns>
-        public bool HasMore()
+        public bool MoveNext()
         {
+            this.position += this.recordSize;
+
             if (this.position < this.fileStream.Length)
             {
                 return true;
@@ -74,53 +86,43 @@ namespace FileCabinetApp.RecordIterator
         }
 
         /// <summary>
-        /// Creates a new list with found records.
+        /// Sets the enumerator to its initial position, which is before the first element in the collection.
         /// </summary>
-        /// <param name="whatFind">the parameter for finding.</param>
-        /// <returns>the list with found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> GetFindList(string whatFind)
+        public void Reset()
         {
-            bool firstname = whatFind.Equals("firstname");
-            bool lastname = whatFind.Equals("lastname");
-            bool dateofbirth = whatFind.Equals("dateofbirth");
+            this.position = -this.recordSize;
+        }
 
-            List<FileCabinetRecord> onlyList = new ();
-            ReadOnlyCollection<FileCabinetRecord> onlyCollection;
-            string appropriateFormat;
-            if (dateofbirth && DateTime.TryParse(this.parameter, out DateTime appropriateValue))
-            {
-                string str = appropriateValue.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture);
-                appropriateFormat = string.Concat(str[..6].ToUpper(), str[6..].ToLower());
-            }
-            else
-            {
-                appropriateFormat = string.Concat(this.parameter[..1].ToUpper(), this.parameter[1..].ToLower());
-            }
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-            while (this.HasMore())
+        /// <summary>
+        /// Protected implementation of Dispose pattern.
+        /// </summary>
+        /// <param name="disposing"> Indicates whether the method call comes from a Dispose method or from a finalizer.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposedValue)
             {
-                FileCabinetRecord record = this.GetNext();
-                this.position += this.recordSize;
-
-                if (firstname && record.FirstName.Equals(appropriateFormat))
+                if (disposing)
                 {
-                    onlyList.Add(record);
+                    return;
                 }
 
-                if (lastname && record.LastName.Equals(appropriateFormat))
+                if (this.fileStream != null)
                 {
-                    onlyList.Add(record);
-                }
-
-                if (dateofbirth && record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture).Equals(appropriateFormat))
-                {
-                    onlyList.Add(record);
+                    this.fileStream.Close();
+                    this.fileStream.Dispose();
                 }
             }
 
-            onlyCollection = new (onlyList);
-
-            return onlyCollection;
+            this.disposedValue = true;
         }
     }
 }

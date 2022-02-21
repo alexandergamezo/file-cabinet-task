@@ -354,6 +354,26 @@
             </summary>
             <returns>fileStream.</returns>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.GetFindList(System.String,System.String)">
+            <summary>
+            Creates a new list with found records.
+            </summary>
+            <param name="whatFind">the parameter for finding.</param>
+            <param name="parameter">firstName, lastName or dateOfBirth.</param>
+            <returns>the list with found records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the collection.
+            </summary>
+            <returns>An enumerator that can be used to iterate through the collection.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the collection.
+            </summary>
+            <returns>An IEnumearator object that can be used to iterate through the collection.</returns>
+        </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.WriteToBytes(FileCabinetApp.FileCabinetRecord,System.Int32[],System.Int32)">
             <summary>
             Converts record in bytes.
@@ -448,6 +468,26 @@
             <param name="destinationFileName">The destination file name.</param>
             <param name="numNewRecords">The number of new records in a new file.</param>
             <param name="numOldRecords">The number of old records in an old file.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the collection.
+            </summary>
+            <returns>An enumerator that can be used to iterate through the collection.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the collection.
+            </summary>
+            <returns>An IEnumearator object that can be used to iterate through the collection.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.GetFindList(System.String,System.String)">
+            <summary>
+            Creates a new list with found records.
+            </summary>
+            <param name="whatFind">the parameter for finding.</param>
+            <param name="parameter">firstName, lastName or dateOfBirth.</param>
+            <returns>the list with found records.</returns>
         </member>
         <member name="T:FileCabinetApp.FileCabinetRecord">
             <summary>
@@ -941,34 +981,52 @@
             FilesystemIterator.
             </summary>
         </member>
-        <member name="M:FileCabinetApp.RecordIterator.FilesystemIterator.#ctor(FileCabinetApp.FileCabinetFilesystemService,System.String,System.Int32,System.Int32[],System.Func{System.IO.BinaryReader,System.Int32[],FileCabinetApp.FileCabinetRecord})">
+        <member name="M:FileCabinetApp.RecordIterator.FilesystemIterator.#ctor(FileCabinetApp.FileCabinetFilesystemService,System.Int32,System.Int32[],System.Func{System.IO.BinaryReader,System.Int32[],FileCabinetApp.FileCabinetRecord})">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.RecordIterator.FilesystemIterator"/> class.
             </summary>
             <param name="collection">collection.</param>
-            <param name="parameter">parameter.</param>
             <param name="recordSize">recordSize.</param>
             <param name="offset">offset.</param>
             <param name="readBinaryRecord">Func Delegate.</param>
         </member>
-        <member name="M:FileCabinetApp.RecordIterator.FilesystemIterator.GetNext">
+        <member name="P:FileCabinetApp.RecordIterator.FilesystemIterator.Current">
             <summary>
-            Move forward to next element.
+            Gets current element.
             </summary>
-            <returns>next element.</returns>
+            <value>
+            Current element.
+            </value>
         </member>
-        <member name="M:FileCabinetApp.RecordIterator.FilesystemIterator.HasMore">
+        <member name="P:FileCabinetApp.RecordIterator.FilesystemIterator.System#Collections#IEnumerator#Current">
+            <summary>
+            Gets the element in the collection at the current position of the enumerator.
+            </summary>
+            <value>
+            Record.
+            </value>
+        </member>
+        <member name="M:FileCabinetApp.RecordIterator.FilesystemIterator.MoveNext">
             <summary>
             Checks the end of the file.
             </summary>
             <returns>boolean.</returns>
         </member>
-        <member name="M:FileCabinetApp.RecordIterator.FilesystemIterator.GetFindList(System.String)">
+        <member name="M:FileCabinetApp.RecordIterator.FilesystemIterator.Reset">
             <summary>
-            Creates a new list with found records.
+            Sets the enumerator to its initial position, which is before the first element in the collection.
             </summary>
-            <param name="whatFind">the parameter for finding.</param>
-            <returns>the list with found records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.RecordIterator.FilesystemIterator.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.RecordIterator.FilesystemIterator.Dispose(System.Boolean)">
+            <summary>
+            Protected implementation of Dispose pattern.
+            </summary>
+            <param name="disposing"> Indicates whether the method call comes from a Dispose method or from a finalizer.</param>
         </member>
         <member name="T:FileCabinetApp.RecordIterator.IRecordIterator">
             <summary>
@@ -988,37 +1046,6 @@
             <returns>boolean.</returns>
         </member>
         <member name="M:FileCabinetApp.RecordIterator.IRecordIterator.GetFindList(System.String)">
-            <summary>
-            Creates a new list with found records.
-            </summary>
-            <param name="whatFind">the parameter for finding.</param>
-            <returns>the list with found records.</returns>
-        </member>
-        <member name="T:FileCabinetApp.RecordIterator.MemoryIterator">
-            <summary>
-            MemoryIterator.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.RecordIterator.MemoryIterator.#ctor(FileCabinetApp.FileCabinetMemoryService,System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.RecordIterator.MemoryIterator"/> class.
-            </summary>
-            <param name="collection">collection.</param>
-            <param name="parameter">parameter.</param>
-        </member>
-        <member name="M:FileCabinetApp.RecordIterator.MemoryIterator.GetNext">
-            <summary>
-            Move forward to next element.
-            </summary>
-            <returns>next element.</returns>
-        </member>
-        <member name="M:FileCabinetApp.RecordIterator.MemoryIterator.HasMore">
-            <summary>
-            Checks the end of the file.
-            </summary>
-            <returns>boolean.</returns>
-        </member>
-        <member name="M:FileCabinetApp.RecordIterator.MemoryIterator.GetFindList(System.String)">
             <summary>
             Creates a new list with found records.
             </summary>
