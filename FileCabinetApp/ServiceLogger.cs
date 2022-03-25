@@ -169,6 +169,35 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Inserts records.
+        /// </summary>
+        /// <param name="id">Id number.</param>
+        /// <param name="v">Object with parameters.</param>
+        /// <returns>The id number.</returns>
+        public int Insert(int id, ParameterObject v)
+        {
+            int result = -1;
+            try
+            {
+                this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Calling Insert() with Id = '{id}' FirstName = '{v.FirstName}', LastName = '{v.LastName}', DateOfBirth = '{v.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)}', " +
+                                      $"Property1 = '{v.Property1}', Property2 = '{v.Property2}', Property3 = '{v.Property3}'");
+                result = this.service.Insert(id, v);
+                this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Insert() returned '{result}'");
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc);
+                this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Exception: '{exc}'");
+            }
+            finally
+            {
+                this.writer.Flush();
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Saves the current state inside a FileCabinetServiceSnapshot.
         /// </summary>
         /// <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>

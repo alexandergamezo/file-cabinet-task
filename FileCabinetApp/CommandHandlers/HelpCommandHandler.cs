@@ -24,6 +24,7 @@ namespace FileCabinetApp.CommandHandlers
             new string[] { "import", "imports service data from from file in the 'CSV' or 'XML' format", "The 'import' imports service data from file in the 'CSV' or 'XML' format. Formats: 'csv', 'xml'." },
             new string[] { "remove", "removes a record", "The 'remove' removes a record." },
             new string[] { "purge", "defragments a file", "The 'purge' defragments a file." },
+            new string[] { "insert", "inserts a record with new values", "The 'insert' inserts a record with new values." },
         };
 
         /// <summary>

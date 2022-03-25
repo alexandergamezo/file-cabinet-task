@@ -118,7 +118,7 @@ namespace FileCabinetApp
                     Console.WriteLine("Using default validation rules. Storage is file.");
                     FileStream fileStream = File.Open(Filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
                     fileStream.Seek(0, SeekOrigin.End);
-                    FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, defaultValidator);
+                    FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, defaultValidator, Filename);
                     fileCabinetBase = fileCabinetFilesystemService;
                     commandLineParameter = "default";
                 }
@@ -134,7 +134,7 @@ namespace FileCabinetApp
                     Console.WriteLine("Using custom validation rules. Storage is file.");
                     FileStream fileStream = File.Open(Filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
                     fileStream.Seek(0, SeekOrigin.End);
-                    FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, customValidator);
+                    FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, customValidator, Filename);
                     fileCabinetBase = fileCabinetFilesystemService;
                     commandLineParameter = "custom";
                 }
@@ -552,6 +552,7 @@ namespace FileCabinetApp
             var importHandler = new ImportCommandHandler(fileCabinetService);
             var removeHandler = new RemoveCommandHandler(fileCabinetService);
             var purgeHandler = new PurgeCommandHandler(fileCabinetService, Filename);
+            var insertHandler = new InsertCommandHandler(fileCabinetService, Filename);
 
             helpHandler.SetNext(exitHandler);
             exitHandler.SetNext(statHandler);
@@ -563,7 +564,7 @@ namespace FileCabinetApp
             exportHandler.SetNext(importHandler);
             importHandler.SetNext(removeHandler);
             removeHandler.SetNext(purgeHandler);
-
+            purgeHandler.SetNext(insertHandler);
             return helpHandler;
         }
 

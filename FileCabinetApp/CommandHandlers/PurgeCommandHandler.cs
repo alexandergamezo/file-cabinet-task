@@ -46,7 +46,8 @@ namespace FileCabinetApp.CommandHandlers
             {
                 File.Replace(SourceFileName, this.filename, DestinationBackupFileName);
                 Console.WriteLine($"Data file processing is completed: {numOldRecords - numNewRecords} of {numOldRecords} records were purged.");
-                Program.CommandLineParameter(Environment.GetCommandLineArgs());
+                string[] str = Environment.GetCommandLineArgs();
+                Program.Main(str[1..]);
             }
         }
     }

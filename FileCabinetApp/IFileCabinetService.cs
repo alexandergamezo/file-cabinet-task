@@ -72,7 +72,7 @@ namespace FileCabinetApp
         /// Removes a record.
         /// </summary>
         /// <param name="id">Id number.</param>
-        public void RemoveRecord(int id);
+        void RemoveRecord(int id);
 
         /// <summary>
         /// Defrags a file.
@@ -80,6 +80,14 @@ namespace FileCabinetApp
         /// <param name="destinationFileName">The destination file name.</param>
         /// <param name="numNewRecords">The number of new records in a new file.</param>
         /// <param name="numOldRecords">The number of old records in an old file.</param>
-        public void DefragFile(string destinationFileName, out int numNewRecords, out int numOldRecords);
+        void DefragFile(string destinationFileName, out int numNewRecords, out int numOldRecords);
+
+        /// <summary>
+        /// Inserts records.
+        /// </summary>
+        /// <param name="id">Id number.</param>
+        /// <param name="v">Object with parameters.</param>
+        /// <returns>The id number.</returns>
+        int Insert(int id, ParameterObject v);
     }
 }
