@@ -54,8 +54,17 @@ namespace FileCabinetApp.RecordIterator
                 using BinaryReader binaryReader = new (memoryStream);
                 memoryStream.Seek(this.position, SeekOrigin.Begin);
 
-                binaryReader.ReadInt16();
-                FileCabinetRecord record = this.readBinaryRecord(binaryReader, this.offset);
+                FileCabinetRecord record;
+                short reserved = binaryReader.ReadInt16();
+
+                if ((reserved >> 2 & 1) == 1)
+                {
+                    record = null;
+                }
+                else
+                {
+                    record = this.readBinaryRecord(binaryReader, this.offset);
+                }
 
                 return record;
             }

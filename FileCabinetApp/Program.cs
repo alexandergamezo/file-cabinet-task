@@ -553,6 +553,7 @@ namespace FileCabinetApp
             var removeHandler = new RemoveCommandHandler(fileCabinetService);
             var purgeHandler = new PurgeCommandHandler(fileCabinetService, Filename);
             var insertHandler = new InsertCommandHandler(fileCabinetService, Filename);
+            var deleteHandler = new DeleteCommandHandler(fileCabinetService);
 
             helpHandler.SetNext(exitHandler);
             exitHandler.SetNext(statHandler);
@@ -565,6 +566,7 @@ namespace FileCabinetApp
             importHandler.SetNext(removeHandler);
             removeHandler.SetNext(purgeHandler);
             purgeHandler.SetNext(insertHandler);
+            insertHandler.SetNext(deleteHandler);
             return helpHandler;
         }
 

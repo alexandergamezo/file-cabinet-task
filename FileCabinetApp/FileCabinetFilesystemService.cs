@@ -443,6 +443,11 @@ namespace FileCabinetApp
             {
                 FileCabinetRecord record = b.Current;
 
+                if (record == null)
+                {
+                    continue;
+                }
+
                 if (firstname && record.FirstName.Equals(appropriateFormat))
                 {
                     yield return record;

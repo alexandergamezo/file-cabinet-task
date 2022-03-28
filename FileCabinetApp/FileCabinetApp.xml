@@ -60,6 +60,23 @@
             </summary>
             <param name="request">Request.</param>
         </member>
+        <member name="T:FileCabinetApp.CommandHandlers.DeleteCommandHandler">
+            <summary>
+            Handler for the 'create' command.
+            </summary>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.DeleteCommandHandler.#ctor(FileCabinetApp.IFileCabinetService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.DeleteCommandHandler"/> class.
+            </summary>
+            <param name="fileCabinetService">Object reference.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.DeleteCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>
+            Handlers a request.
+            </summary>
+            <param name="request">Request.</param>
+        </member>
         <member name="T:FileCabinetApp.CommandHandlers.EditCommandHandler">
             <summary>
             Handler for the 'edit' command.
@@ -175,11 +192,17 @@
             </summary>
             <param name="request">Request.</param>
         </member>
+        <member name="T:FileCabinetApp.CommandHandlers.InsertCommandHandler">
+            <summary>
+            Handler for the 'insert' command.
+            </summary>
+        </member>
         <member name="M:FileCabinetApp.CommandHandlers.InsertCommandHandler.#ctor(FileCabinetApp.IFileCabinetService,System.String)">
             <summary>
             Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.InsertCommandHandler"/> class.
             </summary>
             <param name="fileCabinetService">Object reference.</param>
+            <param name="filename">Filename.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.InsertCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>
@@ -285,6 +308,7 @@
             </summary>
             <param name="fileStream">Stream for recording.</param>
             <param name="validator">Reference to one of the strategy objects.</param>
+            <param name="filename">Filename.</param>
         </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.CreateRecord(FileCabinetApp.ParameterObject)">
             <summary>
@@ -359,6 +383,14 @@
             <param name="destinationFileName">The destination file name.</param>
             <param name="numNewRecords">The number of new records in a new file.</param>
             <param name="numOldRecords">The number of old records in an old file.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.Insert(System.Int32,FileCabinetApp.ParameterObject)">
+            <summary>
+            Inserts records.
+            </summary>
+            <param name="id">Id number.</param>
+            <param name="v">Object with parameters.</param>
+            <returns>The id number.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.GetFileStream">
             <summary>
@@ -488,6 +520,14 @@
             <param name="whatFind">the parameter for finding.</param>
             <param name="parameter">firstName, lastName or dateOfBirth.</param>
             <returns>the list with found records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.Insert(System.Int32,FileCabinetApp.ParameterObject)">
+            <summary>
+            Inserts records.
+            </summary>
+            <param name="id">Id number.</param>
+            <param name="v">Object with parameters.</param>
+            <returns>The id number.</returns>
         </member>
         <member name="T:FileCabinetApp.FileCabinetRecord">
             <summary>
@@ -749,6 +789,14 @@
             <param name="destinationFileName">The destination file name.</param>
             <param name="numNewRecords">The number of new records in a new file.</param>
             <param name="numOldRecords">The number of old records in an old file.</param>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.Insert(System.Int32,FileCabinetApp.ParameterObject)">
+            <summary>
+            Inserts records.
+            </summary>
+            <param name="id">Id number.</param>
+            <param name="v">Object with parameters.</param>
+            <returns>The id number.</returns>
         </member>
         <member name="T:FileCabinetApp.Models.Validation">
             <summary>
@@ -1302,6 +1350,14 @@
             </summary>
             <returns>The number of records.</returns>
         </member>
+        <member name="M:FileCabinetApp.ServiceLogger.Insert(System.Int32,FileCabinetApp.ParameterObject)">
+            <summary>
+            Inserts records.
+            </summary>
+            <param name="id">Id number.</param>
+            <param name="v">Object with parameters.</param>
+            <returns>The id number.</returns>
+        </member>
         <member name="M:FileCabinetApp.ServiceLogger.MakeSnapshot">
             <summary>
             Saves the current state inside a FileCabinetServiceSnapshot.
@@ -1386,6 +1442,14 @@
             Defines the number of records in the List.
             </summary>
             <returns>The number of records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.Insert(System.Int32,FileCabinetApp.ParameterObject)">
+            <summary>
+            Inserts records.
+            </summary>
+            <param name="id">Id number.</param>
+            <param name="v">Object with parameters.</param>
+            <returns>The id number.</returns>
         </member>
         <member name="M:FileCabinetApp.ServiceMeter.MakeSnapshot">
             <summary>
