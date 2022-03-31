@@ -402,6 +402,8 @@ namespace FileCabinetApp
                 this.fileStream.Dispose();
             }
 
+            File.Replace(SourceFileName, this.filename, DestinationBackupFileName);
+
             return id;
         }
 

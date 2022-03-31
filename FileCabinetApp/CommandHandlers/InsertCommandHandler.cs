@@ -8,19 +8,13 @@ namespace FileCabinetApp.CommandHandlers
     /// </summary>
     public class InsertCommandHandler : ServiceCommandHandlerBase
     {
-        private const string SourceFileName = "temp.db";
-        private const string DestinationBackupFileName = "cabinet-records.db.bac";
-        private readonly string filename;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="InsertCommandHandler"/> class.
         /// </summary>
         /// <param name="fileCabinetService">Object reference.</param>
-        /// <param name="filename">Filename.</param>
-        public InsertCommandHandler(IFileCabinetService fileCabinetService, string filename)
+        public InsertCommandHandler(IFileCabinetService fileCabinetService)
             : base(fileCabinetService)
         {
-            this.filename = filename;
         }
 
         /// <summary>
@@ -103,6 +97,8 @@ namespace FileCabinetApp.CommandHandlers
 
                 ParameterObject v = new (firstName, lastName, dateOfBirth, property1, property2, property3);
 
+                string[] str = Environment.GetCommandLineArgs();
+
                 if (id == 0)
                 {
                     int result = this.service.CreateRecord(v);
@@ -111,15 +107,20 @@ namespace FileCabinetApp.CommandHandlers
                         Console.WriteLine($"Record #{result} is inserted.");
                     }
                 }
-                else
+                else if (str[4].ToLowerInvariant() == "memory")
                 {
                     int result = this.service.Insert(id, v);
                     if (result > 0)
                     {
-                        File.Replace(SourceFileName, this.filename, DestinationBackupFileName);
                         Console.WriteLine($"Record #{result} is inserted.");
-
-                        string[] str = Environment.GetCommandLineArgs();
+                    }
+                }
+                else if (str[4].ToLowerInvariant() == "file")
+                {
+                    int result = this.service.Insert(id, v);
+                    if (result > 0)
+                    {
+                        Console.WriteLine($"Record #{result} is inserted.");
                         Program.Main(str[1..]);
                     }
                 }
