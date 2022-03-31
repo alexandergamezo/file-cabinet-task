@@ -43,6 +43,11 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
+        public string[][] GetHelpMessages()
+        {
+            return HelpMessages;
+        }
+
         private static void PrintHelp(AppCommandRequest request)
         {
             if (!string.IsNullOrEmpty(request.Parameters))
