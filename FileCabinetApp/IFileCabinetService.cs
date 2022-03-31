@@ -32,7 +32,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="id">Id number.</param>
         /// <param name="v">Object with parameters.</param>
-        void EditRecord(int id, ParameterObject v);
+        void UpdateRecord(int id, ParameterObject v);
 
         /// <summary>
         /// Finds records by first name.
@@ -72,7 +72,7 @@ namespace FileCabinetApp
         /// Removes a record.
         /// </summary>
         /// <param name="id">Id number.</param>
-        void RemoveRecord(int id);
+        void DeleteRecord(int id);
 
         /// <summary>
         /// Defrags a file.

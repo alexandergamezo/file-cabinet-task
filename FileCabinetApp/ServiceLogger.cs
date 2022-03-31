@@ -72,13 +72,13 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="id">Id number.</param>
         /// <param name="v">Object with parameters.</param>
-        public void EditRecord(int id, ParameterObject v)
+        public void UpdateRecord(int id, ParameterObject v)
         {
             try
             {
                 this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Calling Edit() with FirstName = '{v.FirstName}', LastName = '{v.LastName}', DateOfBirth = '{v.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)}', " +
                         $"Property1 = '{v.Property1}', Property2 = '{v.Property2}', Property3 = '{v.Property3}'");
-                this.service.EditRecord(id, v);
+                this.service.UpdateRecord(id, v);
                 this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Edit() updated Record #{id}");
             }
             catch (Exception exc)
@@ -214,10 +214,10 @@ namespace FileCabinetApp
         /// Removes a record.
         /// </summary>
         /// <param name="id">Id number.</param>
-        public void RemoveRecord(int id)
+        public void DeleteRecord(int id)
         {
                 this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Calling Remove()");
-                this.service.RemoveRecord(id);
+                this.service.DeleteRecord(id);
                 this.writer.WriteLine($"{DateTime.Now.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture)} - Remove() removed Record #{id}");
                 this.writer.Flush();
         }

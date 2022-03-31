@@ -81,7 +81,7 @@ namespace FileCabinetApp.CommandHandlers
 
                 if (id >= 0)
                 {
-                    this.service.EditRecord(id, v);
+                    this.service.UpdateRecord(id, v);
                     Console.WriteLine($"Record #{id} is updated.");
                 }
 
@@ -103,7 +103,7 @@ namespace FileCabinetApp.CommandHandlers
             {
                 foreach (var a in listAfterWhere)
                 {
-                    this.service.EditRecord(a, v);
+                    this.service.UpdateRecord(a, v);
                 }
 
                 Console.Write("Records ");
@@ -116,7 +116,7 @@ namespace FileCabinetApp.CommandHandlers
             }
             else if (listAfterWhere.Count == 1)
             {
-                this.service.EditRecord(listAfterWhere[0], v);
+                this.service.UpdateRecord(listAfterWhere[0], v);
                 Console.WriteLine($"Record #{listAfterWhere[0]} is updated.");
             }
             else

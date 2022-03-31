@@ -61,12 +61,12 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="id">Id number.</param>
         /// <param name="v">Object with parameters.</param>
-        public void EditRecord(int id, ParameterObject v)
+        public void UpdateRecord(int id, ParameterObject v)
         {
             Stopwatch time = new ();
             time.Start();
 
-            this.service.EditRecord(id, v);
+            this.service.UpdateRecord(id, v);
 
             time.Stop();
             Console.WriteLine($"Edit method execution duration is {time.ElapsedTicks} ticks.");
@@ -200,12 +200,12 @@ namespace FileCabinetApp
         /// Removes a record.
         /// </summary>
         /// <param name="id">Id number.</param>
-        public void RemoveRecord(int id)
+        public void DeleteRecord(int id)
         {
             Stopwatch time = new ();
             time.Start();
 
-            this.service.RemoveRecord(id);
+            this.service.DeleteRecord(id);
 
             time.Stop();
             Console.WriteLine($"Remove method execution duration is {time.ElapsedTicks} ticks.");

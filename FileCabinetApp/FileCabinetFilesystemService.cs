@@ -132,7 +132,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="id">Id number.</param>
         /// <param name="v">Object with parameters.</param>
-        public void EditRecord(int id, ParameterObject v)
+        public void UpdateRecord(int id, ParameterObject v)
         {
             this.validator.ValidateParameters(v);
             var record = new FileCabinetRecord
@@ -229,7 +229,7 @@ namespace FileCabinetApp
 
                 if (exist)
                 {
-                    this.EditRecord(a.Id, paramobj);
+                    this.UpdateRecord(a.Id, paramobj);
                     count++;
                 }
                 else
@@ -247,7 +247,7 @@ namespace FileCabinetApp
         /// Removes a record.
         /// </summary>
         /// <param name="id">Id number.</param>
-        public void RemoveRecord(int id)
+        public void DeleteRecord(int id)
         {
             int realPosition = this.FindRealPosition(id);
 

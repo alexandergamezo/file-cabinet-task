@@ -77,23 +77,6 @@
             </summary>
             <param name="request">Request.</param>
         </member>
-        <member name="T:FileCabinetApp.CommandHandlers.EditCommandHandler">
-            <summary>
-            Handler for the 'edit' command.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.EditCommandHandler.#ctor(FileCabinetApp.IFileCabinetService)">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.EditCommandHandler"/> class.
-            </summary>
-            <param name="fileCabinetService">Object reference.</param>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.EditCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
-            <summary>
-            Handlers a request.
-            </summary>
-            <param name="request">Request.</param>
-        </member>
         <member name="T:FileCabinetApp.CommandHandlers.ExitCommandHandler">
             <summary>
             Handler for the 'exit' command.
@@ -245,23 +228,6 @@
             </summary>
             <param name="request">Request.</param>
         </member>
-        <member name="T:FileCabinetApp.CommandHandlers.RemoveCommandHandler">
-            <summary>
-            Handler for the 'remove' command.
-            </summary>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.RemoveCommandHandler.#ctor(FileCabinetApp.IFileCabinetService)">
-            <summary>
-            Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.RemoveCommandHandler"/> class.
-            </summary>
-            <param name="fileCabinetService">Object reference.</param>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.RemoveCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
-            <summary>
-            Handlers a request.
-            </summary>
-            <param name="request">Request.</param>
-        </member>
         <member name="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase">
             <summary>
             Base service handler class.
@@ -345,7 +311,7 @@
             </summary>
             <returns>The number of records.</returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.EditRecord(System.Int32,FileCabinetApp.ParameterObject)">
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.UpdateRecord(System.Int32,FileCabinetApp.ParameterObject)">
             <summary>
             Changes old record on the new one.
             </summary>
@@ -386,7 +352,7 @@
             <param name="snapshot">Snapshot of the object, where saved its state.</param>
             <param name="count">Number of records that were imported with definite validation rules.</param>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.RemoveRecord(System.Int32)">
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.DeleteRecord(System.Int32)">
             <summary>
             Removes a record.
             </summary>
@@ -474,7 +440,7 @@
             </summary>
             <returns>The number of records.</returns>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.EditRecord(System.Int32,FileCabinetApp.ParameterObject)">
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.UpdateRecord(System.Int32,FileCabinetApp.ParameterObject)">
             <summary>
             Changes old record on the new one in the List.
             </summary>
@@ -515,7 +481,7 @@
             <param name="snapshot">Snapshot of the object, where saved its state.</param>
             <param name="count">Number of records that were imported with definite validation rules.</param>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.RemoveRecord(System.Int32)">
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.DeleteRecord(System.Int32)">
             <summary>
             Removes a record.
             </summary>
@@ -751,7 +717,7 @@
             </summary>
             <returns>The number of records.</returns>
         </member>
-        <member name="M:FileCabinetApp.IFileCabinetService.EditRecord(System.Int32,FileCabinetApp.ParameterObject)">
+        <member name="M:FileCabinetApp.IFileCabinetService.UpdateRecord(System.Int32,FileCabinetApp.ParameterObject)">
             <summary>
             Changes old record on the new one.
             </summary>
@@ -792,7 +758,7 @@
             <param name="snapshot">Snapshot of the object, where saved its state.</param>
             <param name="count">Number of records that were imported with definite validation rules.</param>
         </member>
-        <member name="M:FileCabinetApp.IFileCabinetService.RemoveRecord(System.Int32)">
+        <member name="M:FileCabinetApp.IFileCabinetService.DeleteRecord(System.Int32)">
             <summary>
             Removes a record.
             </summary>
@@ -1326,7 +1292,7 @@
             <param name="numNewRecords">The number of new records in a new file.</param>
             <param name="numOldRecords">The number of old records in an old file.</param>
         </member>
-        <member name="M:FileCabinetApp.ServiceLogger.EditRecord(System.Int32,FileCabinetApp.ParameterObject)">
+        <member name="M:FileCabinetApp.ServiceLogger.UpdateRecord(System.Int32,FileCabinetApp.ParameterObject)">
             <summary>
             Changes old record on the new one.
             </summary>
@@ -1380,7 +1346,7 @@
             </summary>
             <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
         </member>
-        <member name="M:FileCabinetApp.ServiceLogger.RemoveRecord(System.Int32)">
+        <member name="M:FileCabinetApp.ServiceLogger.DeleteRecord(System.Int32)">
             <summary>
             Removes a record.
             </summary>
@@ -1419,7 +1385,7 @@
             <param name="numNewRecords">The number of new records in a new file.</param>
             <param name="numOldRecords">The number of old records in an old file.</param>
         </member>
-        <member name="M:FileCabinetApp.ServiceMeter.EditRecord(System.Int32,FileCabinetApp.ParameterObject)">
+        <member name="M:FileCabinetApp.ServiceMeter.UpdateRecord(System.Int32,FileCabinetApp.ParameterObject)">
             <summary>
             Changes old record on the new one.
             </summary>
@@ -1473,7 +1439,7 @@
             </summary>
             <returns>Snapshot of object, where the FileCabinetService passes its state to the FileCabinetServiceSnapshot's constructor parameters.</returns>
         </member>
-        <member name="M:FileCabinetApp.ServiceMeter.RemoveRecord(System.Int32)">
+        <member name="M:FileCabinetApp.ServiceMeter.DeleteRecord(System.Int32)">
             <summary>
             Removes a record.
             </summary>

@@ -88,7 +88,7 @@ namespace FileCabinetApp.CommandHandlers
             {
                 foreach (var a in list)
                 {
-                    this.service.RemoveRecord(a);
+                    this.service.DeleteRecord(a);
                 }
 
                 Console.Write("Records ");
@@ -101,7 +101,7 @@ namespace FileCabinetApp.CommandHandlers
             }
             else if (list.Count == 1)
             {
-                this.service.RemoveRecord(list[0]);
+                this.service.DeleteRecord(list[0]);
                 Console.WriteLine($"Record #{list[0]} is deleted.");
             }
             else
