@@ -118,7 +118,7 @@ namespace FileCabinetApp
                     Console.WriteLine("Using default validation rules. Storage is file.");
                     FileStream fileStream = File.Open(Filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
                     fileStream.Seek(0, SeekOrigin.End);
-                    FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, defaultValidator);
+                    FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, defaultValidator, Filename);
                     fileCabinetBase = fileCabinetFilesystemService;
                     commandLineParameter = "default";
                 }
@@ -134,7 +134,7 @@ namespace FileCabinetApp
                     Console.WriteLine("Using custom validation rules. Storage is file.");
                     FileStream fileStream = File.Open(Filename, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
                     fileStream.Seek(0, SeekOrigin.End);
-                    FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, customValidator);
+                    FileCabinetFilesystemService fileCabinetFilesystemService = new (fileStream, customValidator, Filename);
                     fileCabinetBase = fileCabinetFilesystemService;
                     commandLineParameter = "custom";
                 }
@@ -546,24 +546,25 @@ namespace FileCabinetApp
             var statHandler = new StatCommandHandler(fileCabinetService);
             var createHandler = new CreateCommandHandler(fileCabinetService);
             var listHandler = new ListCommandHandler(fileCabinetService, RecordPrinter);
-            var editHandler = new EditCommandHandler(fileCabinetService);
             var findHandler = new FindCommandHandler(fileCabinetService, RecordPrinter);
             var exportHandler = new ExportCommandHandler(fileCabinetService);
             var importHandler = new ImportCommandHandler(fileCabinetService);
-            var removeHandler = new RemoveCommandHandler(fileCabinetService);
             var purgeHandler = new PurgeCommandHandler(fileCabinetService, Filename);
+            var insertHandler = new InsertCommandHandler(fileCabinetService);
+            var deleteHandler = new DeleteCommandHandler(fileCabinetService);
+            var updateHandler = new UpdateCommandHandler(fileCabinetService);
 
             helpHandler.SetNext(exitHandler);
             exitHandler.SetNext(statHandler);
             statHandler.SetNext(createHandler);
             createHandler.SetNext(listHandler);
-            listHandler.SetNext(editHandler);
-            editHandler.SetNext(findHandler);
+            listHandler.SetNext(findHandler);
             findHandler.SetNext(exportHandler);
             exportHandler.SetNext(importHandler);
-            importHandler.SetNext(removeHandler);
-            removeHandler.SetNext(purgeHandler);
-
+            importHandler.SetNext(purgeHandler);
+            purgeHandler.SetNext(insertHandler);
+            insertHandler.SetNext(deleteHandler);
+            deleteHandler.SetNext(updateHandler);
             return helpHandler;
         }
 

@@ -89,7 +89,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="id">Id number.</param>
         /// <param name="v">Object with parameters.</param>
-        public void EditRecord(int id, ParameterObject v)
+        public void UpdateRecord(int id, ParameterObject v)
         {
             this.validator.ValidateParameters(v);
 
@@ -195,7 +195,7 @@ namespace FileCabinetApp
                 }
                 else
                 {
-                    this.EditRecord(a.Id, paramobj);
+                    this.UpdateRecord(a.Id, paramobj);
                     count++;
                 }
             }
@@ -205,18 +205,9 @@ namespace FileCabinetApp
         /// Removes a record.
         /// </summary>
         /// <param name="id">Id number.</param>
-        public void RemoveRecord(int id)
+        public void DeleteRecord(int id)
         {
-            int realPosition = 0;
-            for (int i = 0; i < this.list.Count; i++)
-            {
-                if (id == this.list[i].Id)
-                {
-                    realPosition = i;
-                }
-            }
-
-            this.list.RemoveAt(realPosition);
+            this.list.RemoveAt(this.FindRealPosition(id));
         }
 
         /// <summary>
@@ -270,6 +261,61 @@ namespace FileCabinetApp
                     yield return record;
                 }
             }
+        }
+
+        /// <summary>
+        /// Inserts records.
+        /// </summary>
+        /// <param name="id">Id number.</param>
+        /// <param name="v">Object with parameters.</param>
+        /// <returns>The id number.</returns>
+        public int Insert(int id, ParameterObject v)
+        {
+            this.validator.ValidateParameters(v);
+
+            int minPos = -1;
+            foreach (var a in this.list)
+            {
+                if (a.Id == id)
+                {
+                    throw new Exception($"Error! Id #{id} exists");
+                }
+
+                if (a.Id < id && minPos < a.Id)
+                {
+                    minPos = a.Id;
+                }
+            }
+
+            FileCabinetRecord record = new ()
+            {
+                    Id = id,
+                    FirstName = v.FirstName,
+                    LastName = v.LastName,
+                    DateOfBirth = v.DateOfBirth,
+                    Property1 = v.Property1,
+                    Property2 = v.Property2,
+                    Property3 = v.Property3,
+            };
+
+            int realPosition = minPos > 0 ? this.FindRealPosition(minPos) : minPos;
+            this.list.Insert(realPosition + 1, record);
+
+            return id;
+        }
+
+        private int FindRealPosition(int id)
+        {
+            int realPosition = 0;
+            for (int i = 0; i < this.list.Count; i++)
+            {
+                if (id == this.list[i].Id)
+                {
+                    realPosition = i;
+                }
+            }
+
+            return realPosition;
         }
     }
 }

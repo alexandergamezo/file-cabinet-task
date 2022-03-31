@@ -14,6 +14,10 @@ namespace FileCabinetApp
     /// </summary>
     public class FileCabinetFilesystemService : IFileCabinetService, IEnumerable<FileCabinetRecord>
     {
+        private const string SourceFileName = "temp.db";
+        private const string DestinationBackupFileName = "cabinet-records.db.bac";
+        private readonly string filename;
+
         private readonly List<FileCabinetRecord> list = new ();
 
         private readonly FileStream fileStream;
@@ -28,10 +32,12 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="fileStream">Stream for recording.</param>
         /// <param name="validator">Reference to one of the strategy objects.</param>
-        public FileCabinetFilesystemService(FileStream fileStream, IRecordValidator validator)
+        /// <param name="filename">Filename.</param>
+        public FileCabinetFilesystemService(FileStream fileStream, IRecordValidator validator, string filename)
         {
             this.fileStream = fileStream;
             this.validator = validator;
+            this.filename = filename;
         }
 
         /// <summary>
@@ -126,7 +132,7 @@ namespace FileCabinetApp
         /// </summary>
         /// <param name="id">Id number.</param>
         /// <param name="v">Object with parameters.</param>
-        public void EditRecord(int id, ParameterObject v)
+        public void UpdateRecord(int id, ParameterObject v)
         {
             this.validator.ValidateParameters(v);
             var record = new FileCabinetRecord
@@ -223,7 +229,7 @@ namespace FileCabinetApp
 
                 if (exist)
                 {
-                    this.EditRecord(a.Id, paramobj);
+                    this.UpdateRecord(a.Id, paramobj);
                     count++;
                 }
                 else
@@ -241,7 +247,7 @@ namespace FileCabinetApp
         /// Removes a record.
         /// </summary>
         /// <param name="id">Id number.</param>
-        public void RemoveRecord(int id)
+        public void DeleteRecord(int id)
         {
             int realPosition = this.FindRealPosition(id);
 
@@ -299,6 +305,109 @@ namespace FileCabinetApp
         }
 
         /// <summary>
+        /// Inserts records.
+        /// </summary>
+        /// <param name="id">Id number.</param>
+        /// <param name="v">Object with parameters.</param>
+        /// <returns>The id number.</returns>
+        public int Insert(int id, ParameterObject v)
+        {
+            this.validator.ValidateParameters(v);
+
+            int minId = id;
+            long minIdPos = 0;
+
+            FileCabinetRecord record = new ()
+            {
+                Id = id,
+                FirstName = v.FirstName,
+                LastName = v.LastName,
+                DateOfBirth = v.DateOfBirth,
+                Property1 = v.Property1,
+                Property2 = v.Property2,
+                Property3 = v.Property3,
+            };
+
+            byte[] readBytes = new byte[this.fileStream.Length];
+            this.fileStream.Seek(0, SeekOrigin.Begin);
+            this.fileStream.Read(readBytes, 0, readBytes.Length);
+            using MemoryStream memoryStream = new (readBytes);
+            using BinaryReader binaryReader = new (memoryStream);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            int offsetShift = 0;
+
+            while (memoryStream.Position <= (memoryStream.Length - this.recordSize))
+            {
+                memoryStream.Seek(offsetShift, SeekOrigin.Begin);
+
+                short reserved = binaryReader.ReadInt16();
+                if ((reserved >> 2 & 1) == 1)
+                {
+                    offsetShift += this.recordSize;
+                    continue;
+                }
+
+                int readerId = binaryReader.ReadInt32();
+
+                if (readerId == id)
+                {
+                    throw new Exception($"Error! Id #{id} exists");
+                }
+                else if (readerId > id)
+                {
+                    break;
+                }
+                else if (readerId < id)
+                {
+                    minId = readerId;
+                    minIdPos = offsetShift;
+                }
+
+                offsetShift += this.recordSize;
+            }
+
+            if (minId == id)
+            {
+                using FileStream newFileStream = File.Open(SourceFileName, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+                byte[] newBytesRecord = new byte[readBytes.Length + this.recordSize];
+
+                byte[] recordBytes = WriteToBytes(record, this.offset, this.recordSize);
+                Array.Copy(recordBytes, 0, newBytesRecord, 0, this.recordSize);
+                Array.Copy(readBytes, 0, newBytesRecord, this.recordSize, readBytes.Length);
+
+                newFileStream.Write(newBytesRecord, 0, newBytesRecord.Length);
+
+                newFileStream.Flush();
+                newFileStream.Dispose();
+
+                this.fileStream.Dispose();
+            }
+            else if (minId < id)
+            {
+                using FileStream newFileStream = File.Open(SourceFileName, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+
+                byte[] newBytesRecord = new byte[readBytes.Length + this.recordSize];
+                Array.Copy(readBytes, 0, newBytesRecord, 0, minIdPos + this.recordSize);
+
+                byte[] recordBytes = WriteToBytes(record, this.offset, this.recordSize);
+                Array.Copy(recordBytes, 0, newBytesRecord, minIdPos + this.recordSize, this.recordSize);
+
+                Array.Copy(readBytes, minIdPos + this.recordSize, newBytesRecord, minIdPos + (this.recordSize * 2), readBytes.Length - (minIdPos + this.recordSize));
+
+                newFileStream.Write(newBytesRecord, 0, newBytesRecord.Length);
+
+                newFileStream.Flush();
+                newFileStream.Dispose();
+
+                this.fileStream.Dispose();
+            }
+
+            File.Replace(SourceFileName, this.filename, DestinationBackupFileName);
+
+            return id;
+        }
+
+        /// <summary>
         /// Returns fileStream.
         /// </summary>
         /// <returns>fileStream.</returns>
@@ -335,6 +444,11 @@ namespace FileCabinetApp
             while (b.MoveNext())
             {
                 FileCabinetRecord record = b.Current;
+
+                if (record == null)
+                {
+                    continue;
+                }
 
                 if (firstname && record.FirstName.Equals(appropriateFormat))
                 {
@@ -485,7 +599,7 @@ namespace FileCabinetApp
             using BinaryReader binaryReader = new (memoryStream);
             memoryStream.Seek(0, SeekOrigin.Begin);
             int offsetShift = 0;
-            int readerId = -1;
+
             while (memoryStream.Position <= (memoryStream.Length - this.recordSize))
             {
                 memoryStream.Seek(offsetShift, SeekOrigin.Begin);
@@ -497,7 +611,7 @@ namespace FileCabinetApp
                     continue;
                 }
 
-                readerId = binaryReader.ReadInt32();
+                int readerId = binaryReader.ReadInt32();
                 if (readerId == id)
                 {
                     break;
