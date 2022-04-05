@@ -17,14 +17,13 @@ namespace FileCabinetApp.CommandHandlers
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
             new string[] { "stat", "displays statistics on records", "The 'stat' command displays statistics on records." },
             new string[] { "create", "creates a record", "The 'create' creates a record." },
-            new string[] { "list", "returns a list of records", "The 'list' returns a list of records." },
-            new string[] { "find", "finds and returns a list of records", "The 'find' finds and returns a list of records. Parameters: 'firstname', 'lastname', 'dateofbirth'." },
             new string[] { "export", "exports service data into a file in the 'CSV' or 'XML' format", "The 'export' exports service data into a file in the 'CSV' or 'XML' format. Formats: 'csv', 'xml'." },
             new string[] { "import", "imports service data from from file in the 'CSV' or 'XML' format", "The 'import' imports service data from file in the 'CSV' or 'XML' format. Formats: 'csv', 'xml'." },
             new string[] { "purge", "defragments a file", "The 'purge' defragments a file." },
             new string[] { "insert", "inserts a record with new values", "The 'insert' inserts a record with new values." },
             new string[] { "delete", "deletes records using the given criteria", "The 'delete' deletes records using the given criteria." },
             new string[] { "update", "updates records (except id) using the given search criteria", "The 'update' updates records (except id) using the given search criteria." },
+            new string[] { "select", "gets a list of fields to display with search criteria", "The 'select' gets a list of fields to display with search criteria." },
         };
 
         /// <summary>
@@ -43,6 +42,10 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
+        /// <summary>
+        /// Returns an array.
+        /// </summary>
+        /// <returns>An array messages.</returns>
         public string[][] GetHelpMessages()
         {
             return HelpMessages;

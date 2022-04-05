@@ -26,7 +26,6 @@ namespace FileCabinetApp
         private const string DeveloperName = "Alexander Gamezo";
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
 
-        private static readonly Action<IEnumerable<FileCabinetRecord>> RecordPrinter = Print;
         private static readonly Action<bool> Action = ChangeIsRunning;
         private static bool isRunning = true;
 
@@ -545,40 +544,30 @@ namespace FileCabinetApp
             var exitHandler = new ExitCommandHandler(Action);
             var statHandler = new StatCommandHandler(fileCabinetService);
             var createHandler = new CreateCommandHandler(fileCabinetService);
-            var listHandler = new ListCommandHandler(fileCabinetService, RecordPrinter);
-            var findHandler = new FindCommandHandler(fileCabinetService, RecordPrinter);
             var exportHandler = new ExportCommandHandler(fileCabinetService);
             var importHandler = new ImportCommandHandler(fileCabinetService);
             var purgeHandler = new PurgeCommandHandler(fileCabinetService, Filename);
             var insertHandler = new InsertCommandHandler(fileCabinetService);
             var deleteHandler = new DeleteCommandHandler(fileCabinetService);
             var updateHandler = new UpdateCommandHandler(fileCabinetService);
+            var selectHandler = new SelectCommandHandler(fileCabinetService);
 
             helpHandler.SetNext(exitHandler);
             exitHandler.SetNext(statHandler);
             statHandler.SetNext(createHandler);
-            createHandler.SetNext(listHandler);
-            listHandler.SetNext(findHandler);
-            findHandler.SetNext(exportHandler);
+            createHandler.SetNext(exportHandler);
             exportHandler.SetNext(importHandler);
             importHandler.SetNext(purgeHandler);
             purgeHandler.SetNext(insertHandler);
             insertHandler.SetNext(deleteHandler);
             deleteHandler.SetNext(updateHandler);
+            updateHandler.SetNext(selectHandler);
             return helpHandler;
         }
 
         private static void ChangeIsRunning(bool b)
         {
             isRunning = b;
-        }
-
-        private static void Print(IEnumerable<FileCabinetRecord> records)
-        {
-            foreach (var a in records)
-            {
-                Console.WriteLine($"#{a.Id}, {a.FirstName}, {a.LastName}, {a.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, {a.Property1}, {a.Property2}, {a.Property3}");
-            }
         }
     }
 }
