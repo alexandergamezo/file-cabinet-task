@@ -13,6 +13,9 @@ namespace FileCabinetApp
         private readonly List<FileCabinetRecord> list = new ();
         private readonly IRecordValidator validator;
 
+        private readonly Dictionary<string, IEnumerable<FileCabinetRecord>> firstnameDict = new ();
+        private readonly Dictionary<string, IEnumerable<FileCabinetRecord>> lastnameDict = new ();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FileCabinetMemoryService"/> class.
         /// Provides a setter to change a strategy at runtime.
@@ -30,6 +33,8 @@ namespace FileCabinetApp
         /// <returns>The id number.</returns>
         public int CreateRecord(ParameterObject v)
         {
+            this.DictionaryClear();
+
             this.validator.ValidateParameters(v);
             FileCabinetRecord record;
 
@@ -91,6 +96,8 @@ namespace FileCabinetApp
         /// <param name="v">Object with parameters.</param>
         public void UpdateRecord(int id, ParameterObject v)
         {
+            this.DictionaryClear();
+
             this.validator.ValidateParameters(v);
 
             int realPosition = 0;
@@ -124,7 +131,20 @@ namespace FileCabinetApp
         /// <returns>The collection of records found by the <paramref name="firstName"/>.</returns>
         public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
-            return this.GetFindList("firstname", firstName);
+            IEnumerable<FileCabinetRecord> list = null;
+            if (!this.firstnameDict.ContainsKey(firstName.ToLowerInvariant()))
+            {
+                IEnumerable<FileCabinetRecord> listFirstname = this.GetFindList("firstname", firstName);
+                this.firstnameDict.Add(firstName.ToLowerInvariant(), listFirstname);
+                list = listFirstname;
+            }
+            else if (this.firstnameDict.ContainsKey(firstName))
+            {
+                Console.WriteLine("From Dictionary firstname!");
+                list = this.firstnameDict[firstName];
+            }
+
+            return list;
         }
 
         /// <summary>
@@ -134,7 +154,20 @@ namespace FileCabinetApp
         /// <returns>The collection of records which by the <paramref name="lastName"/>.</returns>
         public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
-            return this.GetFindList("lastname", lastName);
+            IEnumerable<FileCabinetRecord> list = null;
+            if (!this.lastnameDict.ContainsKey(lastName.ToLowerInvariant()))
+            {
+                IEnumerable<FileCabinetRecord> listLastname = this.GetFindList("lastname", lastName);
+                this.lastnameDict.Add(lastName.ToLowerInvariant(), listLastname);
+                list = listLastname;
+            }
+            else if (this.lastnameDict.ContainsKey(lastName))
+            {
+                Console.WriteLine("From Dictionary lastname!");
+                list = this.lastnameDict[lastName];
+            }
+
+            return list;
         }
 
         /// <summary>
@@ -207,6 +240,7 @@ namespace FileCabinetApp
         /// <param name="id">Id number.</param>
         public void DeleteRecord(int id)
         {
+            this.DictionaryClear();
             this.list.RemoveAt(this.FindRealPosition(id));
         }
 
@@ -276,6 +310,8 @@ namespace FileCabinetApp
         /// <returns>The id number.</returns>
         public int Insert(int id, ParameterObject v)
         {
+            this.DictionaryClear();
+
             this.validator.ValidateParameters(v);
 
             int minPos = -1;
@@ -321,6 +357,12 @@ namespace FileCabinetApp
             }
 
             return realPosition;
+        }
+
+        private void DictionaryClear()
+        {
+            this.firstnameDict.Clear();
+            this.lastnameDict.Clear();
         }
     }
 }
