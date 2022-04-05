@@ -424,6 +424,11 @@ namespace FileCabinetApp
         /// <returns>the list with found records.</returns>
         public IEnumerable<FileCabinetRecord> GetFindList(string whatFind, string parameter)
         {
+            if (parameter == null)
+            {
+                throw new ArgumentNullException($"Check your input. {nameof(parameter)} can't be null.");
+            }
+
             bool firstname = whatFind.Equals("firstname");
             bool lastname = whatFind.Equals("lastname");
             bool dateofbirth = whatFind.Equals("dateofbirth");

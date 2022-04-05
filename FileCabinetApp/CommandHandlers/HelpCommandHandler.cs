@@ -25,6 +25,7 @@ namespace FileCabinetApp.CommandHandlers
             new string[] { "insert", "inserts a record with new values", "The 'insert' inserts a record with new values." },
             new string[] { "delete", "deletes records using the given criteria", "The 'delete' deletes records using the given criteria." },
             new string[] { "update", "updates records (except id) using the given search criteria", "The 'update' updates records (except id) using the given search criteria." },
+            new string[] { "select", "gets a list of fields to display with search criteria", "The 'select' gets a list of fields to display with search criteria." },
         };
 
         /// <summary>
@@ -43,6 +44,10 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
+        /// <summary>
+        /// Returns an array.
+        /// </summary>
+        /// <returns>An array messages.</returns>
         public string[][] GetHelpMessages()
         {
             return HelpMessages;
