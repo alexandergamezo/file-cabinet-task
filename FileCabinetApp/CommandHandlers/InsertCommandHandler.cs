@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 namespace FileCabinetApp.CommandHandlers
 {
@@ -41,8 +40,8 @@ namespace FileCabinetApp.CommandHandlers
             int valStartIndex = requestStr.IndexOf(" values (") + 9;
             int valEndIndex = requestStr.Length - 1;
 
-            string paramStr = string.Empty;
-            string valStr = string.Empty;
+            string paramStr;
+            string valStr;
 
             if (requestStr[0] == '(' && requestStr[^1] == ')')
             {
